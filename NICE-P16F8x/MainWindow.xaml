@@ -9,7 +9,7 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top" Background="{x:Null}">
             <MenuItem Header="_File">
-                <MenuItem x:Name="menuOpen" Header="_Open"/>
+                <MenuItem x:Name="menuOpen" Header="_Open" Click="menuOpen_Click"/>
             </MenuItem>
             <MenuItem Header="_Help">
 
@@ -17,7 +17,13 @@
         </Menu>
         <StackPanel>
             <GroupBox Header="Source Program" Height="385" Width="564" HorizontalAlignment="Left">
-                <DataGrid/>
+                <DataGrid x:Name="SourceDataGrid" AutoGenerateColumns="True" IsReadOnly="True" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFE2E2E2" VerticalGridLinesBrush="#FFE2E2E2">
+                    <!-- <DataGrid.Columns>
+                        <DataGridTextColumn Header="Line" Width="40pt"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Command" Width="100pt"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Comment"></DataGridTextColumn>
+                    </DataGrid.Columns> -->
+                </DataGrid>
             </GroupBox>
         </StackPanel>
     </DockPanel>

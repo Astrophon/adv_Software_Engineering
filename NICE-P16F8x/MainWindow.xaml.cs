@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,10 +21,28 @@ namespace NICE_P16F8x
     /// </summary>
     public partial class MainWindow : Window
     {
+        private SourceFile sourceFile;
+
         public MainWindow()
         {
             InitializeComponent();
-            Test
+        }
+
+        private void menuOpen_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog()
+            {
+                Title = "Open Source File",
+                Filter = "LST files (*.LST)|*.LST",
+                RestoreDirectory = true,
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                sourceFile = new SourceFile(dialog.FileName);
+                SourceDataGrid.ItemsSource = sourceFile.getSourceLines();
+            }
+
         }
     }
 }
