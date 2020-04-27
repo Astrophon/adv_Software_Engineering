@@ -23,6 +23,7 @@ namespace NICE_P16F8x
         public MainWindow()
         {
             InitializeComponent();
+            Test
         }
     }
 }
