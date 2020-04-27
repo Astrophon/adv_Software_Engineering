@@ -5,4 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NICE_P16F8x"
         mc:Ignorable="d"
-        Title="MainWindow" Height="618" Width="1067"/>
+        Title="MainWindow" Height="618" Width="1067">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" Background="{x:Null}">
+            <MenuItem Header="_File">
+                <MenuItem x:Name="menuOpen" Header="_Open"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+
+            </MenuItem>
+        </Menu>
+        <StackPanel>
+            <GroupBox Header="Source Program" Height="385" Width="564" HorizontalAlignment="Left">
+                <DataGrid/>
+            </GroupBox>
+        </StackPanel>
+    </DockPanel>
+</Window>
