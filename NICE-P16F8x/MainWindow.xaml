@@ -1,0 +1,8 @@
+﻿<Window x:Class="NICE_P16F8x.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NICE_P16F8x"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="618" Width="1067"/>
