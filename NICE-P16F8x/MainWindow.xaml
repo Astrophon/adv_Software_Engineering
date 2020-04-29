@@ -5,7 +5,55 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NICE_P16F8x"
         mc:Ignorable="d"
-        Title="MainWindow" Height="618" Width="1067">
+        xmlns:dataGrid2D="http://gu.se/DataGrid2D"
+        Title="MainWindow" SizeToContent="WidthAndHeight" Margin="-2,0,0,0" ResizeMode="CanMinimize">
+    <Window.Resources>
+        <Style x:Key="FileRegisterStyle"
+        TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="TextBlock.TextAlignment" Value="Center" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            
+            <!-- Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter> -->
+            <Style.Triggers>
+                <Trigger Property="IsSelected"  Value="True">
+                    <Setter Property="BorderBrush" Value="OrangeRed" />
+                </Trigger>
+            </Style.Triggers>
+
+        </Style>
+        <Style x:Key="CellHighlight" TargetType="DataGridCell">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Style.Triggers>
+                <Trigger Property="IsSelected"  Value="True">
+                    <Setter Property="BorderBrush" Value="DarkOrange" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="CellStyle" TargetType="DataGridCell">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+    </Window.Resources>
+    <Window.DataContext>
+        <local:FileRegisterViewModel/>
+    </Window.DataContext>
+
     <DockPanel>
         <Menu DockPanel.Dock="Top" Background="{x:Null}">
             <MenuItem Header="_File">
@@ -15,16 +63,99 @@
 
             </MenuItem>
         </Menu>
-        <StackPanel>
-            <GroupBox Header="Source Program" Height="385" Width="564" HorizontalAlignment="Left">
-                <DataGrid x:Name="SourceDataGrid" AutoGenerateColumns="True" IsReadOnly="True" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFE2E2E2" VerticalGridLinesBrush="#FFE2E2E2">
-                    <!-- <DataGrid.Columns>
-                        <DataGridTextColumn Header="Line" Width="40pt"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Command" Width="100pt"></DataGridTextColumn>
-                        <DataGridTextColumn Header="Comment"></DataGridTextColumn>
-                    </DataGrid.Columns> -->
-                </DataGrid>
-            </GroupBox>
+        <StackPanel Margin="5,0,5,5">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Grid.Column="0" Header="SFR + W" MinWidth="300" MinHeight="150px" HorizontalAlignment="Left">
+
+                    </GroupBox>
+                    <GroupBox Grid.Column="1" Header="SFR (Bit)" MinWidth="300" MinHeight="100px">
+
+                    </GroupBox>
+                    <GroupBox  Grid.Column="2" Header="Stack" MinWidth="100" MinHeight="100px">
+
+                    </GroupBox>
+                    <Grid Grid.Column="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" Header="Port A" MinWidth="400" MinHeight="100px">
+
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" Header="Port B" MinWidth="400" MinHeight="100px">
+
+                        </GroupBox>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Grid.Column="0" Header="Source Program" Height="467" VerticalAlignment="Center" HorizontalAlignment="Left" Width="807">
+                        <DataGrid x:Name="SourceDataGrid" IsReadOnly="True" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFE2E2E2" VerticalGridLinesBrush="#FFE2E2E2" SelectionMode="Extended" AutoGenerateColumns="False" CanUserSortColumns="False" FontFamily="Lucida Console" Background="White" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" HeadersVisibility="None" FontSize="13"
+                                  CellStyle="{StaticResource CellStyle}" SelectionChanged="SourceDataGrid_SelectionChanged" PreviewMouseDown="SourceDataGrid_PreviewMouseDown">
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <Setter Property="BorderThickness" Value="0" />
+                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected"  Value="True">
+                                            <Setter Property="BorderBrush" Value="DarkOrange" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.RowStyle>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="auto"/>
+                                <DataGridTextColumn Header="Command" Binding="{Binding Command}" MinWidth="140" FontWeight="Bold" CellStyle="{StaticResource CellHighlight}"/>
+                                <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="100*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <Grid Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" Header="Fileregister (SFR + GPR)" Width="auto" Height="200pt">
+                            <DataGrid x:Name="FileRegister"  
+                            CellStyle="{StaticResource FileRegisterStyle}"
+                            dataGrid2D:ItemsSource.Array2D="{Binding FileRegisterData}"
+                            dataGrid2D:ItemsSource.ColumnHeadersSource="{Binding FileRegisterColumns}"
+                            dataGrid2D:ItemsSource.RowHeadersSource="{Binding FileRegisterRows}" MinColumnWidth="30" RowHeight="20" CanUserResizeColumns="False" CanUserResizeRows="False" FontStyle="Normal" FontFamily="Lucida Console" FontWeight="Normal" SelectionUnit="Cell" CanUserSortColumns="False" FontSize="13" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFCBCBCB" VerticalGridLinesBrush="#FFCBCBCB" CanUserReorderColumns="False" SelectionMode="Single" Foreground="Black">
+                            </DataGrid>
+                        </GroupBox>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Grid.Column="0" Header="Timing" Width="auto" MinHeight="200px">
+                            </GroupBox>
+                            <GroupBox Grid.Column="1" Header="Control" Width="auto" MinHeight="200px">
+                            </GroupBox>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
         </StackPanel>
     </DockPanel>
+
 </Window>

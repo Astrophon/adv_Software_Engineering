@@ -9,10 +9,13 @@ namespace NICE_P16F8x
     class SourceFile
     {
         List<SourceLine> sourceLines = new List<SourceLine>();
+        int[] linesWithCommands;
         public SourceFile(string path)
         {
             List<string> commands = new List<string>();
-            int counter = 0;
+            List<int> linesWithCommands = new List<int>();
+
+            int lineCounter = 0;
             string line;
 
             System.IO.StreamReader file =
@@ -35,23 +38,28 @@ namespace NICE_P16F8x
                 {
                     commands.Add(lineComponents[1]);
                     lineComponents = lineComponents.Skip(2).ToArray();
+                    linesWithCommands.Add(lineCounter);
                 }
 
                 //Fill lineNumber and command variable
-                string lineNumber = lineComponents[0];
-                string command = "";
-                if (lineComponents.Length > 1)
+                if(lineComponents.Length > 0)
                 {
-                    command = string.Join(" ", lineComponents.Skip(1).ToArray());
+                    string lineNumber = lineComponents[0];
+                    string command = "";
+                    if (lineComponents.Length > 1)
+                    {
+                        command = string.Join(" ", lineComponents.Skip(1).ToArray());
+                    }
+
+                    //Add line to list of SourceLines
+                    SourceLine sl = new SourceLine(lineNumber, command, comment);
+                    sourceLines.Add(sl);
                 }
-
-                //Add line to list of SourceLines
-                SourceLine sl = new SourceLine(lineNumber, command, comment);
-                sourceLines.Add(sl);
-                counter++;
+                lineCounter++;
             }
-
             file.Close();
+
+            this.linesWithCommands = linesWithCommands.ToArray();
 
             //Write commands to Data Store BROKEN RIGHT NOW
             //Data.setWriteProgram(commands);
@@ -60,19 +68,26 @@ namespace NICE_P16F8x
         {
             return sourceLines;
         }
+
+        public int getSourceLineFromPC(int pc)
+        {
+            if (pc < linesWithCommands.Length) return linesWithCommands[pc];
+            else return -1;
+      
+        }
     }
 
  
 
     class SourceLine
     {
-        public string Line { get; set; }
+        public string LineNumber { get; set; }
         public string Command { get; set; }
         public string Comment { get; set; }
 
-        public SourceLine(string line, string command, string comment)
+        public SourceLine(string lineNumber, string command, string comment)
         {
-            this.Line = line;
+            this.LineNumber = lineNumber;
             this.Command = command;
             this.Comment = comment;
         }
