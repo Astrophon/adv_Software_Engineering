@@ -61,8 +61,8 @@ namespace NICE_P16F8x
 
             this.linesWithCommands = linesWithCommands.ToArray();
 
-            //Write commands to Data Store BROKEN RIGHT NOW
-            //Data.setWriteProgram(commands);
+            //Write commands to Data store
+            Data.setWriteProgram(commands);
         }
         public List<SourceLine> getSourceLines()
         {

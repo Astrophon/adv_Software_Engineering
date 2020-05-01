@@ -23,6 +23,7 @@ namespace NICE_P16F8x
     public partial class MainWindow : Window
     {
         private SourceFile sourceFile;
+        public static string[,] UIFileRegisterData;
 
         public MainWindow()
         {
@@ -62,6 +63,20 @@ namespace NICE_P16F8x
         private void SourceDataGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
 
+        }
+
+        private void GetFileRegisterUI()
+        {
+            UIFileRegisterData = new string[32, 8];
+
+            int index = 0;
+            for (int i = 0; i < 32; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    UIFileRegisterData[i - 1, j - 1] = Data.getAllRegisters()[index++].ToString();                    
+                }
+            }
         }
     }
     class FileRegisterViewModel
