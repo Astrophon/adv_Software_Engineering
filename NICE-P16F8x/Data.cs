@@ -23,8 +23,8 @@ namespace NICE_P16F8x
         {
             public Command(string hexData)
             {
-                high = (byte) hexToInt(hexData.Substring(0, 2));
-                low = (byte) hexToInt(hexData.Substring(2, 2));
+                high = (byte)hexToInt(hexData.Substring(0, 2));
+                low = (byte)hexToInt(hexData.Substring(2, 2));
             }
             public Command(byte high, byte low)
             {
@@ -34,13 +34,24 @@ namespace NICE_P16F8x
 
             private byte high; //0x30 - command
             private byte low;  //0x11 - data
+
+            public byte getHighByte()
+            {
+                return high;
+            }
+
+            public byte getLowByte()
+            {
+                return low;
+            }
         }
 
         public enum Instruction
         {
             ADDWF, ANDWF, CLRF, CLRW, COMF, DECF, DECFSZ, INCF, INCFSZ, IORWF, MOVF, MOVWF, NOP, RLF, RRF, SUBWF, SWAPF, XORWF,
             BCF, BSF, BTFSC, BTFSS,
-            ADDLW, ANDLW, CALL, CLRWDT, GOTO, IORLW, MOVLW, RETFIE, RETLW, RETURN, SLEEP, SUBLW, XORLW
+            ADDLW, ANDLW, CALL, CLRWDT, GOTO, IORLW, MOVLW, RETFIE, RETLW, RETURN, SLEEP, SUBLW, XORLW,
+            UNKNOWNCOMMAND
         }
         #endregion
 
@@ -64,6 +75,10 @@ namespace NICE_P16F8x
             if (!programInitialized) return null;
 
             return program[at];
+        }
+        public static int getProgramLineCount()
+        {
+            return program.Count;
         }
 
         public static byte getRegister(byte address)
@@ -92,14 +107,75 @@ namespace NICE_P16F8x
             return 16 * hexLookup(hex[0]) + hexLookup(hex[1]);
         }
 
-        public static Instruction CommandLookup(Command instruction)
+        /// <summary>
+        /// Finds the Instruction to the specific command and returns it as an Instruction enum
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public static Instruction InstructionLookup(Command command)
         {
-            Instruction inst = Instruction.NOP;
-            throw new NotImplementedException();
-            return inst;
+            //BYTE-ORIENTED FILE REGISTER OPERATIONS
+            switch (command.getHighByte())
+            {
+                //bytes get compared as integers, so opcode conversion is needed
+                case 7: return Instruction.ADDWF;
+                case 5: return Instruction.ANDWF;
+                case 1: if ((command.getLowByte() & 128) == 0) return Instruction.CLRW;
+                        else return Instruction.CLRF;
+                case 9: return Instruction.COMF;
+                case 3: return Instruction.DECF;
+                case 11: return Instruction.DECFSZ;
+                case 10: return Instruction.INCF;
+                case 15: return Instruction.INCFSZ;
+                case 4: return Instruction.IORWF;
+                case 8: return Instruction.MOVF;                    
+                case 13: return Instruction.RLF;
+                case 12: return Instruction.RRF;
+                case 2: return Instruction.SUBWF;
+                case 14: return Instruction.SWAPF;
+                case 6: return Instruction.XORWF;
+
+                //LITERAL AND CONTROL OPERATIONS + NOP & MOVWF
+                case 57: return Instruction.ANDLW;
+                case 0:
+                    if (command.getLowByte() == 100) return Instruction.CLRWDT;
+                    else if (command.getLowByte() == 9) return Instruction.RETFIE;
+                    else if (command.getLowByte() == 8) return Instruction.RETURN;
+                    else if (command.getLowByte() == 99) return Instruction.SLEEP;
+                    else if ((command.getLowByte() & 159) == 0) return Instruction.NOP;
+                    else return Instruction.MOVWF;
+                case 56: return Instruction.IORLW;
+                case 58: return Instruction.XORLW;
+            }
+            //BIT-ORIENTED FILE REGISTER OPERATIONS
+            switch(command.getHighByte() & 60)
+            {
+                case 16: return Instruction.BCF;
+                case 20: return Instruction.BSF;
+                case 24: return Instruction.BTFSC;
+                case 28: return Instruction.BTFSS;
+
+                //LITERAL AND CONTROL OPERATIONS
+                case 48: return Instruction.MOVLW;
+                case 52: return Instruction.RETLW;
+            }
+            //LITERAL AND CONTROL OPERATIONS
+            switch (command.getHighByte() & 56)
+            {
+                case 32: return Instruction.CALL;
+                case 40: return Instruction.GOTO;
+            }
+            switch (command.getHighByte() & 62)
+            {
+                case 62: return Instruction.ADDLW;
+                case 60: return Instruction.SUBLW;
+            }
+
+
+            return Instruction.UNKNOWNCOMMAND;
         }
 
-        public static Command InstructionLookup(Instruction inst)
+        public static Command CommandLookup(Instruction inst)
         {
             Command com = new Command(0, 0);
             throw new NotImplementedException();
