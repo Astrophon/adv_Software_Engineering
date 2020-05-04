@@ -15,16 +15,6 @@
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="TextBlock.TextAlignment" Value="Center" />
             <Setter Property="BorderBrush" Value="Transparent" />
-            
-            <!-- Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type DataGridCell}">
-                        <Grid Background="{TemplateBinding Background}">
-                            <ContentPresenter VerticalAlignment="Center" />
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter> -->
             <Style.Triggers>
                 <Trigger Property="IsSelected"  Value="True">
                     <Setter Property="BorderBrush" Value="OrangeRed" />
@@ -32,7 +22,7 @@
             </Style.Triggers>
 
         </Style>
-        <Style x:Key="CellHighlight" TargetType="DataGridCell">
+        <Style x:Key="SourceFileCellHighlight" TargetType="DataGridCell">
             <Setter Property="Background" Value="White" />
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="BorderBrush" Value="Transparent" />
@@ -50,9 +40,7 @@
             <Setter Property="BorderThickness" Value="2" />
         </Style>
     </Window.Resources>
-    <Window.DataContext>
-        <local:FileRegisterViewModel/>
-    </Window.DataContext>
+
 
     <DockPanel>
         <Menu DockPanel.Dock="Top" Background="{x:Null}">
@@ -64,12 +52,7 @@
             </MenuItem>
         </Menu>
         <StackPanel Margin="5,0,5,5">
-            <Grid >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
@@ -124,7 +107,7 @@
                             </DataGrid.RowStyle>
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="auto"/>
-                                <DataGridTextColumn Header="Command" Binding="{Binding Command}" MinWidth="140" FontWeight="Bold" CellStyle="{StaticResource CellHighlight}"/>
+                                <DataGridTextColumn Header="Command" Binding="{Binding Command}" MinWidth="140" FontWeight="Bold" CellStyle="{StaticResource SourceFileCellHighlight}"/>
                                 <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="100*"/>
                             </DataGrid.Columns>
                         </DataGrid>
@@ -148,8 +131,10 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <GroupBox Grid.Column="0" Header="Timing" Width="auto" MinHeight="200px">
+                                
                             </GroupBox>
                             <GroupBox Grid.Column="1" Header="Control" Width="auto" MinHeight="200px">
+                                
                             </GroupBox>
                         </Grid>
                     </Grid>

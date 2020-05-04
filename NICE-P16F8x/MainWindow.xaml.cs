@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,10 +25,15 @@ namespace NICE_P16F8x
     {
         private SourceFile sourceFile;
         public static string[,] UIFileRegisterData;
+        private MainWindowViewModel view;
 
         public MainWindow()
         {
+            view = new MainWindowViewModel();
+            DataContext = view;
             InitializeComponent();
+
+            UpdateFileRegisterUI();
         }
 
         private void menuOpen_Click(object sender, RoutedEventArgs e)
@@ -65,31 +71,43 @@ namespace NICE_P16F8x
 
         }
 
-        private void GetFileRegisterUI()
+        private void UpdateFileRegisterUI()
         {
-            UIFileRegisterData = new string[32, 8];
+            view.FileRegisterData = GetFileRegisterDataUI();
+            view.OnPropertyChanged(nameof(view.FileRegisterData));
+        }
+
+        private string[,] GetFileRegisterDataUI()
+        {
+            string[,] data = new string[32, 8];
 
             int index = 0;
             for (int i = 0; i < 32; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    UIFileRegisterData[i - 1, j - 1] = Data.getAllRegisters()[index++].ToString();                    
+                    data[i, j] = Data.getAllRegisters()[index++].ToString();                    
                 }
             }
+            return data;
         }
     }
-    class FileRegisterViewModel
+    public class MainWindowViewModel : INotifyPropertyChanged
     {
         public string[] FileRegisterColumns { get; set; }
-        public string[] FileRegisterRows { get; set; }
-        public int[,] FileRegisterData { get; }
+        public string[] FileRegisterRows { get; }
+        public string[,] FileRegisterData { get; set; }
 
-        public FileRegisterViewModel()
+        public MainWindowViewModel()
         {
             this.FileRegisterColumns = new string[] { "+0", "+1", "+2", "+3", "+4", "+5", "+6", "+7" };
-            this.FileRegisterRows = new string[] { "00", "08", "10", "18", "20", "28", "30", "38", "40", "48", "50", "58", "60", "68", "70", "78", "80", "88", "90", "98"};
-            this.FileRegisterData = new int[20,8];
+            this.FileRegisterRows = new string[] { "00", "08", "10", "18", "20", "28", "30", "38", "40", "48", "50", "58", "60", "68", "70", "78", "80", "88", "90", "98", "A0", "A8", "B0", "B8", "C0", "C8", "D0", "D8", "E0", "E8", "F0", "F8" };
+            this.FileRegisterData = new string[32,8];
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
     }
 }
