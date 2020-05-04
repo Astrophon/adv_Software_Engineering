@@ -120,15 +120,16 @@ namespace NICE_P16F8x
                 //bytes get compared as integers, so opcode conversion is needed
                 case 7: return Instruction.ADDWF;
                 case 5: return Instruction.ANDWF;
-                case 1: if ((command.getLowByte() & 128) == 0) return Instruction.CLRW;
-                        else return Instruction.CLRF;
+                case 1:
+                    if ((command.getLowByte() & 128) == 0) return Instruction.CLRW;
+                    else return Instruction.CLRF;
                 case 9: return Instruction.COMF;
                 case 3: return Instruction.DECF;
                 case 11: return Instruction.DECFSZ;
                 case 10: return Instruction.INCF;
                 case 15: return Instruction.INCFSZ;
                 case 4: return Instruction.IORWF;
-                case 8: return Instruction.MOVF;                    
+                case 8: return Instruction.MOVF;
                 case 13: return Instruction.RLF;
                 case 12: return Instruction.RRF;
                 case 2: return Instruction.SUBWF;
@@ -148,7 +149,7 @@ namespace NICE_P16F8x
                 case 58: return Instruction.XORLW;
             }
             //BIT-ORIENTED FILE REGISTER OPERATIONS
-            switch(command.getHighByte() & 60)
+            switch (command.getHighByte() & 60)
             {
                 case 16: return Instruction.BCF;
                 case 20: return Instruction.BSF;
@@ -173,13 +174,6 @@ namespace NICE_P16F8x
 
 
             return Instruction.UNKNOWNCOMMAND;
-        }
-
-        public static Command CommandLookup(Instruction inst)
-        {
-            Command com = new Command(0, 0);
-            throw new NotImplementedException();
-            return com;
         }
 
         /// <summary>
