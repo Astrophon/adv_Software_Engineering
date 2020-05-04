@@ -31,6 +31,7 @@ namespace NICE_P16F8x
         {
             view = new MainWindowViewModel();
             DataContext = view;
+
             InitializeComponent();
 
             UpdateFileRegisterUI();
@@ -86,7 +87,7 @@ namespace NICE_P16F8x
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    data[i, j] = Data.getAllRegisters()[index++].ToString();                    
+                    data[i, j] = Data.getAllRegisters()[index++].ToString("X2");                    
                 }
             }
             return data;
