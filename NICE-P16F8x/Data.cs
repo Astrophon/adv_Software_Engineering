@@ -12,10 +12,17 @@ namespace NICE_P16F8x
         //normal
         private static List<Command> program = new List<Command>();
         private static byte[] register = new byte[256];
+        private static byte w;
+        //w register
+        //program counter
+        //timing kann geshaved werden
 
         //integrity
         private static bool programInitialized = false;
+        #endregion
 
+        #region Constants
+        public static readonly byte STATUS = 3;
         #endregion
 
         #region Structures
@@ -53,6 +60,11 @@ namespace NICE_P16F8x
             ADDLW, ANDLW, CALL, CLRWDT, GOTO, IORLW, MOVLW, RETFIE, RETLW, RETURN, SLEEP, SUBLW, XORLW,
             UNKNOWNCOMMAND
         }
+
+        public enum Registers
+        {
+            
+        }
         #endregion
 
         #region Access
@@ -81,6 +93,16 @@ namespace NICE_P16F8x
             return program.Count;
         }
 
+        public static byte getRegisterW()
+        {
+            return w;
+        }
+
+        public static void setRegisterW(byte val)
+        {
+            w = val;
+        }
+
         public static byte getRegister(byte address)
         {
             return register[Convert.ToInt16(address)];
@@ -105,6 +127,32 @@ namespace NICE_P16F8x
         {
             if (hex.Length > 2) return -1;
             return 16 * hexLookup(hex[0]) + hexLookup(hex[1]);
+        }
+
+        /// <summary>
+        /// untested
+        /// </summary>
+        /// <param name="ofByte"></param>
+        /// <param name="bit"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static byte setBit(byte ofByte, int bit, bool value)
+        {
+            if (value)
+                return (byte)(ofByte + (int)Math.Pow(bit, 2));
+            else
+                return (byte)(ofByte - (int)Math.Pow(bit, 2));
+        }
+
+        /// <summary>
+        /// untested
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="bit"></param>
+        /// <param name="value"></param>
+        public static void setRegisterBit(byte address, int bit, bool value)
+        {
+            register[address] = setBit(register[address], bit, value);
         }
 
         /// <summary>
@@ -212,6 +260,5 @@ namespace NICE_P16F8x
             }
         }
         #endregion
-
     }
 }
