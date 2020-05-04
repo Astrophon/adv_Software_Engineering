@@ -78,44 +78,63 @@
                             <RowDefinition />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        <GroupBox Grid.Row="0" Header="Port A" MinWidth="400" MinHeight="100px">
+                        <GroupBox Grid.Row="0" Header="Port A">
                             <StackPanel Orientation="Vertical">
-                                <StackPanel Orientation="Horizontal" Name="Tris" HorizontalAlignment="Left">
-                                    <TextBlock VerticalAlignment="Center" Margin="10"> Tris</TextBlock>
-                                    <CheckBox x:Name="checkbox07" Margin="10">7</CheckBox>
-                                    <CheckBox x:Name="checkbox06" Margin="10">6</CheckBox>
-                                    <CheckBox x:Name="checkbox05" Margin="10">5</CheckBox>
-                                    <CheckBox x:Name="checkbox04" Margin="10">4</CheckBox>
-                                    <CheckBox x:Name="checkbox03" Margin="10">3</CheckBox>
-                                    <CheckBox x:Name="checkbox02" Margin="10">2</CheckBox>
-                                    <CheckBox x:Name="checkbox01" Margin="10">1</CheckBox>
-                                    <CheckBox x:Name="checkbox00" Margin="10">0</CheckBox>
-                               </StackPanel>
-
-                                <StackPanel Orientation="Horizontal" Name="Pin" HorizontalAlignment="Right">
+                                <DockPanel>
+                                    <TextBlock VerticalAlignment="Center" Margin="10">Tris</TextBlock>
+                                    <StackPanel  Name="TrisA" Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <CheckBox x:Name="TrisA7" Margin="5,0" VerticalAlignment="Center">7</CheckBox>
+                                        <CheckBox x:Name="TrisA6" Margin="5,0" VerticalAlignment="Center">6</CheckBox>
+                                        <CheckBox x:Name="TrisA5" Margin="5,0" VerticalAlignment="Center">5</CheckBox>
+                                        <CheckBox x:Name="TrisA4" Margin="5,0" VerticalAlignment="Center">4</CheckBox>
+                                        <CheckBox x:Name="TrisA3" Margin="5,0" VerticalAlignment="Center">3</CheckBox>
+                                        <CheckBox x:Name="TrisA2" Margin="5,0" VerticalAlignment="Center">2</CheckBox>
+                                        <CheckBox x:Name="TrisA1" Margin="5,0" VerticalAlignment="Center">1</CheckBox>
+                                        <CheckBox x:Name="TrisA0" Margin="5,0" VerticalAlignment="Center">0</CheckBox>
+                                    </StackPanel>
+                                </DockPanel>
+                                <DockPanel>
                                     <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"> Port</TextBlock>
-                                    <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"></TextBlock>
-                                    <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"></TextBlock>
-                                    <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"></TextBlock>
-                                    <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"></TextBlock>
-                                    <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"></TextBlock>
-                                    <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"></TextBlock>
-                                    <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"></TextBlock>
-                                    <CheckBox x:Name="checkbox4" Margin="10">4</CheckBox>
-                                    <CheckBox x:Name="checkbox3" Margin="10">3</CheckBox>
-                                    <CheckBox x:Name="checkbox2" Margin="10">2</CheckBox>
-                                    <CheckBox x:Name="checkbox1" Margin="10">1</CheckBox>
-                                    <CheckBox x:Name="checkbox0" Margin="10">0</CheckBox>
-                                </StackPanel>
+                                    <StackPanel Name="PinA" Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <CheckBox x:Name="PinA4" Margin="5,0" VerticalAlignment="Center">4</CheckBox>
+                                        <CheckBox x:Name="PinA3" Margin="5,0" VerticalAlignment="Center">3</CheckBox>
+                                        <CheckBox x:Name="PinA2" Margin="5,0" VerticalAlignment="Center">2</CheckBox>
+                                        <CheckBox x:Name="PinA1" Margin="5,0" VerticalAlignment="Center">1</CheckBox>
+                                        <CheckBox x:Name="PinA0" Margin="5,0" VerticalAlignment="Center">0</CheckBox>
+                                    </StackPanel>
+                                </DockPanel>
                             </StackPanel>
-                           
-
-
                         </GroupBox>
-                        <GroupBox Grid.Row="1" Header="Port B" MinWidth="400" MinHeight="100px">
-
+                        <GroupBox Grid.Row="1" Header="Port B">
+                            <StackPanel Orientation="Vertical">
+                                <DockPanel>
+                                    <TextBlock VerticalAlignment="Center" Margin="10">Tris</TextBlock>
+                                    <StackPanel  Name="TrisB" Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <CheckBox x:Name="TrisB7" Margin="5,0" VerticalAlignment="Center">7</CheckBox>
+                                        <CheckBox x:Name="TrisB6" Margin="5,0" VerticalAlignment="Center">6</CheckBox>
+                                        <CheckBox x:Name="TrisB5" Margin="5,0" VerticalAlignment="Center">5</CheckBox>
+                                        <CheckBox x:Name="TrisB4" Margin="5,0" VerticalAlignment="Center">4</CheckBox>
+                                        <CheckBox x:Name="TrisB3" Margin="5,0" VerticalAlignment="Center">3</CheckBox>
+                                        <CheckBox x:Name="TrisB2" Margin="5,0" VerticalAlignment="Center">2</CheckBox>
+                                        <CheckBox x:Name="TrisB1" Margin="5,0" VerticalAlignment="Center">1</CheckBox>
+                                        <CheckBox x:Name="TrisB0" Margin="5,0" VerticalAlignment="Center">0</CheckBox>
+                                    </StackPanel>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"> Port</TextBlock>
+                                    <StackPanel Name="PinB" Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <CheckBox x:Name="PinB7" Margin="5,0" VerticalAlignment="Center">7</CheckBox>
+                                        <CheckBox x:Name="PinB6" Margin="5,0" VerticalAlignment="Center">6</CheckBox>
+                                        <CheckBox x:Name="PinB5" Margin="5,0" VerticalAlignment="Center">5</CheckBox>
+                                        <CheckBox x:Name="PinB4" Margin="5,0" VerticalAlignment="Center">4</CheckBox>
+                                        <CheckBox x:Name="PinB3" Margin="5,0" VerticalAlignment="Center">3</CheckBox>
+                                        <CheckBox x:Name="PinB2" Margin="5,0" VerticalAlignment="Center">2</CheckBox>
+                                        <CheckBox x:Name="PinB1" Margin="5,0" VerticalAlignment="Center">1</CheckBox>
+                                        <CheckBox x:Name="PinB0" Margin="5,0" VerticalAlignment="Center">0</CheckBox>
+                                    </StackPanel>
+                                </DockPanel>
+                            </StackPanel>
                         </GroupBox>
-
                     </Grid>
                 </Grid>
                 <Grid Grid.Row="1">
@@ -123,7 +142,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="Source Program" Height="467" VerticalAlignment="Center" HorizontalAlignment="Left" Width="807">
+                    <GroupBox Grid.Column="0" Header="Source Program" Height="467" VerticalAlignment="Center">
                         <DataGrid x:Name="SourceDataGrid" IsReadOnly="True" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFE2E2E2" VerticalGridLinesBrush="#FFE2E2E2" SelectionMode="Extended" AutoGenerateColumns="False" CanUserSortColumns="False" FontFamily="Lucida Console" Background="White" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" HeadersVisibility="None" FontSize="13"
                                   CellStyle="{StaticResource CellStyle}" SelectionChanged="SourceDataGrid_SelectionChanged" PreviewMouseDown="SourceDataGrid_PreviewMouseDown">
                             <DataGrid.RowStyle>
@@ -163,10 +182,10 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <GroupBox Grid.Column="0" Header="Timing" Width="auto" MinHeight="200px">
-                                
+
                             </GroupBox>
                             <GroupBox Grid.Column="1" Header="Control" Width="auto" MinHeight="200px">
-                                
+
                             </GroupBox>
                         </Grid>
                     </Grid>
