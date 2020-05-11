@@ -68,10 +68,96 @@
 
                     </GroupBox>
                     <GroupBox Grid.Column="1" Header="SFR (Bit)" MinWidth="300" MinHeight="100px">
-
+                        <StackPanel Orientation="Vertical">
+                            <DockPanel>
+                                <TextBlock VerticalAlignment="Center" Margin="10">Status:</TextBlock>
+                                <StackPanel  Name="Status" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">IRP</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">RP1</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">RP0</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">T0</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">PD</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">Z</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">DC</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">C</TextBlock>
+                                </StackPanel>
+                            </DockPanel>
+                            <DockPanel>
+                                <StackPanel  Name="StatusNmbs" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                </StackPanel>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"> Option:</TextBlock>
+                                <StackPanel Name="Option" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <TextBlock Margin="4,0" VerticalAlignment="Center">RPu</TextBlock>
+                                    <TextBlock Margin="5,0" VerticalAlignment="Center">IEg</TextBlock>
+                                    <TextBlock Margin="4,0" VerticalAlignment="Center">TCs</TextBlock>
+                                    <TextBlock Margin="5,0" VerticalAlignment="Center">TSe</TextBlock>
+                                    <TextBlock Margin="4,0" VerticalAlignment="Center">PSA</TextBlock>
+                                    <TextBlock Margin="5,0" VerticalAlignment="Center">PS2</TextBlock>
+                                    <TextBlock Margin="4,0" VerticalAlignment="Center">PS1</TextBlock>
+                                    <TextBlock Margin="5,0" VerticalAlignment="Center">PS0</TextBlock>
+                                </StackPanel>
+                            </DockPanel>
+                            <DockPanel>
+                                <StackPanel  Name="OptionNmbs" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                </StackPanel>
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"> Intcon:</TextBlock>
+                                <StackPanel Name="Intcon" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">GIE</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">EIE</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">TIE</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">IE</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">RIE</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">TIF</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">IF</TextBlock>
+                                    <TextBlock Margin="7,0" VerticalAlignment="Center">RIF</TextBlock>
+                                </StackPanel>
+                            </DockPanel>
+                            <DockPanel>
+                                <StackPanel  Name="IntconNmbs" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                </StackPanel>
+                            </DockPanel>
+                        </StackPanel>
                     </GroupBox>
+                    
                     <GroupBox  Grid.Column="2" Header="Stack" MinWidth="100" MinHeight="100px">
-
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                            <TextBlock HorizontalAlignment="Center">0001</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0002</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0003</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0004</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0005</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0006</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0007</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0008</TextBlock>
+                        </StackPanel>
                     </GroupBox>
                     <Grid Grid.Column="4">
                         <Grid.RowDefinitions>
