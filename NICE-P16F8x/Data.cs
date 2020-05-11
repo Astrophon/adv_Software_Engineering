@@ -250,26 +250,33 @@ namespace NICE_P16F8x
                 case 'D': return 13;
                 case 'E': return 14;
                 case 'F': return 15;
-                default:  return -1;
+                default: return -1;
+            }
+        }
+        #endregion
+
+        #region Constants
+        public static class Registers
+        {
+            public static readonly byte STATUS = 3;
+        }
+
+        public static class Flags
+        {
+            public static class Status
+            {
+                public static readonly int C = 0;
+                public static readonly int DC = 1;
+                public static readonly int Z = 2;
+                public static readonly int PD = 3;
+                public static readonly int TO = 4;
+                public static readonly int RP0 = 5;
+                public static readonly int RP1 = 6;
+                public static readonly int IRP = 7;
             }
         }
         #endregion
     }
 
-    public static class Registers
-    {
-        public static readonly byte STATUS = 3;
-    }
 
-    public static class Flags
-    {
-        public static readonly int C = 0;
-        public static readonly int DC = 1;
-        public static readonly int Z = 2;
-        public static readonly int PD = 3;
-        public static readonly int TO = 4;
-        public static readonly int RP0 = 5;
-        public static readonly int RP1 = 6;
-        public static readonly int IRP = 7;
-    }
 }

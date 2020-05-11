@@ -21,12 +21,14 @@ namespace NICE_P16F8x
 
             //FLAGS
             //set Carry flag if byte overflows
-            if (result < Data.getRegisterW()) Data.setRegisterBit(Registers.STATUS, Flags.C, true);
-            else Data.setRegisterBit(Registers.STATUS, Flags.C, false);
-            
-            //set DC flag if 4th low order bit overflows !!STILL IN QUESTION!!
-            if(((Data.getRegisterW() & 8) == 8 || (Data.getRegister(f) & 8) == 8) && (result & 8) == 0) Data.setRegisterBit(Registers.STATUS, Flags.DC, true);
-            else Data.setRegisterBit(Registers.STATUS, Flags.C, false);
+            if (result < Data.getRegisterW()) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
+            else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
+
+            //set DC flag if 4th low order bit overflows
+            if (((Data.getRegisterW() & 8) == 8 || ((Data.getRegister(f) & 8) == 8)) && (result & 8) == 0)
+                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, true);
+            else
+                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
 
             //set Z flag if result is zero
             CheckZFlag(result);
@@ -44,8 +46,8 @@ namespace NICE_P16F8x
         /// <param name="result"></param>
         private static void CheckZFlag(byte result)
         {
-            if (result == 0) Data.setRegisterBit(Registers.STATUS, Flags.Z, true);
-            else Data.setRegisterBit(Registers.STATUS, Flags.Z, false);
+            if (result == 0) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.Z, true);
+            else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.Z, false);
         }
         #endregion
 
