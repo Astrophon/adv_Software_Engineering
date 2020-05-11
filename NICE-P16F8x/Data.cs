@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace NICE_P16F8x
 {
@@ -13,7 +10,6 @@ namespace NICE_P16F8x
         private static List<Command> program = new List<Command>();
         private static byte[] register = new byte[256];
         private static byte w;
-        //w register
         //program counter
         //timing kann geshaved werden
 
@@ -22,6 +18,25 @@ namespace NICE_P16F8x
         #endregion
 
         #region Constants
+        public static class Registers
+        {
+            public static readonly byte STATUS = 3;
+        }
+
+        public static class Flags
+        {
+            public static class Status
+            {
+                public static readonly int C = 0;
+                public static readonly int DC = 1;
+                public static readonly int Z = 2;
+                public static readonly int PD = 3;
+                public static readonly int TO = 4;
+                public static readonly int RP0 = 5;
+                public static readonly int RP1 = 6;
+                public static readonly int IRP = 7;
+            }
+        }
         #endregion
 
         #region Structures
@@ -254,29 +269,5 @@ namespace NICE_P16F8x
             }
         }
         #endregion
-
-        #region Constants
-        public static class Registers
-        {
-            public static readonly byte STATUS = 3;
-        }
-
-        public static class Flags
-        {
-            public static class Status
-            {
-                public static readonly int C = 0;
-                public static readonly int DC = 1;
-                public static readonly int Z = 2;
-                public static readonly int PD = 3;
-                public static readonly int TO = 4;
-                public static readonly int RP0 = 5;
-                public static readonly int RP1 = 6;
-                public static readonly int IRP = 7;
-            }
-        }
-        #endregion
     }
-
-
 }
