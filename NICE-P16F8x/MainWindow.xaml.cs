@@ -1,20 +1,9 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace NICE_P16F8x
 {
@@ -23,21 +12,66 @@ namespace NICE_P16F8x
     /// </summary>
     public partial class MainWindow : Window
     {
-        private SourceFile sourceFile;
-        public static string[,] UIFileRegisterData;
-        private MainWindowViewModel view;
+        private SourceFile SourceFile;
+        private MainWindowViewModel View;
 
         public MainWindow()
         {
-            view = new MainWindowViewModel();
-            DataContext = view;
+            //Set DataContext for UI
+            View = new MainWindowViewModel();
+            DataContext = View;
+            //Initial data refresh
+            UpdateUI();
 
             InitializeComponent();
-
-            UpdateFileRegisterUI();
         }
 
-        private void menuOpen_Click(object sender, RoutedEventArgs e)
+        #region User interaction logic functions
+        /// <summary>
+        /// Handles user hex edit in fileregister view
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileRegister_CellEditEnding(object sender, System.Windows.Controls.DataGridCellEditEndingEventArgs e)
+        {
+            var editingTextBox = e.EditingElement as TextBox;
+            string newValue = editingTextBox.Text;
+
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                if (newValue.Length <= 2)
+                {
+                    try
+                    {
+                        byte b = (byte)int.Parse(newValue, System.Globalization.NumberStyles.HexNumber);
+                        editingTextBox.Text = b.ToString("X2");
+                        Data.setRegister((byte)(e.Row.GetIndex() * 8 + e.Column.DisplayIndex), b);
+                        UpdateUIWithoutFileRegister();
+                    }
+                    catch
+                    {
+                        e.Cancel = true;
+                        (sender as DataGrid).CancelEdit(DataGridEditingUnit.Cell);
+                        MessageBox.Show("Invalid hexadecimal value", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                else
+                {
+                    e.Cancel = true;
+                    (sender as DataGrid).CancelEdit(DataGridEditingUnit.Cell);
+                    MessageBox.Show("Only one hexadecimal byte allowed", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        #endregion
+        
+        #region Menu Items
+        /// <summary>
+        /// Logic for File -> Open
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuOpen_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog()
             {
@@ -48,37 +82,72 @@ namespace NICE_P16F8x
 
             if (dialog.ShowDialog() == true)
             {
-                sourceFile = new SourceFile(dialog.FileName);
-                SourceDataGrid.ItemsSource = sourceFile.getSourceLines();
-                SelectSourceLineFromPC(0);
+                SourceFile = new SourceFile(dialog.FileName);
+                SourceDataGrid.ItemsSource = SourceFile.getSourceLines();
+                SelectSourceLine(0);
             }
         }
-
-        private void SelectSourceLineFromPC(int pc)
+        /// <summary>
+        /// Handles user click on Menu -> Help
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuHelp_Click(object sender, RoutedEventArgs e)
         {
-            if (sourceFile.getSourceLineFromPC(pc) >= 0 )
+
+        }
+        /// <summary>
+        /// Debug action for development testing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuDebugAction_Click(object sender, RoutedEventArgs e) // TEST METHOD FOR NOW
+        {
+            Data.setPCL(Data.getPCL() + 1);
+            UpdateUI();
+        }
+        #endregion
+
+        #region UI Helper Functions
+        /// <summary>
+        /// Highlights and scrolls to the given pcl
+        /// </summary>
+        /// <param name="pcl"></param>
+        private void SelectSourceLine(int pcl)
+        {
+            SourceFile.HighlightLine(pcl);
+            SourceDataGrid.ScrollIntoView(SourceDataGrid.Items[SourceFile.getSourceLineIndexFromPCL(pcl)]);
+        }
+        #endregion
+
+        #region UI Update Functions
+        /// <summary>
+        /// Refreshes data for all UI elements that need converted info from Data class
+        /// </summary>
+        public void UpdateUI()
+        {
+            UpdateFileRegisterUI();
+            UpdateUIWithoutFileRegister();
+            if(SourceFile != null)
             {
-                UIHelper.SelectRowByIndexes(SourceDataGrid, sourceFile.getSourceLineFromPC(pc));
+                SelectSourceLine(Data.getPCL());
             }
         }
-
-        private void SourceDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        /// <summary>
+        /// Refreshes data for all UI elements BUT the file register view
+        /// </summary>
+        public void UpdateUIWithoutFileRegister()
         {
-
+            View.TrisA = new ObservableCollection<bool>(Data.ByteToBoolArray(Data.getRegister(Data.Registers.TRISA)));
+            View.TrisB = new ObservableCollection<bool>(Data.ByteToBoolArray(Data.getRegister(Data.Registers.TRISB)));
+            View.PortA = new ObservableCollection<bool>(Data.ByteToBoolArray(Data.getRegister(Data.Registers.PORTA)));
+            View.PortB = new ObservableCollection<bool>(Data.ByteToBoolArray(Data.getRegister(Data.Registers.PORTB)));
+            View.TrisA.CollectionChanged += new NotifyCollectionChangedEventHandler(TrisAChanged);
+            View.TrisB.CollectionChanged += new NotifyCollectionChangedEventHandler(TrisBChanged);
+            View.PortA.CollectionChanged += new NotifyCollectionChangedEventHandler(PortAChanged);
+            View.PortB.CollectionChanged += new NotifyCollectionChangedEventHandler(PortBChanged);
         }
-
-        private void SourceDataGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
         private void UpdateFileRegisterUI()
-        {
-            view.FileRegisterData = GetFileRegisterDataUI();
-            view.OnPropertyChanged(nameof(view.FileRegisterData));
-        }
-
-        private string[,] GetFileRegisterDataUI()
         {
             string[,] data = new string[32, 8];
 
@@ -87,28 +156,34 @@ namespace NICE_P16F8x
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    data[i, j] = Data.getAllRegisters()[index++].ToString("X2");                    
+                    data[i, j] = Data.getAllRegisters()[index++].ToString("X2");
                 }
             }
-            return data;
+            View.FileRegisterData = data;
         }
-    }
-    public class MainWindowViewModel : INotifyPropertyChanged
-    {
-        public string[] FileRegisterColumns { get; set; }
-        public string[] FileRegisterRows { get; }
-        public string[,] FileRegisterData { get; set; }
+        #endregion
 
-        public MainWindowViewModel()
+        #region Checkbox ChangedEventHandlers
+        private void TrisAChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            this.FileRegisterColumns = new string[] { "+0", "+1", "+2", "+3", "+4", "+5", "+6", "+7" };
-            this.FileRegisterRows = new string[] { "00", "08", "10", "18", "20", "28", "30", "38", "40", "48", "50", "58", "60", "68", "70", "78", "80", "88", "90", "98", "A0", "A8", "B0", "B8", "C0", "C8", "D0", "D8", "E0", "E8", "F0", "F8" };
-            this.FileRegisterData = new string[32,8];
+            Data.setRegister(Data.Registers.TRISA, Data.BoolArrayToByte(View.TrisA.ToArray<bool>()));
+            UpdateUI();
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
+        private void TrisBChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            Data.setRegister(Data.Registers.TRISB, Data.BoolArrayToByte(View.TrisB.ToArray<bool>()));
+            UpdateUI();
+        }
+        private void PortAChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            Data.setRegister(Data.Registers.PORTA, Data.BoolArrayToByte(View.PortA.ToArray<bool>()));
+            UpdateUI();
+        }
+        private void PortBChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            Data.setRegister(Data.Registers.PORTB, Data.BoolArrayToByte(View.PortB.ToArray<bool>()));
+            UpdateUI();
+        }
+        #endregion
     }
 }

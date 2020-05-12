@@ -10,6 +10,7 @@ namespace NICE_P16F8x
         private static List<Command> program = new List<Command>();
         private static byte[] register = new byte[256];
         private static byte w;
+        private static int pcl;  //TEMPORARY SOLUTION
         //program counter
         //timing kann geshaved werden
 
@@ -21,6 +22,11 @@ namespace NICE_P16F8x
         public static class Registers
         {
             public static readonly byte STATUS = 3;
+            public static readonly byte PORTA = 5;
+            public static readonly byte PORTB = 6;
+            public static readonly byte TRISA = 133;
+            public static readonly byte TRISB = 134;
+            public static readonly byte INTCON = 11;
         }
 
         public static class Flags
@@ -111,6 +117,15 @@ namespace NICE_P16F8x
         {
             w = val;
         }
+        public static int getPCL()
+        {
+            return pcl;
+        }
+
+        public static void setPCL(int val)
+        {
+            pcl = val;
+        }
 
         public static byte getRegister(byte address)
         {
@@ -136,6 +151,44 @@ namespace NICE_P16F8x
         {
             if (hex.Length > 2) return -1;
             return 16 * hexLookup(hex[0]) + hexLookup(hex[1]);
+        }
+        /// <summary>
+        /// Converts a Byte to a bool[8]
+        /// </summary>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool[] ByteToBoolArray(byte b)
+        {
+            // prepare the return result
+            bool[] result = new bool[8];
+
+            // check each bit in the byte. if 1 set to true, if 0 set to false
+            for (int i = 0; i < 8; i++)
+                result[i] = (b & (1 << i)) == 0 ? false : true;
+            return result;
+        }
+        /// <summary>
+        /// Converts a bool[8] to a byte
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static byte BoolArrayToByte(bool[] source)
+        {
+            byte result = 0;
+            // This assumes the array never contains more than 8 elements!
+            int index = 8 - source.Length;
+
+            // reverse the array
+            Array.Reverse(source);
+            // Loop through the array
+            foreach (bool b in source)
+            {
+                // if the element is 'true' set the bit at that position
+                if (b)
+                    result |= (byte)(1 << (7 - index));
+                index++;
+            }
+            return result;
         }
 
         /// <summary>

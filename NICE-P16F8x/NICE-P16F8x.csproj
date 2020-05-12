@@ -8,8 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="chip.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Gu.Wpf.DataGrid2D" Version="0.2.3" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="chip.png" />
   </ItemGroup>
 
 </Project>

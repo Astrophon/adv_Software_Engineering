@@ -6,38 +6,45 @@
         xmlns:local="clr-namespace:NICE_P16F8x"
         mc:Ignorable="d"
         xmlns:dataGrid2D="http://gu.se/DataGrid2D"
-        Title="MainWindow" SizeToContent="WidthAndHeight" Margin="-2,0,0,0" ResizeMode="CanMinimize">
+        Title="MainWindow" SizeToContent="WidthAndHeight" Margin="-2,0,0,0" ResizeMode="CanMinimize" Icon="/chip.png">
     <Window.Resources>
-        <Style x:Key="FileRegisterStyle"
-        TargetType="DataGridCell">
+        <Style x:Key="FileRegisterCellStyle" TargetType="DataGridCell">
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="Background" Value="White" />
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="TextBlock.TextAlignment" Value="Center" />
             <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
             <Style.Triggers>
-                <Trigger Property="IsSelected"  Value="True">
+                <Trigger Property="IsSelected" Value="True">
                     <Setter Property="BorderBrush" Value="OrangeRed" />
                 </Trigger>
             </Style.Triggers>
-
         </Style>
-        <Style x:Key="SourceFileCellHighlight" TargetType="DataGridCell">
+        <Style x:Key="FileRegisterTextBox" TargetType="TextBox">
+            <Setter Property="MaxLength" Value="2"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style x:Key="SourceFileCellStyle" TargetType="DataGridCell">
             <Setter Property="Background" Value="White" />
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        </Style>
+        <Style x:Key="SourceFileCellHighlight" TargetType="DataGridCell" BasedOn="{StaticResource SourceFileCellStyle}">
             <Style.Triggers>
-                <Trigger Property="IsSelected"  Value="True">
+                <DataTrigger Binding="{Binding Active}" Value="True">
                     <Setter Property="BorderBrush" Value="DarkOrange" />
-                </Trigger>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding hasCommand}" Value="True">
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
             </Style.Triggers>
         </Style>
-        <Style x:Key="CellStyle" TargetType="DataGridCell">
-            <Setter Property="Background" Value="White" />
-            <Setter Property="Foreground" Value="Black" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="2" />
+        <Style x:Key="SourceFileAllowClick" TargetType="DataGridCell" BasedOn="{StaticResource SourceFileCellStyle}">
+            <Setter Property="IsHitTestVisible" Value="True"/>
         </Style>
     </Window.Resources>
 
@@ -45,11 +52,12 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top" Background="{x:Null}">
             <MenuItem Header="_File">
-                <MenuItem x:Name="menuOpen" Header="_Open" Click="menuOpen_Click"/>
+                <MenuItem x:Name="MenuOpen" Header="_Open" Click="MenuOpen_Click"/>
             </MenuItem>
-            <MenuItem Header="_Help">
+            <MenuItem x:Name="MenuHelp" Header="_Help" Click="MenuHelp_Click">
 
             </MenuItem>
+            <MenuItem x:Name="MenuDebugAction" Header="_DebugAction" Click="MenuDebugAction_Click"/>
         </Menu>
         <StackPanel Margin="5,0,5,5">
             <Grid>
@@ -83,24 +91,24 @@
                                 <DockPanel>
                                     <TextBlock VerticalAlignment="Center" Margin="10">Tris</TextBlock>
                                     <StackPanel  Name="TrisA" Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <CheckBox x:Name="TrisA7" Margin="5,0" VerticalAlignment="Center">7</CheckBox>
-                                        <CheckBox x:Name="TrisA6" Margin="5,0" VerticalAlignment="Center">6</CheckBox>
-                                        <CheckBox x:Name="TrisA5" Margin="5,0" VerticalAlignment="Center">5</CheckBox>
-                                        <CheckBox x:Name="TrisA4" Margin="5,0" VerticalAlignment="Center">4</CheckBox>
-                                        <CheckBox x:Name="TrisA3" Margin="5,0" VerticalAlignment="Center">3</CheckBox>
-                                        <CheckBox x:Name="TrisA2" Margin="5,0" VerticalAlignment="Center">2</CheckBox>
-                                        <CheckBox x:Name="TrisA1" Margin="5,0" VerticalAlignment="Center">1</CheckBox>
-                                        <CheckBox x:Name="TrisA0" Margin="5,0" VerticalAlignment="Center">0</CheckBox>
+                                        <CheckBox x:Name="TrisA7" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisA[7]}">7</CheckBox>
+                                        <CheckBox x:Name="TrisA6" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisA[6]}">6</CheckBox>
+                                        <CheckBox x:Name="TrisA5" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisA[5]}">5</CheckBox>
+                                        <CheckBox x:Name="TrisA4" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisA[4]}">4</CheckBox>
+                                        <CheckBox x:Name="TrisA3" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisA[3]}">3</CheckBox>
+                                        <CheckBox x:Name="TrisA2" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisA[2]}">2</CheckBox>
+                                        <CheckBox x:Name="TrisA1" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisA[1]}">1</CheckBox>
+                                        <CheckBox x:Name="TrisA0" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisA[0]}">0</CheckBox>
                                     </StackPanel>
                                 </DockPanel>
                                 <DockPanel>
                                     <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"> Port</TextBlock>
                                     <StackPanel Name="PinA" Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <CheckBox x:Name="PinA4" Margin="5,0" VerticalAlignment="Center">4</CheckBox>
-                                        <CheckBox x:Name="PinA3" Margin="5,0" VerticalAlignment="Center">3</CheckBox>
-                                        <CheckBox x:Name="PinA2" Margin="5,0" VerticalAlignment="Center">2</CheckBox>
-                                        <CheckBox x:Name="PinA1" Margin="5,0" VerticalAlignment="Center">1</CheckBox>
-                                        <CheckBox x:Name="PinA0" Margin="5,0" VerticalAlignment="Center">0</CheckBox>
+                                        <CheckBox x:Name="PinA4" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortA[4]}">4</CheckBox>
+                                        <CheckBox x:Name="PinA3" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortA[3]}">3</CheckBox>
+                                        <CheckBox x:Name="PinA2" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortA[2]}">2</CheckBox>
+                                        <CheckBox x:Name="PinA1" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortA[1]}">1</CheckBox>
+                                        <CheckBox x:Name="PinA0" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortA[0]}">0</CheckBox>
                                     </StackPanel>
                                 </DockPanel>
                             </StackPanel>
@@ -110,27 +118,27 @@
                                 <DockPanel>
                                     <TextBlock VerticalAlignment="Center" Margin="10">Tris</TextBlock>
                                     <StackPanel  Name="TrisB" Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <CheckBox x:Name="TrisB7" Margin="5,0" VerticalAlignment="Center">7</CheckBox>
-                                        <CheckBox x:Name="TrisB6" Margin="5,0" VerticalAlignment="Center">6</CheckBox>
-                                        <CheckBox x:Name="TrisB5" Margin="5,0" VerticalAlignment="Center">5</CheckBox>
-                                        <CheckBox x:Name="TrisB4" Margin="5,0" VerticalAlignment="Center">4</CheckBox>
-                                        <CheckBox x:Name="TrisB3" Margin="5,0" VerticalAlignment="Center">3</CheckBox>
-                                        <CheckBox x:Name="TrisB2" Margin="5,0" VerticalAlignment="Center">2</CheckBox>
-                                        <CheckBox x:Name="TrisB1" Margin="5,0" VerticalAlignment="Center">1</CheckBox>
-                                        <CheckBox x:Name="TrisB0" Margin="5,0" VerticalAlignment="Center">0</CheckBox>
+                                        <CheckBox x:Name="TrisB7" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisB[7]}">7</CheckBox>
+                                        <CheckBox x:Name="TrisB6" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisB[6]}">6</CheckBox>
+                                        <CheckBox x:Name="TrisB5" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisB[5]}">5</CheckBox>
+                                        <CheckBox x:Name="TrisB4" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisB[4]}">4</CheckBox>
+                                        <CheckBox x:Name="TrisB3" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisB[3]}">3</CheckBox>
+                                        <CheckBox x:Name="TrisB2" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisB[2]}">2</CheckBox>
+                                        <CheckBox x:Name="TrisB1" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisB[1]}">1</CheckBox>
+                                        <CheckBox x:Name="TrisB0" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding TrisB[0]}">0</CheckBox>
                                     </StackPanel>
                                 </DockPanel>
                                 <DockPanel>
                                     <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"> Port</TextBlock>
                                     <StackPanel Name="PinB" Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <CheckBox x:Name="PinB7" Margin="5,0" VerticalAlignment="Center">7</CheckBox>
-                                        <CheckBox x:Name="PinB6" Margin="5,0" VerticalAlignment="Center">6</CheckBox>
-                                        <CheckBox x:Name="PinB5" Margin="5,0" VerticalAlignment="Center">5</CheckBox>
-                                        <CheckBox x:Name="PinB4" Margin="5,0" VerticalAlignment="Center">4</CheckBox>
-                                        <CheckBox x:Name="PinB3" Margin="5,0" VerticalAlignment="Center">3</CheckBox>
-                                        <CheckBox x:Name="PinB2" Margin="5,0" VerticalAlignment="Center">2</CheckBox>
-                                        <CheckBox x:Name="PinB1" Margin="5,0" VerticalAlignment="Center">1</CheckBox>
-                                        <CheckBox x:Name="PinB0" Margin="5,0" VerticalAlignment="Center">0</CheckBox>
+                                        <CheckBox x:Name="PinB7" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortB[7]}">7</CheckBox>
+                                        <CheckBox x:Name="PinB6" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortB[6]}">6</CheckBox>
+                                        <CheckBox x:Name="PinB5" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortB[5]}">5</CheckBox>
+                                        <CheckBox x:Name="PinB4" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortB[4]}">4</CheckBox>
+                                        <CheckBox x:Name="PinB3" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortB[3]}">3</CheckBox>
+                                        <CheckBox x:Name="PinB2" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortB[2]}">2</CheckBox>
+                                        <CheckBox x:Name="PinB1" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortB[1]}">1</CheckBox>
+                                        <CheckBox x:Name="PinB0" Margin="5,0" VerticalAlignment="Center" IsChecked="{Binding PortB[0]}">0</CheckBox>
                                     </StackPanel>
                                 </DockPanel>
                             </StackPanel>
@@ -142,24 +150,21 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="Source Program" Height="467" VerticalAlignment="Center">
-                        <DataGrid x:Name="SourceDataGrid" IsReadOnly="True" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFE2E2E2" VerticalGridLinesBrush="#FFE2E2E2" SelectionMode="Extended" AutoGenerateColumns="False" CanUserSortColumns="False" FontFamily="Lucida Console" Background="White" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" HeadersVisibility="None" FontSize="13"
-                                  CellStyle="{StaticResource CellStyle}" SelectionChanged="SourceDataGrid_SelectionChanged" PreviewMouseDown="SourceDataGrid_PreviewMouseDown">
-                            <DataGrid.RowStyle>
-                                <Style TargetType="DataGridRow">
-                                    <Setter Property="BorderThickness" Value="0" />
-                                    <Setter Property="BorderBrush" Value="Transparent" />
-                                    <Style.Triggers>
-                                        <Trigger Property="IsSelected"  Value="True">
-                                            <Setter Property="BorderBrush" Value="DarkOrange" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </DataGrid.RowStyle>
+                    <GroupBox Grid.Column="0" Header="Source Program" Height="467" VerticalAlignment="Center" HorizontalAlignment="Left" Width="902">
+                        <DataGrid x:Name="SourceDataGrid" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFE2E2E2" VerticalGridLinesBrush="#FFE2E2E2" SelectionMode="Extended" AutoGenerateColumns="False" CanUserSortColumns="False"
+                                  FontFamily="Lucida Console" Background="White" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" HeadersVisibility="None" FontSize="13" CanUserAddRows="False" CanUserDeleteRows="False"
+                                  CellStyle="{StaticResource SourceFileCellStyle}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="auto"/>
-                                <DataGridTextColumn Header="Command" Binding="{Binding Command}" MinWidth="140" FontWeight="Bold" CellStyle="{StaticResource SourceFileCellHighlight}"/>
-                                <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="100*"/>
+                                <DataGridTemplateColumn Header="Breakpoint"  Width="20pt" IsReadOnly="False" CellStyle="{StaticResource SourceFileAllowClick}">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding Breakpoint}" HorizontalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="auto" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Command" Binding="{Binding Command}" MinWidth="140" IsReadOnly="True" CellStyle="{StaticResource SourceFileCellHighlight}"/>
+                                <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="100*" IsReadOnly="True"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </GroupBox>
@@ -168,12 +173,26 @@
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <GroupBox Grid.Row="0" Header="Fileregister (SFR + GPR)" Width="auto" Height="200pt">
+                        <GroupBox Grid.Row="0" Header="Fileregister (SFR + GPR)" MinWidth="180pt"  Width="auto" Height="210pt">
                             <DataGrid x:Name="FileRegister"  
-                            CellStyle="{StaticResource FileRegisterStyle}"
-                            dataGrid2D:ItemsSource.Array2D="{Binding FileRegisterData}"
-                            dataGrid2D:ItemsSource.ColumnHeadersSource="{Binding FileRegisterColumns}"
-                            dataGrid2D:ItemsSource.RowHeadersSource="{Binding FileRegisterRows}" MinColumnWidth="30" RowHeight="20" CanUserResizeColumns="False" CanUserResizeRows="False" FontStyle="Normal" FontFamily="Lucida Console" FontWeight="Normal" SelectionUnit="Cell" CanUserSortColumns="False" FontSize="13" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFCBCBCB" VerticalGridLinesBrush="#FFCBCBCB" CanUserReorderColumns="False" SelectionMode="Single" Foreground="Black">
+                                CellStyle="{StaticResource FileRegisterCellStyle}"
+                                dataGrid2D:ItemsSource.Array2D="{Binding FileRegisterData}"
+                                dataGrid2D:ItemsSource.ColumnHeadersSource="{Binding FileRegisterColumns}"
+                                dataGrid2D:ItemsSource.RowHeadersSource="{Binding FileRegisterRows}" 
+                                AutoGenerateColumns="False"
+                                FontStyle="Normal" FontFamily="Courier New" FontWeight="Normal" FontSize="15"
+                                CanUserResizeColumns="False" CanUserResizeRows="False"  SelectionUnit="Cell" CanUserSortColumns="False" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFCBCBCB" VerticalGridLinesBrush="#FFCBCBCB" CanUserReorderColumns="False" SelectionMode="Single" Foreground="Black" CanUserAddRows="False" CanUserDeleteRows="False"
+                                CellEditEnding="FileRegister_CellEditEnding">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource FileRegisterTextBox}" Binding="{Binding C0}"/>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource FileRegisterTextBox}" Binding="{Binding C1}"/>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource FileRegisterTextBox}" Binding="{Binding C2}"/>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource FileRegisterTextBox}" Binding="{Binding C3}"/>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource FileRegisterTextBox}" Binding="{Binding C4}"/>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource FileRegisterTextBox}" Binding="{Binding C5}"/>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource FileRegisterTextBox}" Binding="{Binding C6}"/>
+                                    <DataGridTextColumn EditingElementStyle="{StaticResource FileRegisterTextBox}" Binding="{Binding C7}"/>
+                                </DataGrid.Columns>
                             </DataGrid>
                         </GroupBox>
                         <Grid Grid.Row="1">
@@ -193,5 +212,4 @@
             </Grid>
         </StackPanel>
     </DockPanel>
-
 </Window>
