@@ -21,26 +21,61 @@ namespace NICE_P16F8x
         #region Constants
         public static class Registers
         {
-            public static readonly byte STATUS = 3;
-            public static readonly byte PORTA = 5;
-            public static readonly byte PORTB = 6;
-            public static readonly byte TRISA = 133;
-            public static readonly byte TRISB = 134;
-            public static readonly byte INTCON = 11;
+            //Bank 1
+            public static readonly byte INDF    = 0x00;
+            public static readonly byte TMR0    = 0x01;
+            public static readonly byte PCL     = 0x02;
+            public static readonly byte STATUS  = 0x03;
+            public static readonly byte FSR     = 0x04;
+            public static readonly byte PORTA   = 0x05;
+            public static readonly byte PORTB   = 0x06;
+            public static readonly byte EEDATA  = 0x08;
+            public static readonly byte EEADR   = 0x09;
+            public static readonly byte PCLATH  = 0x0A;
+            public static readonly byte INTCON  = 0x0B;
+
+            //Bank 2
+            public static readonly byte OPTION  = 0x81;
+            public static readonly byte TRISA   = 0x85;
+            public static readonly byte TRISB   = 0x86;
+            public static readonly byte EECON1  = 0x88;
+            public static readonly byte EECON2  = 0x88;
         }
 
         public static class Flags
         {
             public static class Status
             {
-                public static readonly int C = 0;
-                public static readonly int DC = 1;
-                public static readonly int Z = 2;
-                public static readonly int PD = 3;
-                public static readonly int TO = 4;
-                public static readonly int RP0 = 5;
-                public static readonly int RP1 = 6;
-                public static readonly int IRP = 7;
+                public static readonly int C    = 0;
+                public static readonly int DC   = 1;
+                public static readonly int Z    = 2;
+                public static readonly int PD   = 3;
+                public static readonly int TO   = 4;
+                public static readonly int RP0  = 5;
+                public static readonly int RP1  = 6;
+                public static readonly int IRP  = 7;
+            }
+            public static class Intcon
+            {
+                public static readonly int RBIF = 0;
+                public static readonly int INTF = 1;
+                public static readonly int T0IF = 2;
+                public static readonly int RBIE = 3;
+                public static readonly int INTE = 4;
+                public static readonly int T0IE = 5;
+                public static readonly int EEIE = 6;
+                public static readonly int GIE  = 7;
+            }
+            public static class Option
+            {
+                public static readonly int PS0      = 0;
+                public static readonly int PS1      = 1;
+                public static readonly int PS2      = 2;
+                public static readonly int PSA      = 3;
+                public static readonly int T0SE     = 4;
+                public static readonly int T0CS     = 5;
+                public static readonly int INTEDG   = 6;
+                public static readonly int RBPU     = 7;
             }
         }
         #endregion
@@ -190,7 +225,14 @@ namespace NICE_P16F8x
             }
             return result;
         }
+        public static string[] ByteToStringArray(byte b)
+        {
+            string[] result = new string[8];
 
+            for (int i = 0; i < 8; i++)
+                result[i] = (b & (1 << i)) == 0 ? "0" : "1";
+            return result;
+        }
         /// <summary>
         /// untested
         /// </summary>
