@@ -146,6 +146,9 @@ namespace NICE_P16F8x
             View.TrisB.CollectionChanged += new NotifyCollectionChangedEventHandler(TrisBChanged);
             View.PortA.CollectionChanged += new NotifyCollectionChangedEventHandler(PortAChanged);
             View.PortB.CollectionChanged += new NotifyCollectionChangedEventHandler(PortBChanged);
+            View.Status = new ObservableCollection<string>(Data.ByteToStringArray(Data.getRegister(Data.Registers.STATUS)));
+            View.Option = new ObservableCollection<string>(Data.ByteToStringArray(Data.getRegister(Data.Registers.OPTION)));
+            View.Intcon = new ObservableCollection<string>(Data.ByteToStringArray(Data.getRegister(Data.Registers.INTCON)));
         }
         private void UpdateFileRegisterUI()
         {

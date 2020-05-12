@@ -45,7 +45,24 @@ namespace NICE_P16F8x
             get { return this.portB; }
             set { this.SetAndNotify(ref this.portB, value, () => this.PortB); }
         }
-
+        private ObservableCollection<string> status;
+        public ObservableCollection<string> Status
+        {
+            get { return this.status; }
+            set { this.SetAndNotify(ref this.status, value, () => this.Status); }
+        }
+        private ObservableCollection<string> option;
+        public ObservableCollection<string> Option
+        {
+            get { return this.option; }
+            set { this.SetAndNotify(ref this.option, value, () => this.Option); }
+        }
+        private ObservableCollection<string> intcon;
+        public ObservableCollection<string> Intcon
+        {
+            get { return this.intcon; }
+            set { this.SetAndNotify(ref this.intcon, value, () => this.Intcon); }
+        }
         #endregion
 
         public MainWindowViewModel()
@@ -57,6 +74,9 @@ namespace NICE_P16F8x
             this.trisB = new ObservableCollection<bool>(new bool[8]);
             this.portA = new ObservableCollection<bool>(new bool[8]);
             this.portB = new ObservableCollection<bool>(new bool[8]);
+            this.status = new ObservableCollection<string>(Enumerable.Repeat("0", 8).ToList());
+            this.option = new ObservableCollection<string>(Enumerable.Repeat("0", 8).ToList());
+            this.intcon = new ObservableCollection<string>(Enumerable.Repeat("0", 8).ToList());
         }
 
     }

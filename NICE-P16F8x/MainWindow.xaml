@@ -92,14 +92,14 @@
                             </DockPanel>
                             <DockPanel>
                                 <StackPanel  Name="StatusNmbs" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[7]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[6]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[5]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[4]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[3]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[2]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[1]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[0]}"></TextBlock>
                                 </StackPanel>
                             </DockPanel>
                             <DockPanel>
@@ -117,14 +117,14 @@
                             </DockPanel>
                             <DockPanel>
                                 <StackPanel  Name="OptionNmbs" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[7]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[6]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[5]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[4]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[3]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[2]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[1]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[0]}"></TextBlock>
                                 </StackPanel>
                             </DockPanel>
                             <DockPanel>
@@ -142,14 +142,14 @@
                             </DockPanel>
                             <DockPanel>
                                 <StackPanel  Name="IntconNmbs" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center">0</TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[7]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[6]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[5]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[4]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[3]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[2]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[1]}"></TextBlock>
+                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[0]}"></TextBlock>
                                 </StackPanel>
                             </DockPanel>
                         </StackPanel>
