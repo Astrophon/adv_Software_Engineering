@@ -78,7 +78,6 @@ namespace NICE_P16F8x
         {
             return sourceLines;
         }
-
         public int getSourceLineIndexFromPCL(int pcl)
         {
             if (pcl < linesWithCommands.Length) return linesWithCommands[pcl];

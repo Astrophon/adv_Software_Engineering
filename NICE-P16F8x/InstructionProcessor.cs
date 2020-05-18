@@ -201,7 +201,14 @@
         }
         //public static void CALL(Data.Command com)
         //public static void CLRWDT(Data.Command com)
-        //public static void GOTO(Data.Command com)
+        public static void GOTO(Data.Command com)
+        {
+            byte k1 = com.getLowByte();
+            byte k2 = (byte)(com.getHighByte() & 7);
+
+            byte merge = (byte) ((Data.getRegister(Data.Registers.PCLATH) & 24) + k2); // geht evtl. nicht
+            Data.setPCFromBytes(merge, k1);
+        }
         public static void IORLW(Data.Command com)
         {
             byte k = com.getLowByte();

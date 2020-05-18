@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace NICE_P16F8x
 {
@@ -10,6 +11,7 @@ namespace NICE_P16F8x
         private static List<Command> program = new List<Command>();
         private static byte[] register = new byte[256];
         private static byte w;
+        private static int pc; // vor dem fetch obere bits auf 0 setzen um später overflow zu vermeiden
         //timing kann geshaved werden
 
         //integrity
@@ -33,6 +35,7 @@ namespace NICE_P16F8x
             public static readonly byte INTCON = 0x0B;
 
             //Bank 2
+            public static readonly byte PCL2 = 0x82;
             public static readonly byte OPTION = 0x81;
             public static readonly byte TRISA = 0x85;
             public static readonly byte TRISB = 0x86;
@@ -116,17 +119,19 @@ namespace NICE_P16F8x
         #endregion
 
         #region Access
-        public static UInt16 getPCL()
+        public static void IncPC()
         {
-            byte pcl = Data.getRegister(Data.Registers.PCL);
-            byte pclath = Data.getRegister(Data.Registers.PCLATH);
-            return BitConverter.ToUInt16(new byte[] { pcl, pclath }, 0);
+            pc++;
+            byte pcl = BitConverter.GetBytes(pc)[0];
+            setRegister(Registers.PCL, pcl);
         }
-        public static void setPCL(UInt16 pcl)
+        public static int getPC()
         {
-            byte[] arr = BitConverter.GetBytes(pcl);
-            Data.setRegister(Data.Registers.PCL, arr[0]);
-            Data.setRegister(Data.Registers.PCLATH, (byte)(arr[1] & 0x1F));
+            return pc;
+        }
+        public static void setPC(int newPc)
+        {
+            pc = newPc;
         }
         public static void setWriteProgram(List<string> commands)
         {
@@ -173,13 +178,15 @@ namespace NICE_P16F8x
         }
         public static void setRegister(byte address, byte data)
         {
-            switch(address)
+            register[Convert.ToInt16(address)] = data;
+            switch (address)
             {
                 case 0x00:
                     register[Convert.ToInt16(0x80)] = data;
                     break;
                 case 0x02:
                     register[Convert.ToInt16(0x82)] = data;
+                    setPCFromBytes(Data.getRegister(Data.Registers.PCLATH), Data.getRegister(Data.Registers.PCL));
                     break;
                 case 0x03:
                     register[Convert.ToInt16(0x83)] = data;
@@ -199,6 +206,7 @@ namespace NICE_P16F8x
                     break;
                 case 0x82:
                     register[Convert.ToInt16(0x02)] = data;
+                    setPCFromBytes(Data.getRegister(Data.Registers.PCLATH), Data.getRegister(Data.Registers.PCL));
                     break;
                 case 0x83:
                     register[Convert.ToInt16(0x03)] = data;
@@ -213,7 +221,6 @@ namespace NICE_P16F8x
                     register[Convert.ToInt16(0x0B)] = data;
                     break;
             }
-            register[Convert.ToInt16(address)] = data;
         }
 
         /// <summary>
@@ -229,6 +236,10 @@ namespace NICE_P16F8x
         #endregion
 
         #region HelperFunctions
+        public static void setPCFromBytes(byte bHigh, byte bLow)
+        {
+            pc = BitConverter.ToUInt16(new byte[] { bLow, bHigh }, 0);
+        }
         /// <summary>
         /// Converts a 2 character string of hex numbers to an integer
         /// </summary>
@@ -299,7 +310,6 @@ namespace NICE_P16F8x
             else
                 return (byte)(ofByte - (int)Math.Pow(bit, 2));
         }
-
         /// <summary>
         /// Finds the Instruction to the specific command and returns it as an Instruction enum
         /// </summary>

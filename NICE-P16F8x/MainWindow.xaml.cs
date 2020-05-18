@@ -50,7 +50,7 @@ namespace NICE_P16F8x
                         int column = e.Column.DisplayIndex;
                         Data.setRegister((byte)(row * 8 + column), b);
                         UpdateUI();
-                        if(row > 0)
+                        if (row > 0)
                         {
                             FileRegister.CurrentCell = new DataGridCellInfo(FileRegister.Items[row - 1], FileRegister.Columns[column]);
                         }
@@ -91,7 +91,7 @@ namespace NICE_P16F8x
             {
                 SourceFile = new SourceFile(dialog.FileName);
                 SourceDataGrid.ItemsSource = SourceFile.getSourceLines();
-                SelectSourceLine(0);
+                UpdateUI();
             }
         }
         /// <summary>
@@ -110,7 +110,7 @@ namespace NICE_P16F8x
         /// <param name="e"></param>
         private void MenuDebugAction_Click(object sender, RoutedEventArgs e) // TEST METHOD FOR NOW
         {
-            Data.setPCL((UInt16) (Data.getPCL() + 1));
+            Data.IncPC();
             UpdateUI();
         }
         #endregion
@@ -120,10 +120,14 @@ namespace NICE_P16F8x
         /// Highlights and scrolls to the given pcl
         /// </summary>
         /// <param name="pcl"></param>
-        private void SelectSourceLine(int pcl)
+        private void HighlightSourceLine(int pcl)
         {
-            SourceFile.HighlightLine(pcl);
-            SourceDataGrid.ScrollIntoView(SourceDataGrid.Items[SourceFile.getSourceLineIndexFromPCL(pcl)]);
+            try
+            {
+                SourceFile.HighlightLine(pcl);
+                SourceDataGrid.ScrollIntoView(SourceDataGrid.Items[SourceFile.getSourceLineIndexFromPCL(pcl)]);
+            }
+            catch (ArgumentOutOfRangeException) { }
         }
         #endregion
 
@@ -137,7 +141,7 @@ namespace NICE_P16F8x
             UpdateUIWithoutFileRegister();
             if(SourceFile != null)
             {
-                SelectSourceLine(Data.getPCL());
+                HighlightSourceLine(Data.getPC());
             }
         }
         /// <summary>
