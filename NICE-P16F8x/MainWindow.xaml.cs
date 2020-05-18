@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
@@ -103,7 +104,7 @@ namespace NICE_P16F8x
         /// <param name="e"></param>
         private void MenuDebugAction_Click(object sender, RoutedEventArgs e) // TEST METHOD FOR NOW
         {
-            Data.setPCL(Data.getPCL() + 1);
+            Data.setPCL((UInt16) (Data.getPCL() + 1));
             UpdateUI();
         }
         #endregion

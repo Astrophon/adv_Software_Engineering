@@ -77,13 +77,13 @@
             DirectionalWrite(d, f, result);
         }
         //public static void INCFSZ(Data.Command com)
-        public static void IORWF(Data.Command com) //INCOMPLETE
+        public static void IORWF(Data.Command com)
         {
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
             byte result = (byte)(Data.getRegister(f) | Data.getRegisterW());
-            CheckZFlag(result); //??????????
+            CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
         }

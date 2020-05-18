@@ -10,8 +10,6 @@ namespace NICE_P16F8x
         private static List<Command> program = new List<Command>();
         private static byte[] register = new byte[256];
         private static byte w;
-        private static int pcl;  //TEMPORARY SOLUTION
-        //program counter
         //timing kann geshaved werden
 
         //integrity
@@ -22,38 +20,38 @@ namespace NICE_P16F8x
         public static class Registers
         {
             //Bank 1
-            public static readonly byte INDF    = 0x00;
-            public static readonly byte TMR0    = 0x01;
-            public static readonly byte PCL     = 0x02;
-            public static readonly byte STATUS  = 0x03;
-            public static readonly byte FSR     = 0x04;
-            public static readonly byte PORTA   = 0x05;
-            public static readonly byte PORTB   = 0x06;
-            public static readonly byte EEDATA  = 0x08;
-            public static readonly byte EEADR   = 0x09;
-            public static readonly byte PCLATH  = 0x0A;
-            public static readonly byte INTCON  = 0x0B;
+            public static readonly byte INDF = 0x00;
+            public static readonly byte TMR0 = 0x01;
+            public static readonly byte PCL = 0x02;
+            public static readonly byte STATUS = 0x03;
+            public static readonly byte FSR = 0x04;
+            public static readonly byte PORTA = 0x05;
+            public static readonly byte PORTB = 0x06;
+            public static readonly byte EEDATA = 0x08;
+            public static readonly byte EEADR = 0x09;
+            public static readonly byte PCLATH = 0x0A;
+            public static readonly byte INTCON = 0x0B;
 
             //Bank 2
-            public static readonly byte OPTION  = 0x81;
-            public static readonly byte TRISA   = 0x85;
-            public static readonly byte TRISB   = 0x86;
-            public static readonly byte EECON1  = 0x88;
-            public static readonly byte EECON2  = 0x88;
+            public static readonly byte OPTION = 0x81;
+            public static readonly byte TRISA = 0x85;
+            public static readonly byte TRISB = 0x86;
+            public static readonly byte EECON1 = 0x88;
+            public static readonly byte EECON2 = 0x88;
         }
 
         public static class Flags
         {
             public static class Status
             {
-                public static readonly int C    = 0;
-                public static readonly int DC   = 1;
-                public static readonly int Z    = 2;
-                public static readonly int PD   = 3;
-                public static readonly int TO   = 4;
-                public static readonly int RP0  = 5;
-                public static readonly int RP1  = 6;
-                public static readonly int IRP  = 7;
+                public static readonly int C = 0;
+                public static readonly int DC = 1;
+                public static readonly int Z = 2;
+                public static readonly int PD = 3;
+                public static readonly int TO = 4;
+                public static readonly int RP0 = 5;
+                public static readonly int RP1 = 6;
+                public static readonly int IRP = 7;
             }
             public static class Intcon
             {
@@ -64,18 +62,18 @@ namespace NICE_P16F8x
                 public static readonly int INTE = 4;
                 public static readonly int T0IE = 5;
                 public static readonly int EEIE = 6;
-                public static readonly int GIE  = 7;
+                public static readonly int GIE = 7;
             }
             public static class Option
             {
-                public static readonly int PS0      = 0;
-                public static readonly int PS1      = 1;
-                public static readonly int PS2      = 2;
-                public static readonly int PSA      = 3;
-                public static readonly int T0SE     = 4;
-                public static readonly int T0CS     = 5;
-                public static readonly int INTEDG   = 6;
-                public static readonly int RBPU     = 7;
+                public static readonly int PS0 = 0;
+                public static readonly int PS1 = 1;
+                public static readonly int PS2 = 2;
+                public static readonly int PSA = 3;
+                public static readonly int T0SE = 4;
+                public static readonly int T0CS = 5;
+                public static readonly int INTEDG = 6;
+                public static readonly int RBPU = 7;
             }
         }
         #endregion
@@ -118,6 +116,18 @@ namespace NICE_P16F8x
         #endregion
 
         #region Access
+        public static UInt16 getPCL()
+        {
+            byte pcl = Data.getRegister(Data.Registers.PCL);
+            byte pclath = Data.getRegister(Data.Registers.PCLATH);
+            return BitConverter.ToUInt16(new byte[] { pcl, pclath }, 0);
+        }
+        public static void setPCL(UInt16 pcl)
+        {
+            byte[] arr = BitConverter.GetBytes(pcl);
+            Data.setRegister(Data.Registers.PCL, arr[0]);
+            Data.setRegister(Data.Registers.PCLATH, (byte)(arr[1] & 0x1F));
+        }
         public static void setWriteProgram(List<string> commands)
         {
             if (commands == null) throw new ArgumentNullException();
@@ -151,15 +161,6 @@ namespace NICE_P16F8x
         public static void setRegisterW(byte val)
         {
             w = val;
-        }
-        public static int getPCL()
-        {
-            return pcl;
-        }
-
-        public static void setPCL(int val)
-        {
-            pcl = val;
         }
 
         public static byte getRegister(byte address)
