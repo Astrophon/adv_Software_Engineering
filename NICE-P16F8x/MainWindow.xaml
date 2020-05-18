@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:NICE_P16F8x"
         mc:Ignorable="d"
         xmlns:dataGrid2D="http://gu.se/DataGrid2D"
-        Title="MainWindow" SizeToContent="WidthAndHeight" Margin="-2,0,0,0" ResizeMode="CanMinimize" Icon="/chip.png">
+        Title="NICE-PIC16F8x" SizeToContent="WidthAndHeight" Margin="-2,0,0,0" ResizeMode="CanMinimize" Icon="/chip.png">
     <Window.Resources>
         <Style x:Key="FileRegisterCellStyle" TargetType="DataGridCell">
             <Setter Property="BorderThickness" Value="2" />

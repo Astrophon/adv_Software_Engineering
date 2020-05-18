@@ -46,8 +46,14 @@ namespace NICE_P16F8x
                     {
                         byte b = (byte)int.Parse(newValue, System.Globalization.NumberStyles.HexNumber);
                         editingTextBox.Text = b.ToString("X2");
-                        Data.setRegister((byte)(e.Row.GetIndex() * 8 + e.Column.DisplayIndex), b);
-                        UpdateUIWithoutFileRegister();
+                        int row = e.Row.GetIndex();
+                        int column = e.Column.DisplayIndex;
+                        Data.setRegister((byte)(row * 8 + column), b);
+                        UpdateUI();
+                        if(row > 0)
+                        {
+                            FileRegister.CurrentCell = new DataGridCellInfo(FileRegister.Items[row - 1], FileRegister.Columns[column]);
+                        }
                     }
                     catch
                     {
