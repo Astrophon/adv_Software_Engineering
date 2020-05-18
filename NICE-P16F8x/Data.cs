@@ -173,7 +173,58 @@ namespace NICE_P16F8x
         }
         public static void setRegister(byte address, byte data)
         {
+            switch(address)
+            {
+                case 0x00:
+                    register[Convert.ToInt16(0x80)] = data;
+                    break;
+                case 0x02:
+                    register[Convert.ToInt16(0x82)] = data;
+                    break;
+                case 0x03:
+                    register[Convert.ToInt16(0x83)] = data;
+                    break;
+                case 0x04:
+                    register[Convert.ToInt16(0x84)] = data;
+                    break;
+                case 0x0A:
+                    register[Convert.ToInt16(0x8A)] = data;
+                    break;
+                case 0x0B:
+                    register[Convert.ToInt16(0x8B)] = data;
+                    break;
+
+                case 0x80:
+                    register[Convert.ToInt16(0x00)] = data;
+                    break;
+                case 0x82:
+                    register[Convert.ToInt16(0x02)] = data;
+                    break;
+                case 0x83:
+                    register[Convert.ToInt16(0x03)] = data;
+                    break;
+                case 0x84:
+                    register[Convert.ToInt16(0x04)] = data;
+                    break;
+                case 0x8A:
+                    register[Convert.ToInt16(0x0A)] = data;
+                    break;
+                case 0x8B:
+                    register[Convert.ToInt16(0x0B)] = data;
+                    break;
+            }
             register[Convert.ToInt16(address)] = data;
+        }
+
+        /// <summary>
+        /// untested
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="bit"></param>
+        /// <param name="value"></param>
+        public static void setRegisterBit(byte address, int bit, bool value)
+        {
+            setRegister(address, setBit(register[address], bit, value));
         }
         #endregion
 
@@ -247,17 +298,6 @@ namespace NICE_P16F8x
                 return (byte)(ofByte + (int)Math.Pow(bit, 2));
             else
                 return (byte)(ofByte - (int)Math.Pow(bit, 2));
-        }
-
-        /// <summary>
-        /// untested
-        /// </summary>
-        /// <param name="address"></param>
-        /// <param name="bit"></param>
-        /// <param name="value"></param>
-        public static void setRegisterBit(byte address, int bit, bool value)
-        {
-            register[address] = setBit(register[address], bit, value);
         }
 
         /// <summary>
