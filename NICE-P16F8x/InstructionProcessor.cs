@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Windows;
 
 namespace NICE_P16F8x
 {

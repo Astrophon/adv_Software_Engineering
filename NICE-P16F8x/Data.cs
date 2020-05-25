@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
 
@@ -235,7 +236,7 @@ namespace NICE_P16F8x
         }
 
         /// <summary>
-        /// untested
+        /// Sets a specific bit in the given register
         /// </summary>
         /// <param name="address"></param>
         /// <param name="bit"></param>
@@ -243,6 +244,16 @@ namespace NICE_P16F8x
         public static void setRegisterBit(byte address, int bit, bool value)
         {
             setRegister(address, setBit(register[address], bit, value));
+        }
+        /// <summary>
+        /// Gets a specific bit in the given register
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="bit"></param>
+        /// <param name="value"></param>
+        public static bool getRegisterBit(byte address, int position)
+        {
+            return (1 == ((register[address] >> position) & 1));
         }
         #endregion
 
@@ -308,7 +319,7 @@ namespace NICE_P16F8x
             return result;
         }
         /// <summary>
-        /// untested
+        /// changes bit of given byte and returns the altered byte
         /// </summary>
         /// <param name="ofByte"></param>
         /// <param name="bit"></param>
