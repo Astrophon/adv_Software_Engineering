@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Windows;
 
 namespace NICE_P16F8x
 {
