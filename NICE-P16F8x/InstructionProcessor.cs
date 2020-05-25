@@ -236,6 +236,7 @@ namespace NICE_P16F8x
 
             byte merge = (byte) ((Data.getRegister(Data.Registers.PCLATH) & 24) + k2); // geht evtl. nicht
             Data.setPCFromBytes(merge, k1);
+            Data.SetPCLfromPC();
         }
         public static void IORLW(Data.Command com)
         {

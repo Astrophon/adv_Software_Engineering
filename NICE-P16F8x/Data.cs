@@ -127,16 +127,11 @@ namespace NICE_P16F8x
         public static void IncPC()
         {
             pc++;
-            byte pcl = BitConverter.GetBytes(pc)[0];
-            setRegister(Registers.PCL, pcl);
+            SetPCLfromPC();
         }
         public static int getPC()
         {
             return pc;
-        }
-        public static void setPC(int newPc)
-        {
-            pc = newPc;
         }
         public static void setWriteProgram(List<string> commands)
         {
@@ -256,6 +251,12 @@ namespace NICE_P16F8x
         #endregion
 
         #region HelperFunctions
+        public static void SetPCLfromPC()
+        {
+            byte pcl = BitConverter.GetBytes(pc)[0];
+            setRegister(Registers.PCL, pcl);
+        }
+
         public static void setPCFromBytes(byte bHigh, byte bLow)
         {
             pc = BitConverter.ToUInt16(new byte[] { bLow, bHigh }, 0);
