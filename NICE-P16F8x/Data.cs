@@ -9,6 +9,8 @@ namespace NICE_P16F8x
         //normal
         private static List<Command> program = new List<Command>();
         private static byte[] register = new byte[256];
+        private static int[] stack = new int[8];
+        private static int stackPointer;
         private static byte w;
         private static int pc; // vor dem fetch obere bits auf 0 setzen um später overflow zu vermeiden
         //timing kann geshaved werden
@@ -129,6 +131,23 @@ namespace NICE_P16F8x
             setRegister(Registers.TRISA, 0x1F);     //0001 1111
             setRegister(Registers.TRISB, 0xFF);     //1111 1111
         }
+
+        public static void pushStack()
+        {
+            stack[stackPointer] = pc;
+
+            if (stackPointer == 7) stackPointer = 0;
+            else stackPointer++;
+        }
+
+        public static int popStack()
+        {
+            if (stackPointer == 0) stackPointer = 7;
+            else stackPointer--;
+
+            return stack[stackPointer];
+        }
+
         public static void IncPC()
         {
             pc++;
