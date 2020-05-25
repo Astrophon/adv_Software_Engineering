@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Dynamic;
+using System.Reflection;
+using System.Windows;
 
 namespace NICE_P16F8x
 {
@@ -57,14 +59,14 @@ namespace NICE_P16F8x
 
             DirectionalWrite(d, f, result);
         }
-        public static void DECFSZ(Data.Command com) //INCOMPLETE
+        public static void DECFSZ(Data.Command com) 
         {
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
             byte result = (byte)(Data.getRegister(f) - 1);
 
-            /// !!!! Skip missing !!!
+            if (result == 0) Skip();
 
             DirectionalWrite(d, f, result);
         }
@@ -78,7 +80,18 @@ namespace NICE_P16F8x
 
             DirectionalWrite(d, f, result);
         }
-        //public static void INCFSZ(Data.Command com)
+
+        public static void INCFSZ(Data.Command com)
+        {
+            byte d = (byte)(com.getLowByte() & 128);
+            byte f = (byte)(com.getLowByte() & 127);
+
+            byte result = (byte)(Data.getRegister(f) + 1);
+
+            if (result == 0) Skip();
+
+            DirectionalWrite(d, f, result);
+        }
         public static void IORWF(Data.Command com)
         {
             byte d = (byte)(com.getLowByte() & 128);
@@ -181,8 +194,21 @@ namespace NICE_P16F8x
 
             Data.setRegisterBit(f, b, true);
         }
-        //public static void BTFSC(Data.Command com)
-        //public static void BTFSS(Data.Command com)
+        public static void BTFSC(Data.Command com)
+        {
+            int b1 = (com.getHighByte() & 3);
+            int b = b1 + (((com.getLowByte() & 128) == 128) ? 4 : 0);
+            byte f = (byte)(com.getLowByte() & 127);
+            
+            
+           // if (result == 1) Skip();
+
+            Data.setRegisterBit(f, b, true);
+        }
+        public static void BTFSS(Data.Command com)
+        {
+
+        }
         #endregion
 
         #region LITERAL AND CONTROL OPERATIONS
@@ -298,6 +324,12 @@ namespace NICE_P16F8x
             if (d == 0) Data.setRegisterW(result);
             //save to f address
             else if (d == 128) Data.setRegister(f, result);
+        }
+
+        private static void Skip()
+        {
+            Data.IncPC();
+            //TO FUC**NG DO adjust Clock
         }
         #endregion
 
