@@ -21,7 +21,9 @@ namespace NICE_P16F8x
             //Set DataContext for UI
             View = new MainWindowViewModel();
             DataContext = View;
-            //Initial data refresh
+
+            //Initial data reset / refresh
+            Data.Reset();
             UpdateUI();
 
             InitializeComponent();
