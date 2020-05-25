@@ -1,4 +1,7 @@
-﻿namespace NICE_P16F8x
+﻿using System.Reflection;
+using System.Windows;
+
+namespace NICE_P16F8x
 {
     /// <summary>
     /// class responsible for executing instructions
@@ -298,5 +301,16 @@
             else if (d == 128) Data.setRegister(f, result);
         }
         #endregion
+
+        #region Access
+
+        public static void Execute (Data.Instruction instruction, Data.Command com)
+        {
+            MethodInfo theMethod = typeof(InstructionProcessor).GetMethod(instruction.ToString());
+            theMethod.Invoke(null, new object[]{ com }) ;  
+        }
+
+        #endregion
+
     }
 }

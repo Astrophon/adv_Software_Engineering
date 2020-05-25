@@ -158,6 +158,11 @@ namespace NICE_P16F8x
             return program.Count;
         }
 
+        public static List<Command> getProgram()
+        {
+            return program;
+        }
+
         public static byte getRegisterW()
         {
             return w;
