@@ -119,6 +119,12 @@ namespace NICE_P16F8x
         #endregion
 
         #region Access
+        public static void Reset()
+        {
+            pc = 0;
+            w = 0;
+            register = new byte[256];
+        }
         public static void IncPC()
         {
             pc++;

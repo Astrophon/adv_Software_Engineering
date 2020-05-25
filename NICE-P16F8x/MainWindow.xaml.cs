@@ -91,6 +91,7 @@ namespace NICE_P16F8x
             {
                 SourceFile = new SourceFile(dialog.FileName);
                 SourceDataGrid.ItemsSource = SourceFile.getSourceLines();
+                Data.Reset();
                 UpdateUI();
             }
         }
@@ -111,8 +112,8 @@ namespace NICE_P16F8x
         private void MenuDebugAction_Click(object sender, RoutedEventArgs e) // TEST METHOD FOR NOW
         {
             Data.Command com = Data.getProgram()[Data.getPC()];
-            InstructionProcessor.Execute(Data.InstructionLookup(com), com);
             Data.IncPC();
+            InstructionProcessor.Execute(Data.InstructionLookup(com), com);
             UpdateUI();
         }
         #endregion
