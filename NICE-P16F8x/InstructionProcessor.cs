@@ -199,15 +199,16 @@ namespace NICE_P16F8x
             int b1 = (com.getHighByte() & 3);
             int b = b1 + (((com.getLowByte() & 128) == 128) ? 4 : 0);
             byte f = (byte)(com.getLowByte() & 127);
-            
-            
-           // if (result == 1) Skip();
-
-            Data.setRegisterBit(f, b, true);
+                      
+            if (Data.getRegisterBit(f, b) == false) Skip();
         }
         public static void BTFSS(Data.Command com)
         {
+            int b1 = (com.getHighByte() & 3);
+            int b = b1 + (((com.getLowByte() & 128) == 128) ? 4 : 0);
+            byte f = (byte)(com.getLowByte() & 127);
 
+            if (Data.getRegisterBit(f, b) == true) Skip();
         }
         #endregion
 
