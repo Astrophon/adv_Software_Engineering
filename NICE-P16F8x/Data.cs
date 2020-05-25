@@ -123,6 +123,11 @@ namespace NICE_P16F8x
             pc = 0;
             w = 0;
             register = new byte[256];
+
+            setRegister(Registers.STATUS, 0x18);    //0001 1000
+            setRegister(Registers.OPTION, 0xFF);    //1111 1111
+            setRegister(Registers.TRISA, 0x1F);     //0001 1111
+            setRegister(Registers.TRISB, 0xFF);     //1111 1111
         }
         public static void IncPC()
         {
