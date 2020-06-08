@@ -113,9 +113,14 @@ namespace NICE_P16F8x
         /// <param name="e"></param>
         private void MenuDebugAction_Click(object sender, RoutedEventArgs e) // TEST METHOD FOR NOW
         {
-            Data.Command com = Data.getProgram()[Data.getPC()];
-            Data.IncPC();
-            InstructionProcessor.Execute(Data.InstructionLookup(com), com);
+
+        }
+        #endregion
+
+        #region Button Functions
+        private void Button_Step_Click(object sender, RoutedEventArgs e)
+        {
+            InstructionProcessor.PCStep();
             UpdateUI();
         }
         #endregion

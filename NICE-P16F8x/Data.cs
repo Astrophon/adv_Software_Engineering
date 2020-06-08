@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 
 namespace NICE_P16F8x
 {
@@ -13,7 +14,10 @@ namespace NICE_P16F8x
         private static int stackPointer;
         private static byte w;
         private static int pc; // vor dem fetch obere bits auf 0 setzen um später overflow zu vermeiden
-        //timing kann geshaved werden
+        private static int tmr0Precounter;
+        private static int prescaler;
+        private static long runtime, watchdog; //in microseconds
+        private static int clockspeed = 4000000;
 
         //integrity
         private static bool programInitialized = false;
@@ -120,6 +124,51 @@ namespace NICE_P16F8x
         #endregion
 
         #region Access
+        public static long getSingleExectionTime()
+        {
+            return 4 / clockspeed * 1000000;
+        }
+        public static void ProcessTMR0()
+        {
+            bool increment = true;
+            if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
+            {
+                tmr0Precounter++;
+                byte psByte = BoolArrayToByte(new bool[] { getRegisterBit(Registers.OPTION, Flags.Option.PS0), getRegisterBit(Registers.OPTION, Flags.Option.PS1), getRegisterBit(Registers.OPTION, Flags.Option.PS2) });
+                int prescaler = (int)(Math.Pow(2, psByte) + 1);
+                if (tmr0Precounter < prescaler)
+                {
+                    increment = false;
+                }
+            }
+            if (increment)
+            {
+                byte tmr0 = (byte)(getRegister(Registers.TMR0) + 1);
+                setRegister(Registers.TMR0, tmr0);
+                if (tmr0 == 0)
+                {
+                    setRegisterBit(Registers.INTCON, Flags.Intcon.T0IF, true);
+                }
+            }
+        }
+        public static void ProcessWDT()
+        {
+            long limit = 18000; // 18 milliseconds watchdog time without prescaler
+            watchdog += getSingleExectionTime();
+            if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == true) //Prescaler assigned to WDT
+            {
+                byte psByte = BoolArrayToByte(new bool[] { getRegisterBit(Registers.OPTION, Flags.Option.PS0), getRegisterBit(Registers.OPTION, Flags.Option.PS1), getRegisterBit(Registers.OPTION, Flags.Option.PS2) });
+                limit *= (long)(Math.Pow(2, psByte));
+            }
+            if (watchdog >= limit) //Watchdog attacks!!
+            {
+                WDTReset();
+            }
+        }
+        public static void increaseRuntime()
+        {
+            runtime += getSingleExectionTime();
+        }
         public static void Reset()
         {
             pc = 0;
@@ -131,7 +180,13 @@ namespace NICE_P16F8x
             setRegister(Registers.TRISA, 0x1F);     //0001 1111
             setRegister(Registers.TRISB, 0xFF);     //1111 1111
         }
-
+        public static void WDTReset() //TODO
+        {
+            pc = 0;
+            w = 0;
+            setRegister(Registers.STATUS, (byte)(getRegister(Registers.STATUS) & 7 + 8));
+            throw new NotImplementedException();
+        }
         public static void pushStack()
         {
             stack[stackPointer] = pc;
@@ -156,6 +211,10 @@ namespace NICE_P16F8x
         public static int getPC()
         {
             return pc;
+        }
+        public static void setPC(int newPc)
+        {
+            pc = newPc;
         }
         public static void setWriteProgram(List<string> commands)
         {
@@ -213,9 +272,12 @@ namespace NICE_P16F8x
                 case 0x00:
                     register[Convert.ToInt16(0x80)] = data;
                     break;
+                case 0x01: //TMR0
+                    prescaler = 0; //Reset Prescaler
+                    break;
                 case 0x02:
                     register[Convert.ToInt16(0x82)] = data;
-                    setPCFromBytes(Data.getRegister(Data.Registers.PCLATH), Data.getRegister(Data.Registers.PCL));
+                    setPCFromBytes(getRegister(Registers.PCLATH), getRegister(Registers.PCL));
                     break;
                 case 0x03:
                     register[Convert.ToInt16(0x83)] = data;
@@ -235,7 +297,7 @@ namespace NICE_P16F8x
                     break;
                 case 0x82:
                     register[Convert.ToInt16(0x02)] = data;
-                    setPCFromBytes(Data.getRegister(Data.Registers.PCLATH), Data.getRegister(Data.Registers.PCL));
+                    setPCFromBytes(getRegister(Registers.PCLATH), getRegister(Registers.PCL));
                     break;
                 case 0x83:
                     register[Convert.ToInt16(0x03)] = data;

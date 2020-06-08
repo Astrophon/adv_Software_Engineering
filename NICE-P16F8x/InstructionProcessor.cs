@@ -1,4 +1,5 @@
-﻿using System.Dynamic;
+﻿using System;
+using System.Dynamic;
 using System.Reflection;
 using System.Windows;
 
@@ -59,14 +60,18 @@ namespace NICE_P16F8x
 
             DirectionalWrite(d, f, result);
         }
-        public static void DECFSZ(Data.Command com) 
+        public static void DECFSZ(Data.Command com)
         {
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
             byte result = (byte)(Data.getRegister(f) - 1);
 
-            if (result == 0) Skip();
+            if (result == 0)
+            {
+                Data.IncPC();
+                SkipCycle();
+            }
 
             DirectionalWrite(d, f, result);
         }
@@ -88,7 +93,11 @@ namespace NICE_P16F8x
 
             byte result = (byte)(Data.getRegister(f) + 1);
 
-            if (result == 0) Skip();
+            if (result == 0)
+            {
+                Data.IncPC();
+                SkipCycle();
+            }
 
             DirectionalWrite(d, f, result);
         }
@@ -199,8 +208,12 @@ namespace NICE_P16F8x
             int b1 = (com.getHighByte() & 3);
             int b = b1 + (((com.getLowByte() & 128) == 128) ? 4 : 0);
             byte f = (byte)(com.getLowByte() & 127);
-                      
-            if (Data.getRegisterBit(f, b) == false) Skip();
+
+            if (Data.getRegisterBit(f, b) == false)
+            {
+                Data.IncPC();
+                SkipCycle();
+            }
         }
         public static void BTFSS(Data.Command com)
         {
@@ -208,7 +221,11 @@ namespace NICE_P16F8x
             int b = b1 + (((com.getLowByte() & 128) == 128) ? 4 : 0);
             byte f = (byte)(com.getLowByte() & 127);
 
-            if (Data.getRegisterBit(f, b) == true) Skip();
+            if (Data.getRegisterBit(f, b) == true)
+            {
+                Data.IncPC();
+                SkipCycle();
+            }
         }
         #endregion
 
@@ -228,14 +245,28 @@ namespace NICE_P16F8x
             CheckZFlag(result);
             Data.setRegisterW(result);
         }
-        //public static void CALL(Data.Command com)
-        //public static void CLRWDT(Data.Command com)
+        public static void CALL(Data.Command com)
+        {
+            byte k1 = com.getLowByte();
+            byte k2 = (byte)(com.getHighByte() & 7);
+
+            byte merge = (byte)((Data.getRegister(Data.Registers.PCLATH) & 24) + k2); // geht evtl. nicht
+
+            Data.pushStack();
+            Data.setPCFromBytes(merge, k1);
+            Data.SetPCLfromPC();
+            SkipCycle();
+        }
+        public static void CLRWDT(Data.Command com)
+        {
+            //TODO
+        }
         public static void GOTO(Data.Command com)
         {
             byte k1 = com.getLowByte();
             byte k2 = (byte)(com.getHighByte() & 7);
 
-            byte merge = (byte) ((Data.getRegister(Data.Registers.PCLATH) & 24) + k2); // geht evtl. nicht
+            byte merge = (byte)((Data.getRegister(Data.Registers.PCLATH) & 24) + k2); // geht evtl. nicht
             Data.setPCFromBytes(merge, k1);
             Data.SetPCLfromPC();
         }
@@ -253,9 +284,28 @@ namespace NICE_P16F8x
 
             Data.setRegisterW(Data.getRegister(k));
         }
-        //public static void RETFIE(Data.Command com)
-        //public static void RETLW(Data.Command com)
-        //public static void RETURN(Data.Command com)
+        public static void RETFIE(Data.Command com)
+        {
+            Data.setPC(Data.popStack());
+            Data.SetPCLfromPC();
+            Data.setRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE, true); //Re-enable Global-Interrupt-Bit
+            SkipCycle();
+        }
+        public static void RETLW(Data.Command com)
+        {
+            byte k = com.getLowByte();
+
+            Data.setRegisterW(k);
+            Data.setPC(Data.popStack());
+            Data.SetPCLfromPC();
+            SkipCycle();
+        }
+        public static void RETURN(Data.Command com)
+        {
+            Data.setPC(Data.popStack());
+            Data.SetPCLfromPC();
+            SkipCycle();
+        }
         //public static void SLEEP(Data.Command com)
         public static void SUBLW(Data.Command com)
         {
@@ -328,22 +378,47 @@ namespace NICE_P16F8x
             else if (d == 128) Data.setRegister(f, result);
         }
 
-        private static void Skip()
+        private static void SkipCycle()
         {
-            Data.IncPC();
-            //TO FUC**NG DO adjust Clock
+            Data.ProcessTMR0();
+            Data.ProcessWDT();
+            Data.increaseRuntime();
+        }
+
+        private static void CheckInterrupts()
+        {
+            if (Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE))
+            {
+                if (Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.T0IE) && Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.T0IF))
+                {
+                    CallInterrupt();
+                }
+            } //TODO
+        }
+
+        private static void CallInterrupt()
+        {
+            Data.setPC(0x04); //Fixed interrupt routine address
+            Data.setRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE, false); //Disable Global-Interrupt-Bit
         }
         #endregion
 
         #region Access
-
-        public static void Execute (Data.Instruction instruction, Data.Command com)
+        public static void Execute(Data.Instruction instruction, Data.Command com)
         {
             MethodInfo theMethod = typeof(InstructionProcessor).GetMethod(instruction.ToString());
-            theMethod.Invoke(null, new object[]{ com }) ;  
+            theMethod.Invoke(null, new object[] { com });
         }
 
+        public static void PCStep()
+        {
+            Data.Command com = Data.getProgram()[Data.getPC()];
+            Data.IncPC();
+            InstructionProcessor.Execute(Data.InstructionLookup(com), com);
+            Data.ProcessTMR0();
+            Data.ProcessWDT();
+            CheckInterrupts();
+        }
         #endregion
-
     }
 }
