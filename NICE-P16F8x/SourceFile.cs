@@ -24,7 +24,6 @@ namespace NICE_P16F8x
                 new System.IO.StreamReader(@path, CodePagesEncodingProvider.Instance.GetEncoding(1252));
             while ((line = file.ReadLine()) != null)
             {
-                bool hasCommand = false;
                 //Check if line contains command, save it and remove it from the list
                 string comment = "";
                 string[] lineCommentSplit = line.Split(";");
@@ -33,10 +32,17 @@ namespace NICE_P16F8x
                     comment = lineCommentSplit[1];
                     line = lineCommentSplit[0];
                 }
+                //Check if line contains label, save it
+                string label;
+                bool hasLabel = false;
+                label = line.Substring(27).Split(" ")[0];
+                if (label != "") hasLabel = true;
+
                 //Split line in substrings, seperated by " ", removing all duplicate white spaces
                 string[] lineComponents = line.Split(" ", StringSplitOptions.RemoveEmptyEntries);
 
                 //Check if line contains hexadecimal command
+                bool hasCommand = false;
                 if (!char.IsWhiteSpace(line, 0))
                 {
                     commands.Add(lineComponents[1]);
@@ -52,11 +58,11 @@ namespace NICE_P16F8x
                     string command = "";
                     if (lineComponents.Length > 1)
                     {
-                        command = string.Join(" ", lineComponents.Skip(1).ToArray());
+                        command = string.Join(" ", lineComponents.Skip(hasLabel ? 2 : 1).ToArray());
                     }
 
                     //Add line to list of SourceLines
-                    SourceLine sl = new SourceLine(lineNumber, command, comment, hasCommand);
+                    SourceLine sl = new SourceLine(lineNumber, label, command, comment, hasCommand);
                     sourceLines.Add(sl);
                 }
                 lineCounter++;
@@ -89,6 +95,7 @@ namespace NICE_P16F8x
     {
         public bool Breakpoint { get; set; }
         public string LineNumber { get; set; }
+        public string Label { get; set; }
         public string Command { get; set; }
         public string Comment { get; set; }
         public bool hasCommand { get; set; }
@@ -99,10 +106,11 @@ namespace NICE_P16F8x
             set { this.SetAndNotify(ref this.active, value, () => this.Active); }
         }
 
-        public SourceLine(string lineNumber, string command, string comment, bool hasCommand)
+        public SourceLine(string lineNumber, string label, string command, string comment, bool hasCommand)
         {
             this.Breakpoint = false;
             this.LineNumber = lineNumber;
+            this.Label = label;
             this.Command = command;
             this.Comment = comment;
             this.hasCommand = hasCommand;

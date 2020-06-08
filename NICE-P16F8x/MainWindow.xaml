@@ -157,14 +157,14 @@
                     
                     <GroupBox  Grid.Column="2" Header="Stack" MinWidth="100" MinHeight="100px">
                         <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                            <TextBlock HorizontalAlignment="Center">0001</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0002</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0003</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0004</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0005</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0006</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0007</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0008</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
+                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
                         </StackPanel>
                     </GroupBox>
                     <Grid Grid.Column="4">
@@ -246,6 +246,7 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="auto" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Label" Binding="{Binding Label}" MinWidth="40" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="Command" Binding="{Binding Command}" MinWidth="140" IsReadOnly="True" CellStyle="{StaticResource SourceFileCellHighlight}"/>
                                 <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="100*" IsReadOnly="True"/>
                             </DataGrid.Columns>
@@ -287,7 +288,18 @@
 
                             </GroupBox>
                             <GroupBox Grid.Column="1" Header="Control" Width="auto" MinHeight="200px">
-
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Button Grid.Row="0" Content="Start" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="70px" Height="30px"></Button>
+                                    <Button x:Name="Button_Step" Grid.Row="1" Content="Step" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="70px" Height="30px" Click="Button_Step_Click"></Button>
+                                    <Button Grid.Row="2" Content="Stop" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="70px" Height="30px"></Button>
+                                    <Button Grid.Row="3" Content="Reset" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="70px" Height="30px"></Button>
+                                </Grid>
                             </GroupBox>
                         </Grid>
                     </Grid>
