@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>NICE_P16F8x</RootNamespace>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>chip.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
