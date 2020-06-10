@@ -269,6 +269,7 @@ namespace NICE_P16F8x
             byte merge = (byte)((Data.getRegister(Data.Registers.PCLATH) & 24) + k2); // geht evtl. nicht
             Data.setPCFromBytes(merge, k1);
             Data.SetPCLfromPC();
+            SkipCycle();
         }
         public static void IORLW(Data.Command com)
         {
@@ -412,12 +413,24 @@ namespace NICE_P16F8x
 
         public static void PCStep()
         {
-            Data.Command com = Data.getProgram()[Data.getPC()];
-            Data.IncPC();
-            InstructionProcessor.Execute(Data.InstructionLookup(com), com);
-            Data.ProcessTMR0();
-            Data.ProcessWDT();
-            CheckInterrupts();
+            if (Data.isProgramInitialized())
+            {
+                if(Data.getPC() < Data.getProgram().Count)
+                {
+                    Data.Command com = Data.getProgram()[Data.getPC()];
+                    Data.IncPC();
+                    InstructionProcessor.Execute(Data.InstructionLookup(com), com);
+                } else //PC has left program area
+                {
+                    Data.IncPC();
+                    MessageBox.Show("PC has left program area!\nPlease avoid this behavior by ending the code in an infinite loop.", "Out of bounds" , MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }
+
+                Data.ProcessTMR0();
+                Data.ProcessWDT();
+                Data.increaseRuntime();
+                CheckInterrupts();
+            }
         }
         #endregion
     }

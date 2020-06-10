@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:NICE_P16F8x"
         mc:Ignorable="d"
         xmlns:dataGrid2D="http://gu.se/DataGrid2D"
-        Title="NICE-PIC16F8x" SizeToContent="WidthAndHeight" Margin="-2,0,0,0" ResizeMode="CanMinimize" Icon="/chip.png">
+        Title="NICE-PIC16F8x" SizeToContent="WidthAndHeight" Margin="-2,0,0,0" ResizeMode="CanMinimize" Icon="/chip.png"
+        Closing="Window_Closing">
     <Window.Resources>
         <Style x:Key="FileRegisterCellStyle" TargetType="DataGridCell">
             <Setter Property="BorderThickness" Value="2" />
@@ -46,6 +47,17 @@
         <Style x:Key="SourceFileAllowClick" TargetType="DataGridCell" BasedOn="{StaticResource SourceFileCellStyle}">
             <Setter Property="IsHitTestVisible" Value="True"/>
         </Style>
+        <Style x:Key="StackTextBlock" TargetType="{x:Type TextBlock}">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,2,10,2"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Background" Value="DarkOrange"/>
+            <Style.Triggers>
+                <Trigger Property="Text" Value="0000">
+                    <Setter Property="Background" Value="LightGray"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
 
@@ -73,7 +85,7 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <GroupBox Grid.Column="0" Header="SFR + W" MinWidth="300" MinHeight="150px" HorizontalAlignment="Left">
-
+                        <ListView></ListView>
                     </GroupBox>
                     <GroupBox Grid.Column="1" Header="SFR (Bit)" MinWidth="300" MinHeight="100px">
                         <StackPanel Orientation="Vertical">
@@ -154,17 +166,20 @@
                             </DockPanel>
                         </StackPanel>
                     </GroupBox>
-                    
+
                     <GroupBox  Grid.Column="2" Header="Stack" MinWidth="100" MinHeight="100px">
-                        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
-                            <TextBlock HorizontalAlignment="Center">0000</TextBlock>
+                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" UseLayoutRounding="True">
+                            <StackPanel.Resources>
+                                
+                            </StackPanel.Resources>
+                            <TextBlock Text="{Binding StackDisplay[0]}" Style="{StaticResource StackTextBlock}"/>
+                            <TextBlock Text="{Binding StackDisplay[1]}" Style="{StaticResource StackTextBlock}"/>
+                            <TextBlock Text="{Binding StackDisplay[2]}" Style="{StaticResource StackTextBlock}"/>
+                            <TextBlock Text="{Binding StackDisplay[3]}" Style="{StaticResource StackTextBlock}"/>
+                            <TextBlock Text="{Binding StackDisplay[4]}" Style="{StaticResource StackTextBlock}"/>
+                            <TextBlock Text="{Binding StackDisplay[5]}" Style="{StaticResource StackTextBlock}"/>
+                            <TextBlock Text="{Binding StackDisplay[6]}" Style="{StaticResource StackTextBlock}"/>
+                            <TextBlock Text="{Binding StackDisplay[7]}" Style="{StaticResource StackTextBlock}"/>
                         </StackPanel>
                     </GroupBox>
                     <Grid Grid.Column="4">
@@ -266,7 +281,9 @@
                                 AutoGenerateColumns="False"
                                 FontStyle="Normal" FontFamily="Courier New" FontWeight="Normal" FontSize="15"
                                 CanUserResizeColumns="False" CanUserResizeRows="False"  SelectionUnit="Cell" CanUserSortColumns="False" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFCBCBCB" VerticalGridLinesBrush="#FFCBCBCB" CanUserReorderColumns="False" SelectionMode="Single" Foreground="Black" CanUserAddRows="False" CanUserDeleteRows="False"
-                                CellEditEnding="FileRegister_CellEditEnding">
+                                CellEditEnding="FileRegister_CellEditEnding"
+                                EnableColumnVirtualization="true" EnableRowVirtualization="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                                VirtualizingPanel.IsVirtualizing="True">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn EditingElementStyle="{StaticResource FileRegisterTextBox}" Binding="{Binding C0}"/>
                                     <DataGridTextColumn EditingElementStyle="{StaticResource FileRegisterTextBox}" Binding="{Binding C1}"/>
@@ -284,21 +301,58 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <GroupBox Grid.Column="0" Header="Timing" Width="auto" MinHeight="200px">
-
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="Control" Width="auto" MinHeight="200px">
-                                <Grid>
+                            <GroupBox Grid.Column="0" Header="Timing" Width="auto" MinHeight="150px" MinWidth="180px">
+                                <Grid Margin="5">
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
                                         <RowDefinition/>
                                         <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <DockPanel Grid.Row="0" VerticalAlignment="Center">
+                                        <TextBlock Margin="0,0,15,0" VerticalAlignment="Center">Clock speed:</TextBlock>
+                                        <ComboBox 
+                                            ItemsSource="{Binding ClockSpeedPairs}"
+                                            SelectedValuePath="Key"
+                                            DisplayMemberPath="Value"
+                                            IsSynchronizedWithCurrentItem="True"
+                                            SelectedIndex="0"
+                                            SelectedValue="{Binding ClockSpeed}"/>
+                                    </DockPanel>
+                                    <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                                        <DockPanel Margin="0,5,0,5">
+                                            <DockPanel>
+                                                <TextBlock>Runtime:</TextBlock>
+                                            </DockPanel>
+                                            <DockPanel HorizontalAlignment="Right">
+                                                <TextBlock HorizontalAlignment="Right" Text="{Binding Runtime}" FontWeight="Bold"></TextBlock>
+                                                <TextBlock HorizontalAlignment="Right" Text="µs" FontWeight="Bold"/>
+                                            </DockPanel>
+                                        </DockPanel>
+                                        <DockPanel  Margin="0,5,0,5">
+                                            <DockPanel>
+                                                <TextBlock>Watchdog:</TextBlock>
+                                            </DockPanel>
+                                            <DockPanel HorizontalAlignment="Right">
+                                                <TextBlock HorizontalAlignment="Right" Text="{Binding Watchdog}" FontWeight="Bold"></TextBlock>
+                                                <TextBlock HorizontalAlignment="Right" Text="µs" FontWeight="Bold"/>
+                                            </DockPanel>
+                                        </DockPanel>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="2" VerticalAlignment="Center">
+                                        <CheckBox IsChecked="{Binding WatchdogEnabled}">Enable Watchdog (WDTE)</CheckBox>
+                                    </StackPanel>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Column="1" Header="Control" Width="auto" MinHeight="150px">
+                                <Grid Margin="10,0,10,0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <Button Grid.Row="0" Content="Start" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="70px" Height="30px"></Button>
-                                    <Button x:Name="Button_Step" Grid.Row="1" Content="Step" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="70px" Height="30px" Click="Button_Step_Click"></Button>
-                                    <Button Grid.Row="2" Content="Stop" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="70px" Height="30px"></Button>
-                                    <Button Grid.Row="3" Content="Reset" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="70px" Height="30px"></Button>
+                                    <Button Grid.Row="0" Content="{Binding StartStopButtonText}" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="70px" Height="30px" Click="Button_StartStop_Click"></Button>
+                                    <Button Grid.Row="1" Content="Step" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="70px" Height="30px" Click="Button_Step_Click"></Button>
+                                    <Button Grid.Row="2" Content="Reset" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="70px" Height="30px" Click="Button_Reset_Click"></Button>
                                 </Grid>
                             </GroupBox>
                         </Grid>

@@ -2,7 +2,9 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -15,12 +17,18 @@ namespace NICE_P16F8x
     {
         private SourceFile SourceFile;
         private MainWindowViewModel View;
+        private Timer TimerStep;
+        private DateTime LastRegUpdate;
 
         public MainWindow()
         {
             //Set DataContext for UI
             View = new MainWindowViewModel();
             DataContext = View;
+
+            TimerStep = new Timer(100);  //Time between steps in running mode
+            TimerStep.AutoReset = false;
+            TimerStep.Elapsed += new ElapsedEventHandler(OnRunTimerEvent);
 
             //Initial data reset / refresh
             Data.Reset();
@@ -72,8 +80,24 @@ namespace NICE_P16F8x
                 }
             }
         }
+        private void Start()
+        {
+            if (Data.isProgramInitialized())
+            {
+                TimerStep.Enabled = true;
+                View.StartStopButtonText = "Stop";
+                FileRegister.IsReadOnly = true;
+            }
+        }
+        private void Stop()
+        {
+            TimerStep.Enabled = false;
+            View.StartStopButtonText = "Start";
+            FileRegister.IsReadOnly = false;
+            UpdateUI();
+        }
         #endregion
-        
+
         #region Menu Items
         /// <summary>
         /// Logic for File -> Open
@@ -91,9 +115,13 @@ namespace NICE_P16F8x
 
             if (dialog.ShowDialog() == true)
             {
+                if (TimerStep.Enabled)
+                {
+                    Stop();
+                }
+                Data.Reset();
                 SourceFile = new SourceFile(dialog.FileName);
                 SourceDataGrid.ItemsSource = SourceFile.getSourceLines();
-                Data.Reset();
                 UpdateUI();
             }
         }
@@ -113,7 +141,7 @@ namespace NICE_P16F8x
         /// <param name="e"></param>
         private void MenuDebugAction_Click(object sender, RoutedEventArgs e) // TEST METHOD FOR NOW
         {
-
+            MessageBox.Show(Data.getSingleExectionTime().ToString());
         }
         #endregion
 
@@ -122,6 +150,23 @@ namespace NICE_P16F8x
         {
             InstructionProcessor.PCStep();
             UpdateUI();
+        }
+        private void Button_Reset_Click(object sender, RoutedEventArgs e)
+        {
+            Stop();
+            Data.Reset();
+            UpdateUI();
+        }
+        private void Button_StartStop_Click(object sender, RoutedEventArgs e)
+        {
+            if (TimerStep.Enabled)
+            {
+                Stop();
+            }
+            else
+            {
+                Start();
+            }
         }
         #endregion
 
@@ -135,9 +180,34 @@ namespace NICE_P16F8x
             try
             {
                 SourceFile.HighlightLine(pcl);
+                SourceDataGrid.ScrollIntoView(SourceDataGrid.Items[6]);
                 SourceDataGrid.ScrollIntoView(SourceDataGrid.Items[SourceFile.getSourceLineIndexFromPCL(pcl)]);
             }
-            catch (ArgumentOutOfRangeException) { }
+            catch (Exception)
+            {
+            }
+        }
+        private void OnRunTimerEvent(object source, ElapsedEventArgs e)
+        {
+            TimerStep.Stop();
+            InstructionProcessor.PCStep();
+            this.Dispatcher.Invoke(() =>
+            {
+                if (DateTime.Now.Subtract(LastRegUpdate).TotalSeconds > 1)
+                {
+                    UpdateUI();
+                    LastRegUpdate = DateTime.Now;
+                }
+                else
+                {
+                    UpdateUIWithoutFileRegister();
+                }
+            });
+            TimerStep.Start();
+        }
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Stop();
         }
         #endregion
 
@@ -149,10 +219,6 @@ namespace NICE_P16F8x
         {
             UpdateFileRegisterUI();
             UpdateUIWithoutFileRegister();
-            if(SourceFile != null)
-            {
-                HighlightSourceLine(Data.getPC());
-            }
         }
         /// <summary>
         /// Refreshes data for all UI elements BUT the file register view
@@ -170,6 +236,13 @@ namespace NICE_P16F8x
             View.Status = new ObservableCollection<string>(Data.ByteToStringArray(Data.getRegister(Data.Registers.STATUS)));
             View.Option = new ObservableCollection<string>(Data.ByteToStringArray(Data.getRegister(Data.Registers.OPTION)));
             View.Intcon = new ObservableCollection<string>(Data.ByteToStringArray(Data.getRegister(Data.Registers.INTCON)));
+            View.StackDisplay = new ObservableCollection<string>(Data.getStack().Select(x => x.ToString("D4")).ToArray());
+            View.Runtime = Data.getRuntime();
+            View.Watchdog = Data.getWatchdog();
+            if (SourceFile != null)
+            {
+                HighlightSourceLine(Data.getPC());
+            }
         }
         private void UpdateFileRegisterUI()
         {
@@ -183,7 +256,11 @@ namespace NICE_P16F8x
                     data[i, j] = Data.getAllRegisters()[index++].ToString("X2");
                 }
             }
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
             View.FileRegisterData = data;
+            //sw.Stop();
+            //MessageBox.Show("Elapsed Setting SourceData = "+ sw.ElapsedMilliseconds.ToString());
         }
         #endregion
 
@@ -209,5 +286,7 @@ namespace NICE_P16F8x
             UpdateUI();
         }
         #endregion
+
+
     }
 }

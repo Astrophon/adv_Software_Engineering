@@ -16,8 +16,9 @@ namespace NICE_P16F8x
         private static int pc; // vor dem fetch obere bits auf 0 setzen um später overflow zu vermeiden
         private static int tmr0Precounter;
         private static int prescaler;
-        private static long runtime, watchdog; //in microseconds
-        private static int clockspeed = 4000000;
+        private static decimal runtime, watchdog; //in microseconds
+        private static int clockspeed = 4000000; //in Hz
+        private static bool watchdogEnabled;
 
         //integrity
         private static bool programInitialized = false;
@@ -124,9 +125,21 @@ namespace NICE_P16F8x
         #endregion
 
         #region Access
-        public static long getSingleExectionTime()
+        public static void setWatchdogEnabled(bool wdte)
         {
-            return 4 / clockspeed * 1000000;
+            watchdogEnabled = wdte;
+        }
+        public static int[] getStack()
+        {
+            return stack;
+        }
+        public static void setClockSpeed(int speed)
+        {
+            clockspeed = speed;
+        }
+        public static long getSingleExectionTime() //In Microseconds
+        {
+            return (4000000 / clockspeed);
         }
         public static void ProcessTMR0()
         {
@@ -153,16 +166,19 @@ namespace NICE_P16F8x
         }
         public static void ProcessWDT()
         {
-            long limit = 18000; // 18 milliseconds watchdog time without prescaler
-            watchdog += getSingleExectionTime();
-            if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == true) //Prescaler assigned to WDT
+            if (watchdogEnabled)
             {
-                byte psByte = BoolArrayToByte(new bool[] { getRegisterBit(Registers.OPTION, Flags.Option.PS0), getRegisterBit(Registers.OPTION, Flags.Option.PS1), getRegisterBit(Registers.OPTION, Flags.Option.PS2) });
-                limit *= (long)(Math.Pow(2, psByte));
-            }
-            if (watchdog >= limit) //Watchdog attacks!!
-            {
-                WDTReset();
+                long limit = 18000; // 18 milliseconds watchdog time without prescaler
+                watchdog += getSingleExectionTime();
+                if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == true) //Prescaler assigned to WDT
+                {
+                    byte psByte = BoolArrayToByte(new bool[] { getRegisterBit(Registers.OPTION, Flags.Option.PS0), getRegisterBit(Registers.OPTION, Flags.Option.PS1), getRegisterBit(Registers.OPTION, Flags.Option.PS2) });
+                    limit *= (long)(Math.Pow(2, psByte));
+                }
+                if (watchdog >= limit) //Watchdog attacks!!
+                {
+                    WDTReset();
+                }
             }
         }
         public static void increaseRuntime()
@@ -174,6 +190,11 @@ namespace NICE_P16F8x
             pc = 0;
             w = 0;
             register = new byte[256];
+            stack = new int[8];
+            stackPointer = 0;
+            tmr0Precounter = 0;
+            runtime = 0;
+            watchdog = 0;
 
             setRegister(Registers.STATUS, 0x18);    //0001 1000
             setRegister(Registers.OPTION, 0xFF);    //1111 1111
@@ -216,6 +237,14 @@ namespace NICE_P16F8x
         {
             pc = newPc;
         }
+        public static decimal getRuntime()
+        {
+            return runtime;
+        }
+        public static decimal getWatchdog()
+        {
+            return watchdog;
+        }
         public static void setWriteProgram(List<string> commands)
         {
             if (commands == null) throw new ArgumentNullException();
@@ -245,7 +274,10 @@ namespace NICE_P16F8x
         {
             return program;
         }
-
+        public static bool isProgramInitialized()
+        {
+            return programInitialized;
+        }
         public static byte getRegisterW()
         {
             return w;
