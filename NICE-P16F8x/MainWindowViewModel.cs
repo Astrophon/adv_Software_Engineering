@@ -66,6 +66,12 @@ namespace NICE_P16F8x
             get { return intcon; }
             set { SetAndNotify(ref intcon, value, () => Intcon); }
         }
+        private ObservableCollection<string> sfrvalues;
+        public ObservableCollection<string> SFRValues
+        {
+            get { return sfrvalues; }
+            set { SetAndNotify(ref sfrvalues, value, () => SFRValues); }
+        }
         private decimal runtime;
         public decimal Runtime
         {
@@ -131,6 +137,7 @@ namespace NICE_P16F8x
             option = new ObservableCollection<string>(Enumerable.Repeat("0", 8).ToList());
             intcon = new ObservableCollection<string>(Enumerable.Repeat("0", 8).ToList());
             stackDisplay = new ObservableCollection<string>(Enumerable.Repeat("0000", 8).ToList());
+            sfrvalues = new ObservableCollection<string>(Enumerable.Repeat("00", 10).ToList());
             runtime = 0;
             watchdog = 0; 
             WatchdogEnabled = false;

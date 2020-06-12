@@ -237,6 +237,22 @@ namespace NICE_P16F8x
             View.Option = new ObservableCollection<string>(Data.ByteToStringArray(Data.getRegister(Data.Registers.OPTION)));
             View.Intcon = new ObservableCollection<string>(Data.ByteToStringArray(Data.getRegister(Data.Registers.INTCON)));
             View.StackDisplay = new ObservableCollection<string>(Data.getStack().Select(x => x.ToString("D4")).ToArray());
+            View.SFRValues[0] = Data.getRegisterW().ToString("X2");
+            View.SFRValues[1] = Data.getRegister(Data.Registers.PCL).ToString("X2");
+            View.SFRValues[2] = Data.getRegister(Data.Registers.PCLATH).ToString("X2");
+            View.SFRValues[3] = Data.getPC().ToString("D2");
+            View.SFRValues[4] = Data.getRegister(Data.Registers.STATUS).ToString("X2");
+            View.SFRValues[5] = Data.getRegister(Data.Registers.FSR).ToString("X2");
+            View.SFRValues[6] = Data.getRegister(Data.Registers.OPTION).ToString("X2");
+            View.SFRValues[7] = Data.getRegister(Data.Registers.TMR0).ToString("X2");
+            View.SFRValues[8] = "WIP";
+
+            if (Data.getPC() < Data.getProgram().Count)
+            {
+                View.SFRValues[9] = Data.InstructionLookup(Data.getProgram()[Data.getPC()]).ToString();
+
+            }
+
             View.Runtime = Data.getRuntime();
             View.Watchdog = Data.getWatchdog();
             if (SourceFile != null)

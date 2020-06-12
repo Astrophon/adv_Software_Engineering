@@ -51,7 +51,8 @@
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="Padding" Value="10,2,10,2"/>
             <Setter Property="Margin" Value="0"/>
-            <Setter Property="Background" Value="DarkOrange"/>
+            <Setter Property="Background" Value="DarkSeaGreen"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Style.Triggers>
                 <Trigger Property="Text" Value="0000">
                     <Setter Property="Background" Value="LightGray"/>
@@ -84,94 +85,142 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="SFR + W" MinWidth="300" MinHeight="150px" HorizontalAlignment="Left">
-                        <ListView></ListView>
-                    </GroupBox>
-                    <GroupBox Grid.Column="1" Header="SFR (Bit)" MinWidth="300" MinHeight="100px">
-                        <StackPanel Orientation="Vertical">
-                            <DockPanel>
-                                <TextBlock VerticalAlignment="Center" Margin="10">Status:</TextBlock>
-                                <StackPanel  Name="Status" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">IRP</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">RP1</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">RP0</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">T0</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">PD</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">Z</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">DC</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">C</TextBlock>
-                                </StackPanel>
-                            </DockPanel>
-                            <DockPanel>
-                                <StackPanel  Name="StatusNmbs" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[7]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[6]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[5]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[4]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[3]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[2]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[1]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Status[0]}"></TextBlock>
-                                </StackPanel>
-                            </DockPanel>
-                            <DockPanel>
-                                <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"> Option:</TextBlock>
-                                <StackPanel Name="Option" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <TextBlock Margin="4,0" VerticalAlignment="Center">RPu</TextBlock>
-                                    <TextBlock Margin="5,0" VerticalAlignment="Center">IEg</TextBlock>
-                                    <TextBlock Margin="4,0" VerticalAlignment="Center">TCs</TextBlock>
-                                    <TextBlock Margin="5,0" VerticalAlignment="Center">TSe</TextBlock>
-                                    <TextBlock Margin="4,0" VerticalAlignment="Center">PSA</TextBlock>
-                                    <TextBlock Margin="5,0" VerticalAlignment="Center">PS2</TextBlock>
-                                    <TextBlock Margin="4,0" VerticalAlignment="Center">PS1</TextBlock>
-                                    <TextBlock Margin="5,0" VerticalAlignment="Center">PS0</TextBlock>
-                                </StackPanel>
-                            </DockPanel>
-                            <DockPanel>
-                                <StackPanel  Name="OptionNmbs" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[7]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[6]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[5]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[4]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[3]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[2]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[1]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Option[0]}"></TextBlock>
-                                </StackPanel>
-                            </DockPanel>
-                            <DockPanel>
-                                <TextBlock VerticalAlignment="Center" Margin="10" HorizontalAlignment="Left"> Intcon:</TextBlock>
-                                <StackPanel Name="Intcon" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">GIE</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">EIE</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">TIE</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">IE</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">RIE</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">TIF</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">IF</TextBlock>
-                                    <TextBlock Margin="7,0" VerticalAlignment="Center">RIF</TextBlock>
-                                </StackPanel>
-                            </DockPanel>
-                            <DockPanel>
-                                <StackPanel  Name="IntconNmbs" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[7]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[6]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[5]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[4]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[3]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[2]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[1]}"></TextBlock>
-                                    <TextBlock Margin="11,0" VerticalAlignment="Center" Text="{Binding Intcon[0]}"></TextBlock>
-                                </StackPanel>
-                            </DockPanel>
+                    <GroupBox Grid.Column="0" Header="SFR + W" MinWidth="200" MinHeight="100" Padding="5">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition MinWidth="40"/>
+                                        <ColumnDefinition MinWidth="30"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition MinWidth="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.Resources>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Margin" Value="0,5,0,5"/>
+                                        </Style>
+                                        <Style x:Key="SFRValues" TargetType="TextBlock">
+                                            <Setter Property="Margin" Value="0,5,0,5"/>
+                                            <Setter Property="TextAlignment" Value="Right"/>
+                                        </Style>
+                                    </Grid.Resources>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="W-Register"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="PCL"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="PCLATH"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="PC internal"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Status"/>
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="FSR"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SFRValues[0]}" Style="{StaticResource SFRValues}"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SFRValues[1]}" Style="{StaticResource SFRValues}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SFRValues[2]}" Style="{StaticResource SFRValues}"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SFRValues[3]}" Style="{StaticResource SFRValues}"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding SFRValues[4]}" Style="{StaticResource SFRValues}"/>
+                                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding SFRValues[5]}" Style="{StaticResource SFRValues}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="Option"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="Timer0"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="Pre/Postscaler"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="Command"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding SFRValues[6]}" Style="{StaticResource SFRValues}"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding SFRValues[7]}" Style="{StaticResource SFRValues}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding SFRValues[8]}" Style="{StaticResource SFRValues}"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding SFRValues[9]}" Style="{StaticResource SFRValues}"/>
+                                </Grid>
+                            </StackPanel>
                         </StackPanel>
+                    </GroupBox>
+                    <GroupBox Grid.Column="1" Header="SFR (Bit)" MinWidth="300" MinHeight="100" Padding="5">
+                        <Grid>
+                            <Grid.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="FontFamily" Value="Courier New"/>
+                                </Style>
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,10,0" FontFamily="Default">Status:</TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="1">IRP</TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="2">RP1</TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="3">RP0</TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="4">T0</TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="5">PD</TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="6">Z</TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="7">DC</TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="8">C</TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Status[7]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Status[6]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Status[5]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Status[4]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="1" Grid.Column="5" Text="{Binding Status[3]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding Status[2]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="1" Grid.Column="7" Text="{Binding Status[1]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="1" Grid.Column="8" Text="{Binding Status[0]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,10,0" FontFamily="Default">Option:</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="1">RPu</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="2">IEg</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="3">TCs</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="4">TSe</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="5">PSA</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="6">PS2</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="7">PS1</TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="8">PS0</TextBlock>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Option[7]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Option[6]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding Option[5]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding Option[4]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="3" Grid.Column="5" Text="{Binding Option[3]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="3" Grid.Column="6" Text="{Binding Option[2]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="3" Grid.Column="7" Text="{Binding Option[1]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="3" Grid.Column="8" Text="{Binding Option[0]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,10,0" FontFamily="Default">Intcon:</TextBlock>
+                            <TextBlock Grid.Row="4" Grid.Column="1">GIE</TextBlock>
+                            <TextBlock Grid.Row="4" Grid.Column="2">EIE</TextBlock>
+                            <TextBlock Grid.Row="4" Grid.Column="3">TIE</TextBlock>
+                            <TextBlock Grid.Row="4" Grid.Column="4">IE</TextBlock>
+                            <TextBlock Grid.Row="4" Grid.Column="5">RIE</TextBlock>
+                            <TextBlock Grid.Row="4" Grid.Column="6">TIF</TextBlock>
+                            <TextBlock Grid.Row="4" Grid.Column="7">IF</TextBlock>
+                            <TextBlock Grid.Row="4" Grid.Column="8">RIF</TextBlock>
+                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Intcon[7]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding Intcon[6]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding Intcon[5]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="5" Grid.Column="4" Text="{Binding Intcon[4]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="5" Grid.Column="5" Text="{Binding Intcon[3]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="5" Grid.Column="6" Text="{Binding Intcon[2]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="5" Grid.Column="7" Text="{Binding Intcon[1]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="5" Grid.Column="8" Text="{Binding Intcon[0]}" Margin="0,0,0,7"/>
+                        </Grid>
                     </GroupBox>
 
                     <GroupBox  Grid.Column="2" Header="Stack" MinWidth="100" MinHeight="100px">
                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" UseLayoutRounding="True">
-                            <StackPanel.Resources>
-                                
-                            </StackPanel.Resources>
                             <TextBlock Text="{Binding StackDisplay[0]}" Style="{StaticResource StackTextBlock}"/>
                             <TextBlock Text="{Binding StackDisplay[1]}" Style="{StaticResource StackTextBlock}"/>
                             <TextBlock Text="{Binding StackDisplay[2]}" Style="{StaticResource StackTextBlock}"/>
@@ -248,9 +297,9 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="Source Program" Height="467" VerticalAlignment="Center" HorizontalAlignment="Left" Width="902">
+                    <GroupBox Grid.Column="0" Header="Program (LST-File)" Height="467" VerticalAlignment="Center" HorizontalAlignment="Left" Width="800">
                         <DataGrid x:Name="SourceDataGrid" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFE2E2E2" VerticalGridLinesBrush="#FFE2E2E2" SelectionMode="Extended" AutoGenerateColumns="False" CanUserSortColumns="False"
-                                  FontFamily="Lucida Console" Background="White" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" HeadersVisibility="None" FontSize="13" CanUserAddRows="False" CanUserDeleteRows="False"
+                                  FontFamily="Courier New" Background="White" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" HeadersVisibility="None" FontSize="14" CanUserAddRows="False" CanUserDeleteRows="False"
                                   CellStyle="{StaticResource SourceFileCellStyle}">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="Breakpoint"  Width="20pt" IsReadOnly="False" CellStyle="{StaticResource SourceFileAllowClick}">
