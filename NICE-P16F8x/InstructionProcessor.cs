@@ -117,7 +117,10 @@ namespace NICE_P16F8x
             byte f = (byte)(com.getLowByte() & 127);
 
             CheckZFlag(Data.getRegister(f));
-            Data.setRegisterW(Data.getRegister(f));
+            if (d == 128)
+            {
+                Data.setRegisterW(Data.getRegister(f));
+            }
         }
         public static void MOVWF(Data.Command com)
         {
@@ -275,7 +278,7 @@ namespace NICE_P16F8x
         {
             byte k = com.getLowByte();
 
-            byte result = (byte)(Data.getRegisterW() & k);
+            byte result = (byte)(Data.getRegisterW() | k);
             CheckZFlag(result);
             Data.setRegisterW(result);
         }
@@ -283,7 +286,7 @@ namespace NICE_P16F8x
         {
             byte k = com.getLowByte();
 
-            Data.setRegisterW(Data.getRegister(k));
+            Data.setRegisterW(k);
         }
         public static void RETFIE(Data.Command com)
         {
@@ -312,10 +315,9 @@ namespace NICE_P16F8x
         {
             byte k = com.getLowByte();
 
-            byte onecomp = (byte)(Data.getRegisterW() ^ Data.getRegisterW());
-            byte twocomp = (byte)(onecomp + 1);
+            byte twocomp = (byte)(~Data.getRegisterW() + 1);
 
-            byte result = BitwiseAdd(Data.getRegisterW(), twocomp);
+            byte result = BitwiseAdd(twocomp, k);
             Data.setRegisterW(result);
         }
         public static void XORLW(Data.Command com)
@@ -358,7 +360,7 @@ namespace NICE_P16F8x
             if (((b1 & 8) == 8 || (b2 & 8) == 8) && (result & 8) == 0)
                 Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, true);
             else
-                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
+                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, false);
 
             //set Z flag if result is zero
             CheckZFlag(result);
@@ -419,6 +421,7 @@ namespace NICE_P16F8x
                 {
                     Data.Command com = Data.getProgram()[Data.getPC()];
                     Data.IncPC();
+                    
                     InstructionProcessor.Execute(Data.InstructionLookup(com), com);
                 } else //PC has left program area
                 {
