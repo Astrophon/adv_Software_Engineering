@@ -442,12 +442,13 @@ namespace NICE_P16F8x
         /// <param name="bit"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static byte setBit(byte ofByte, int bit, bool value)
+        public static byte setBit(byte ofByte, int bitIndex, bool value)
         {
+            byte mask = (byte)(1 << bitIndex);
             if (value)
-                return (byte)(ofByte + (int)Math.Pow(bit, 2));
+                return ofByte |= mask;
             else
-                return (byte)(ofByte - (int)Math.Pow(bit, 2));
+                return ofByte &= (byte)~mask;
         }
         /// <summary>
         /// Finds the Instruction to the specific command and returns it as an Instruction enum
