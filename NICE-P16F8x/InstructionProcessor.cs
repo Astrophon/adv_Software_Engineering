@@ -45,7 +45,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(f) ^ Data.getRegister(f));
+            byte result = (byte)~Data.getRegister(f);
             CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
@@ -117,7 +117,7 @@ namespace NICE_P16F8x
             byte f = (byte)(com.getLowByte() & 127);
 
             CheckZFlag(Data.getRegister(f));
-            if (d == 128)
+            if (d != 128)
             {
                 Data.setRegisterW(Data.getRegister(f));
             }
@@ -139,6 +139,10 @@ namespace NICE_P16F8x
 
             byte result = (byte)(Data.getRegister(f) << 1);
 
+            //Add carry bit if flag is set
+            if (Data.getRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C)) result++;
+
+            //Set carry flag for current calculation
             if ((Data.getRegister(f) & 128) == 128) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
             else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
 
@@ -151,6 +155,10 @@ namespace NICE_P16F8x
 
             byte result = (byte)(Data.getRegister(f) >> 1);
 
+            //Add carry bit if flag is set
+            if (Data.getRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C)) result += 128;
+
+            //Set carry flag for current calculation
             if ((Data.getRegister(f) & 1) == 1) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
             else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
 
@@ -161,10 +169,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte onecomp = (byte)(Data.getRegisterW() ^ Data.getRegisterW());
-            byte twocomp = (byte)(onecomp + 1);
-
-            byte result = BitwiseAdd(Data.getRegister(f), twocomp);
+            byte result = BitwiseSubstract(Data.getRegister(f), Data.getRegisterW());
 
             DirectionalWrite(d, f, result);
         }
@@ -315,9 +320,7 @@ namespace NICE_P16F8x
         {
             byte k = com.getLowByte();
 
-            byte twocomp = (byte)(~Data.getRegisterW() + 1);
-
-            byte result = BitwiseAdd(twocomp, k);
+            byte result = BitwiseSubstract(k, Data.getRegisterW());
             Data.setRegisterW(result);
         }
         public static void XORLW(Data.Command com)
@@ -353,11 +356,36 @@ namespace NICE_P16F8x
 
             //FLAGS
             //set Carry flag if byte overflows
-            if (result < b1) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
+            if (result < b1 || result < b2) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
             else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
 
             //set DC flag if 4th low order bit overflows
-            if (((b1 & 8) == 8 || (b2 & 8) == 8) && (result & 8) == 0)
+            //if (((b1 & 8) == 8 || (b2 & 8) == 8) && (result & 8) == 0)
+            if ((((b1 & 15) + (b2 & 15)) & 16) == 16)
+                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, true);
+            else
+                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, false);
+
+            //set Z flag if result is zero
+            CheckZFlag(result);
+
+            return result;
+        }
+        private static byte BitwiseSubstract(byte b1, byte b2)
+        {
+            //calculate two's complement
+            b2 = (byte)(~b2 + 1);
+
+            //calculate result
+            byte result = (byte)(b1 + b2);
+
+            //FLAGS
+            //set Carry flag if byte overflows OR if either b1 or b2 is zero
+            if (result < b1 || result < b2 || b1 == 0 || b2 == 0) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
+            else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
+
+            //set DC flag if 4th low order bit overflows OR if either b1 or b2 is zero
+            if (((((b1 & 15) + (b2 & 15)) & 16) == 16) || b1 == 0 || b2 == 0)
                 Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, true);
             else
                 Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, false);
@@ -417,16 +445,17 @@ namespace NICE_P16F8x
         {
             if (Data.isProgramInitialized())
             {
-                if(Data.getPC() < Data.getProgram().Count)
+                if (Data.getPC() < Data.getProgram().Count)
                 {
                     Data.Command com = Data.getProgram()[Data.getPC()];
                     Data.IncPC();
-                    
+
                     InstructionProcessor.Execute(Data.InstructionLookup(com), com);
-                } else //PC has left program area
+                }
+                else //PC has left program area
                 {
                     Data.IncPC();
-                    MessageBox.Show("PC has left program area!\nPlease avoid this behavior by ending the code in an infinite loop.", "Out of bounds" , MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    MessageBox.Show("PC has left program area!\nPlease avoid this behavior by ending the code in an infinite loop.", "Out of bounds", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
 
                 Data.ProcessTMR0();
