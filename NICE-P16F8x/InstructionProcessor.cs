@@ -197,16 +197,16 @@ namespace NICE_P16F8x
         #region BIT-ORIENTED FILE REGISTER OPERATIONS
         public static void BCF(Data.Command com)
         {
-            int b1 = (com.getHighByte() & 3);
-            int b = b1 + (((com.getLowByte() & 128) == 128) ? 4 : 0);
+            int b1 = (com.getHighByte() & 3) << 1;
+            int b = b1 + (((com.getLowByte() & 128) == 128) ? 1 : 0);
             byte f = (byte)(com.getLowByte() & 127);
 
             Data.setRegisterBit(f, b, false);
         }
         public static void BSF(Data.Command com)
         {
-            int b1 = (com.getHighByte() & 3);
-            int b = b1 + (((com.getLowByte() & 128) == 128) ? 4 : 0);
+            int b1 = (com.getHighByte() & 3) << 1;
+            int b = b1 + (((com.getLowByte() & 128) == 128) ? 1 : 0);
             byte f = (byte)(com.getLowByte() & 127);
 
             Data.setRegisterBit(f, b, true);
