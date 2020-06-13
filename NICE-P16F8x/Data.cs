@@ -290,7 +290,13 @@ namespace NICE_P16F8x
 
         public static byte getRegister(byte address)
         {
-            return register[Convert.ToInt16(address)];
+            switch (address)
+            {
+                case 0x00:
+                    return register[getRegister(Registers.FSR)];
+                default:
+                    return register[Convert.ToInt16(address)];
+            }
         }
         public static byte[] getAllRegisters()
         {
@@ -354,7 +360,7 @@ namespace NICE_P16F8x
         /// <param name="value"></param>
         public static void setRegisterBit(byte address, int bit, bool value)
         {
-            setRegister(address, setBit(register[address], bit, value));
+            setRegister(address, setBit(getRegister(address), bit, value));
         }
         /// <summary>
         /// Gets a specific bit in the given register
@@ -364,7 +370,7 @@ namespace NICE_P16F8x
         /// <param name="value"></param>
         public static bool getRegisterBit(byte address, int position)
         {
-            return (1 == ((register[address] >> position) & 1));
+            return (1 == ((getRegister(address) >> position) & 1));
         }
         #endregion
 
