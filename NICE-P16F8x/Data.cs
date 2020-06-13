@@ -301,8 +301,8 @@ namespace NICE_P16F8x
             register[Convert.ToInt16(address)] = data;
             switch (address)
             {
-                case 0x00:
-                    register[Convert.ToInt16(0x80)] = data;
+                case 0x00: //indirect (using FSR)
+                    register[getRegister(Registers.FSR)] = data;
                     break;
                 case 0x01: //TMR0
                     prescaler = 0; //Reset Prescaler
@@ -324,8 +324,8 @@ namespace NICE_P16F8x
                     register[Convert.ToInt16(0x8B)] = data;
                     break;
 
-                case 0x80:
-                    register[Convert.ToInt16(0x00)] = data;
+                case 0x80: //indirect (using FSR)
+                    register[getRegister(Registers.FSR)] = data;
                     break;
                 case 0x82:
                     register[Convert.ToInt16(0x02)] = data;
