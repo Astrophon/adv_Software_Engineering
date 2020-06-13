@@ -86,56 +86,52 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <GroupBox Grid.Column="0" Header="SFR + W" MinWidth="200" MinHeight="100" Padding="5">
-                        <StackPanel Orientation="Horizontal">
-                            <StackPanel>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition MinWidth="40"/>
-                                        <ColumnDefinition MinWidth="30"/>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition MinWidth="40"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.Resources>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Margin" Value="0,5,0,5"/>
-                                        </Style>
-                                        <Style x:Key="SFRValues" TargetType="TextBlock">
-                                            <Setter Property="Margin" Value="0,5,0,5"/>
-                                            <Setter Property="TextAlignment" Value="Right"/>
-                                        </Style>
-                                    </Grid.Resources>
-                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="W-Register"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="PCL"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="PCLATH"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="PC internal"/>
-                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Status"/>
-                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="FSR"/>
-                                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SFRValues[0]}" Style="{StaticResource SFRValues}"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SFRValues[1]}" Style="{StaticResource SFRValues}"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SFRValues[2]}" Style="{StaticResource SFRValues}"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SFRValues[3]}" Style="{StaticResource SFRValues}"/>
-                                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding SFRValues[4]}" Style="{StaticResource SFRValues}"/>
-                                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding SFRValues[5]}" Style="{StaticResource SFRValues}"/>
-                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="Option"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="3" Text="Timer0"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="3" Text="Pre/Postscaler"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="3" Text="Command"/>
-                                    <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding SFRValues[6]}" Style="{StaticResource SFRValues}"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding SFRValues[7]}" Style="{StaticResource SFRValues}"/>
-                                    <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding SFRValues[8]}" Style="{StaticResource SFRValues}"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding SFRValues[9]}" Style="{StaticResource SFRValues}"/>
-                                </Grid>
-                            </StackPanel>
-                        </StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition MinWidth="40"/>
+                                <ColumnDefinition MinWidth="30"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition MinWidth="45"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Margin" Value="0,5,0,5"/>
+                                </Style>
+                                <Style x:Key="SFRValues" TargetType="TextBlock">
+                                    <Setter Property="Margin" Value="0,5,0,5"/>
+                                    <Setter Property="TextAlignment" Value="Right"/>
+                                </Style>
+                            </Grid.Resources>
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="W-Register"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="PCL"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="PCLATH"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="PC internal"/>
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Status"/>
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="FSR"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SFRValues[0]}" Style="{StaticResource SFRValues}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SFRValues[1]}" Style="{StaticResource SFRValues}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SFRValues[2]}" Style="{StaticResource SFRValues}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SFRValues[3]}" Style="{StaticResource SFRValues}"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding SFRValues[4]}" Style="{StaticResource SFRValues}"/>
+                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding SFRValues[5]}" Style="{StaticResource SFRValues}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="3" Text="Option"/>
+                            <TextBlock Grid.Row="1" Grid.Column="3" Text="Timer0"/>
+                            <TextBlock Grid.Row="2" Grid.Column="3" Text="Pre/Postscaler"/>
+                            <TextBlock Grid.Row="3" Grid.Column="3" Text="Command"/>
+                            <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding SFRValues[6]}" Style="{StaticResource SFRValues}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding SFRValues[7]}" Style="{StaticResource SFRValues}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="4" Text="{Binding SFRValues[8]}" Style="{StaticResource SFRValues}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding SFRValues[9]}" Style="{StaticResource SFRValues}"/>
+                        </Grid>
                     </GroupBox>
                     <GroupBox Grid.Column="1" Header="SFR (Bit)" MinWidth="300" MinHeight="100" Padding="5">
                         <Grid>
