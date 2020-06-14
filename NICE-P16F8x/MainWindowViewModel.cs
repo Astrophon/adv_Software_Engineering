@@ -100,6 +100,12 @@ namespace NICE_P16F8x
             get { return startStopButtonText; }
             set { SetAndNotify(ref startStopButtonText, value, () => StartStopButtonText); }
         }
+        private string prePostScalerText;
+        public string PrePostScalerText
+        {
+            get { return prePostScalerText; }
+            set { SetAndNotify(ref prePostScalerText, value, () => PrePostScalerText); }
+        }
         private ObservableCollection<string> stackDisplay;
         public ObservableCollection<string> StackDisplay
         {
@@ -141,7 +147,6 @@ namespace NICE_P16F8x
             runtime = 0;
             watchdog = 0; 
             WatchdogEnabled = false;
-            startStopButtonText = "Start";
         }
     }
 }

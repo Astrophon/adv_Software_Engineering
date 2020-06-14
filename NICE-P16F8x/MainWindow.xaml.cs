@@ -86,7 +86,6 @@ namespace NICE_P16F8x
         {
             if (Data.isProgramInitialized())
             {
-                View.StartStopButtonText = "Stop";
                 FileRegister.IsReadOnly = true;
                 TimerStep.Start();
             }
@@ -94,7 +93,6 @@ namespace NICE_P16F8x
         private void Stop()
         {
             TimerStep.Stop();
-            View.StartStopButtonText = "Start";
             this.Dispatcher.Invoke(() =>
             {
                 FileRegister.IsReadOnly = false;
@@ -126,7 +124,10 @@ namespace NICE_P16F8x
             {
                 Reset();
                 SourceFile = new SourceFile(dialog.FileName);
+                SourceDataGrid.Columns[4].Width = 0; //Reset comment column width
                 SourceDataGrid.ItemsSource = SourceFile.getSourceLines();
+                SourceDataGrid.Columns[4].Width = DataGridLength.Auto; //Set new column width automatically according to content
+                SourceDataGrid.UpdateLayout();
                 UpdateUI();
             }
         }
@@ -153,9 +154,12 @@ namespace NICE_P16F8x
         #region Button Functions
         private void Button_Step_Click(object sender, RoutedEventArgs e)
         {
-            ProgramStep();
-            UpdateUI();
-            CheckOutOfProgramRange();
+            if (Data.isProgramInitialized())
+            {
+                ProgramStep();
+                UpdateUI();
+                CheckOutOfProgramRange();
+            }
         }
         private void Button_Reset_Click(object sender, RoutedEventArgs e)
         {
@@ -291,11 +295,21 @@ namespace NICE_P16F8x
             View.SFRValues[5] = Data.getRegister(Data.Registers.FSR).ToString("X2");
             View.SFRValues[6] = Data.getRegister(Data.Registers.OPTION).ToString("X2");
             View.SFRValues[7] = Data.getRegister(Data.Registers.TMR0).ToString("X2");
-            View.SFRValues[8] = "WIP";
+            View.SFRValues[8] = "1:" + Data.getPrePostscaler();
+
+            if(Data.getRegisterBit(Data.Registers.OPTION, Data.Flags.Option.PSA)) View.PrePostScalerText = "Postscaler"; //Postscaler assigned to WDT
+            else View.PrePostScalerText = "Prescaler"; //Prescaler assigned to TMR0
+
+            if (TimerStep.Enabled) View.StartStopButtonText = "Stop";
+            else View.StartStopButtonText = "Start";
+
 
             if (Data.getPC() < Data.getProgram().Count)
             {
                 View.SFRValues[9] = Data.InstructionLookup(Data.getProgram()[Data.getPC()]).ToString();
+            } else
+            {
+                View.SFRValues[9] = "N/A";
             }
 
             View.Runtime = Data.getRuntime();

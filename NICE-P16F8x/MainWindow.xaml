@@ -125,7 +125,7 @@
                             <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding SFRValues[5]}" Style="{StaticResource SFRValues}"/>
                             <TextBlock Grid.Row="0" Grid.Column="3" Text="Option"/>
                             <TextBlock Grid.Row="1" Grid.Column="3" Text="Timer0"/>
-                            <TextBlock Grid.Row="2" Grid.Column="3" Text="Pre/Postscaler"/>
+                            <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding PrePostScalerText}"/>
                             <TextBlock Grid.Row="3" Grid.Column="3" Text="Command"/>
                             <TextBlock Grid.Row="0" Grid.Column="4" Text="{Binding SFRValues[6]}" Style="{StaticResource SFRValues}"/>
                             <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding SFRValues[7]}" Style="{StaticResource SFRValues}"/>
@@ -293,7 +293,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="Program (LST-File)" Height="467" VerticalAlignment="Center" HorizontalAlignment="Left" Width="800">
+                    <GroupBox Grid.Column="0" Header="Program (LST-File)" Height="480" VerticalAlignment="Center" HorizontalAlignment="Left" Width="800">
                         <DataGrid x:Name="SourceDataGrid" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFE2E2E2" VerticalGridLinesBrush="#FFE2E2E2" SelectionMode="Extended" AutoGenerateColumns="False" CanUserSortColumns="False"
                                   FontFamily="Courier New" Background="White" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" HeadersVisibility="None" FontSize="14" CanUserAddRows="False" CanUserDeleteRows="False"
                                   CellStyle="{StaticResource SourceFileCellStyle}">
@@ -318,7 +318,7 @@
                                 <DataGridTextColumn Header="Line" Binding="{Binding LineNumber}" Width="auto" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="Label" Binding="{Binding Label}" MinWidth="40" IsReadOnly="True"/>
                                 <DataGridTextColumn Header="Command" Binding="{Binding Command}" MinWidth="140" IsReadOnly="True" CellStyle="{StaticResource SourceFileCellHighlight}"/>
-                                <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="100*" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" IsReadOnly="True"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </GroupBox>

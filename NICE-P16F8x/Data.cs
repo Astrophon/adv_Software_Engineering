@@ -15,7 +15,7 @@ namespace NICE_P16F8x
         private static byte w;
         private static int pc; // vor dem fetch obere bits auf 0 setzen um später overflow zu vermeiden
         private static int tmr0Precounter;
-        private static int prescaler;
+        private static int prePostscaler;
         private static decimal runtime, watchdog; //in microseconds
         private static int clockspeed = 4000000; //in Hz
         private static bool watchdogEnabled;
@@ -125,31 +125,14 @@ namespace NICE_P16F8x
         #endregion
 
         #region Access
-        public static void setWatchdogEnabled(bool wdte)
-        {
-            watchdogEnabled = wdte;
-        }
-        public static int[] getStack()
-        {
-            return stack;
-        }
-        public static void setClockSpeed(int speed)
-        {
-            clockspeed = speed;
-        }
-        public static long getSingleExectionTime() //In Microseconds
-        {
-            return (4000000 / clockspeed);
-        }
         public static void ProcessTMR0()
         {
             bool increment = true;
             if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
             {
                 tmr0Precounter++;
-                byte psByte = BoolArrayToByte(new bool[] { getRegisterBit(Registers.OPTION, Flags.Option.PS0), getRegisterBit(Registers.OPTION, Flags.Option.PS1), getRegisterBit(Registers.OPTION, Flags.Option.PS2) });
-                int prescaler = (int)(Math.Pow(2, psByte) + 1);
-                if (tmr0Precounter < prescaler)
+
+                if (tmr0Precounter < prePostscaler)
                 {
                     increment = false;
                 }
@@ -157,7 +140,7 @@ namespace NICE_P16F8x
             if (increment)
             {
                 byte tmr0 = (byte)(getRegister(Registers.TMR0) + 1);
-                setRegister(Registers.TMR0, tmr0);
+                register[Registers.TMR0] = tmr0; //Direct access to avoid prescaler reset
                 if (tmr0 == 0)
                 {
                     setRegisterBit(Registers.INTCON, Flags.Intcon.T0IF, true);
@@ -170,15 +153,27 @@ namespace NICE_P16F8x
             {
                 long limit = 18000; // 18 milliseconds watchdog time without prescaler
                 watchdog += getSingleExectionTime();
-                if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == true) //Prescaler assigned to WDT
+                if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == true) //Postscaler assigned to WDT
                 {
-                    byte psByte = BoolArrayToByte(new bool[] { getRegisterBit(Registers.OPTION, Flags.Option.PS0), getRegisterBit(Registers.OPTION, Flags.Option.PS1), getRegisterBit(Registers.OPTION, Flags.Option.PS2) });
-                    limit *= (long)(Math.Pow(2, psByte));
+                    limit *= prePostscaler;
                 }
                 if (watchdog >= limit) //Watchdog attacks!!
                 {
                     WDTReset();
                 }
+            }
+        }
+        public static void SetPrePostscaler()
+        {
+            byte PSByte = (byte)(getRegister(Registers.OPTION) & 7);
+
+            if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
+            {
+                prePostscaler = (int)Math.Pow(2, PSByte + 1);
+            }
+            else // Postscaler assigned to WDT
+            {
+                prePostscaler = (int)Math.Pow(2, PSByte);
             }
         }
         public static void increaseRuntime()
@@ -229,22 +224,6 @@ namespace NICE_P16F8x
             pc++;
             SetPCLfromPC();
         }
-        public static int getPC()
-        {
-            return pc;
-        }
-        public static void setPC(int newPc)
-        {
-            pc = newPc;
-        }
-        public static decimal getRuntime()
-        {
-            return runtime;
-        }
-        public static decimal getWatchdog()
-        {
-            return watchdog;
-        }
         public static void setWriteProgram(List<string> commands)
         {
             if (commands == null) throw new ArgumentNullException();
@@ -258,36 +237,6 @@ namespace NICE_P16F8x
 
             programInitialized = true;
         }
-
-        public static Command getProgramLine(int at)
-        {
-            if (!programInitialized) return null;
-
-            return program[at];
-        }
-        public static int getProgramLineCount()
-        {
-            return program.Count;
-        }
-
-        public static List<Command> getProgram()
-        {
-            return program;
-        }
-        public static bool isProgramInitialized()
-        {
-            return programInitialized;
-        }
-        public static byte getRegisterW()
-        {
-            return w;
-        }
-
-        public static void setRegisterW(byte val)
-        {
-            w = val;
-        }
-
         public static byte getRegister(byte address)
         {
             switch (address)
@@ -298,10 +247,6 @@ namespace NICE_P16F8x
                     return register[Convert.ToInt16(address)];
             }
         }
-        public static byte[] getAllRegisters()
-        {
-            return register;
-        }
         public static void setRegister(byte address, byte data)
         {
             register[Convert.ToInt16(address)] = data;
@@ -311,7 +256,7 @@ namespace NICE_P16F8x
                     register[getRegister(Registers.FSR)] = data;
                     break;
                 case 0x01: //TMR0
-                    prescaler = 0; //Reset Prescaler
+                    prePostscaler = 0; //Reset Prescaler
                     break;
                 case 0x02:
                     register[Convert.ToInt16(0x82)] = data;
@@ -333,6 +278,9 @@ namespace NICE_P16F8x
                 case 0x80: //indirect (using FSR)
                     register[getRegister(Registers.FSR)] = data;
                     break;
+                case 0x81: //OPTION 
+                    SetPrePostscaler();
+                    break;
                 case 0x82:
                     register[Convert.ToInt16(0x02)] = data;
                     setPCFromBytes(getRegister(Registers.PCLATH), getRegister(Registers.PCL));
@@ -351,7 +299,6 @@ namespace NICE_P16F8x
                     break;
             }
         }
-
         /// <summary>
         /// Sets a specific bit in the given register
         /// </summary>
@@ -560,5 +507,74 @@ namespace NICE_P16F8x
             };
         }
         #endregion
+
+        #region Getter/Setter
+        public static int[] getStack()
+        {
+            return stack;
+        }
+        public static long getSingleExectionTime() //In Microseconds
+        {
+            return (4000000 / clockspeed);
+        }
+        public static int getPC()
+        {
+            return pc;
+        }
+        public static void setPC(int newPc)
+        {
+            pc = newPc;
+        }
+        public static decimal getRuntime()
+        {
+            return runtime;
+        }
+        public static decimal getWatchdog()
+        {
+            return watchdog;
+        }
+        public static byte[] getAllRegisters()
+        {
+            return register;
+        }
+        public static int getProgramLineCount()
+        {
+            return program.Count;
+        }
+        public static List<Command> getProgram()
+        {
+            return program;
+        }
+        public static bool isProgramInitialized()
+        {
+            return programInitialized;
+        }
+        public static byte getRegisterW()
+        {
+            return w;
+        }
+        public static void setRegisterW(byte val)
+        {
+            w = val;
+        }
+        public static Command getProgramLine(int index)
+        {
+            if (!programInitialized) return null;
+
+            return program[index];
+        }
+        public static void setClockSpeed(int speed)
+        {
+            clockspeed = speed;
+        }
+        public static void setWatchdogEnabled(bool wdte)
+        {
+            watchdogEnabled = wdte;
+        }
+        #endregion
+        public static int getPrePostscaler()
+        {
+            return prePostscaler;
+        }
     }
 }
