@@ -301,7 +301,17 @@
                                 <DataGridTemplateColumn Header="Breakpoint"  Width="20pt" IsReadOnly="False" CellStyle="{StaticResource SourceFileAllowClick}">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <CheckBox IsChecked="{Binding Breakpoint}" HorizontalAlignment="Center"/>
+                                            <DataTemplate.Resources>
+                                                <Style TargetType="CheckBox">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding hasCommand}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </DataTemplate.Resources>
+                                            <CheckBox IsChecked="{Binding Breakpoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>

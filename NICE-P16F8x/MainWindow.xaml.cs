@@ -19,6 +19,7 @@ namespace NICE_P16F8x
         private MainWindowViewModel View;
         private Timer TimerStep;
         private DateTime LastRegUpdate;
+        private bool OutOfBoundsMessageShown = false;
 
         public MainWindow()
         {
@@ -27,14 +28,15 @@ namespace NICE_P16F8x
             DataContext = View;
 
             TimerStep = new Timer(100);  //Time between steps in running mode
-            TimerStep.AutoReset = false;
+            TimerStep.AutoReset = true;
             TimerStep.Elapsed += new ElapsedEventHandler(OnRunTimerEvent);
 
-            //Initial data reset / refresh
-            Data.Reset();
-            UpdateUI();
-
+            //Init UI
             InitializeComponent();
+
+            //Initial data reset / refresh
+            Reset();
+            UpdateUI();
         }
 
         #region User interaction logic functions
@@ -84,17 +86,24 @@ namespace NICE_P16F8x
         {
             if (Data.isProgramInitialized())
             {
-                TimerStep.Enabled = true;
                 View.StartStopButtonText = "Stop";
                 FileRegister.IsReadOnly = true;
+                TimerStep.Start();
             }
         }
         private void Stop()
         {
-            TimerStep.Enabled = false;
+            TimerStep.Stop();
             View.StartStopButtonText = "Start";
-            FileRegister.IsReadOnly = false;
-            UpdateUI();
+            this.Dispatcher.Invoke(() =>
+            {
+                FileRegister.IsReadOnly = false;
+            });
+        }
+        private void Reset()
+        {
+            Stop();
+            Data.Reset();
         }
         #endregion
 
@@ -115,11 +124,7 @@ namespace NICE_P16F8x
 
             if (dialog.ShowDialog() == true)
             {
-                if (TimerStep.Enabled)
-                {
-                    Stop();
-                }
-                Data.Reset();
+                Reset();
                 SourceFile = new SourceFile(dialog.FileName);
                 SourceDataGrid.ItemsSource = SourceFile.getSourceLines();
                 UpdateUI();
@@ -141,20 +146,20 @@ namespace NICE_P16F8x
         /// <param name="e"></param>
         private void MenuDebugAction_Click(object sender, RoutedEventArgs e) // TEST METHOD FOR NOW
         {
-            MessageBox.Show(Data.getSingleExectionTime().ToString());
+            MessageBox.Show(Data.setBit(0xFF, 3, false) + "\n" + Data.setBit(0x00, 4, true));
         }
         #endregion
 
         #region Button Functions
         private void Button_Step_Click(object sender, RoutedEventArgs e)
         {
-            InstructionProcessor.PCStep();
+            ProgramStep();
             UpdateUI();
+            CheckOutOfProgramRange();
         }
         private void Button_Reset_Click(object sender, RoutedEventArgs e)
         {
-            Stop();
-            Data.Reset();
+            Reset();
             UpdateUI();
         }
         private void Button_StartStop_Click(object sender, RoutedEventArgs e)
@@ -162,6 +167,7 @@ namespace NICE_P16F8x
             if (TimerStep.Enabled)
             {
                 Stop();
+                UpdateUI();
             }
             else
             {
@@ -181,7 +187,7 @@ namespace NICE_P16F8x
             {
                 SourceFile.HighlightLine(pcl);
                 SourceDataGrid.ScrollIntoView(SourceDataGrid.Items[6]);
-                SourceDataGrid.ScrollIntoView(SourceDataGrid.Items[SourceFile.getSourceLineIndexFromPCL(pcl)]);
+                SourceDataGrid.ScrollIntoView(SourceDataGrid.Items[SourceFile.getSourceLineIndexFromPC(pcl)]);
             }
             catch (Exception)
             {
@@ -189,8 +195,7 @@ namespace NICE_P16F8x
         }
         private void OnRunTimerEvent(object source, ElapsedEventArgs e)
         {
-            TimerStep.Stop();
-            InstructionProcessor.PCStep();
+            ProgramStep();
             this.Dispatcher.Invoke(() =>
             {
                 if (DateTime.Now.Subtract(LastRegUpdate).TotalSeconds > 1)
@@ -202,12 +207,53 @@ namespace NICE_P16F8x
                 {
                     UpdateUIWithoutFileRegister();
                 }
+                CheckOutOfProgramRange();
             });
-            TimerStep.Start();
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Stop();
+        }
+        /// <summary>
+        /// Executes one program step. Stops running timer if 1. out of program bounds AND warning message has not yet been shown 2. a breakpoint is hit
+        /// </summary>
+        private void ProgramStep()
+        {
+            InstructionProcessor.PCStep();
+            if (IsPCOutOfRange())
+            {
+                if (!OutOfBoundsMessageShown) Stop();
+            }
+            else if (IsBreakpointHit())
+            {
+                Stop();
+            }
+        }
+        /// <summary>
+        /// Shows a message if the current PC is out of bounds
+        /// </summary>
+        private void CheckOutOfProgramRange()
+        {
+            if (IsPCOutOfRange())
+            {
+                if (!OutOfBoundsMessageShown)
+                {
+                    OutOfBoundsMessageShown = true;
+                    MessageBox.Show("PC has left program area!\nPlease avoid this behavior by ending the code in an infinite loop.", "Out of program bounds", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }
+            }
+            else
+            {
+                OutOfBoundsMessageShown = false;
+            }
+        }
+        private bool IsPCOutOfRange()
+        {
+            return (Data.getPC() >= Data.getProgram().Count);
+        }
+        public bool IsBreakpointHit()
+        {
+            return SourceFile.LineHasBreakpoint(Data.getPC());
         }
         #endregion
 
@@ -250,7 +296,6 @@ namespace NICE_P16F8x
             if (Data.getPC() < Data.getProgram().Count)
             {
                 View.SFRValues[9] = Data.InstructionLookup(Data.getProgram()[Data.getPC()]).ToString();
-
             }
 
             View.Runtime = Data.getRuntime();
@@ -302,7 +347,5 @@ namespace NICE_P16F8x
             UpdateUI();
         }
         #endregion
-
-
     }
 }

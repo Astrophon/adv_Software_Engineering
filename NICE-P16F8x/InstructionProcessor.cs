@@ -440,7 +440,10 @@ namespace NICE_P16F8x
             MethodInfo theMethod = typeof(InstructionProcessor).GetMethod(instruction.ToString());
             theMethod.Invoke(null, new object[] { com });
         }
-
+        /// <summary>
+        /// Step function. Executes current command of loaded program and increases PC
+        /// </summary>
+        /// <returns>false if within program bounds, true if PC left program bounds</returns>
         public static void PCStep()
         {
             if (Data.isProgramInitialized())
@@ -449,19 +452,18 @@ namespace NICE_P16F8x
                 {
                     Data.Command com = Data.getProgram()[Data.getPC()];
                     Data.IncPC();
-
                     InstructionProcessor.Execute(Data.InstructionLookup(com), com);
                 }
                 else //PC has left program area
                 {
                     Data.IncPC();
-                    MessageBox.Show("PC has left program area!\nPlease avoid this behavior by ending the code in an infinite loop.", "Out of bounds", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
 
                 Data.ProcessTMR0();
                 Data.ProcessWDT();
                 Data.increaseRuntime();
                 CheckInterrupts();
+
             }
         }
         #endregion

@@ -74,26 +74,29 @@ namespace NICE_P16F8x
             //Write commands to Data store
             Data.setWriteProgram(commands);
         }
-        public void HighlightLine(int pcl)
+        public void HighlightLine(int pc)
         {
-            sourceLines[getSourceLineIndexFromPCL(LastHighlightedIndex)].Active = false;
-            sourceLines[getSourceLineIndexFromPCL(pcl)].Active = true;
-            LastHighlightedIndex = pcl;
+            sourceLines[getSourceLineIndexFromPC(LastHighlightedIndex)].Active = false;
+            sourceLines[getSourceLineIndexFromPC(pc)].Active = true;
+            LastHighlightedIndex = pc;
         }
         public ObservableCollection<SourceLine> getSourceLines()
         {
             return sourceLines;
         }
-        public int getSourceLineIndexFromPCL(int pcl)
+        public int getSourceLineIndexFromPC(int pc)
         {
-            if (pcl < linesWithCommands.Length) return linesWithCommands[pcl];
+            if (pc < linesWithCommands.Length) return linesWithCommands[pc];
             else return -1;
 
+        }
+        public bool LineHasBreakpoint(int pc)
+        {
+            return sourceLines[getSourceLineIndexFromPC(pc)].Breakpoint;
         }
     }
     class SourceLine : ObservableObject
     {
-        public bool Breakpoint { get; set; }
         public string LineNumber { get; set; }
         public string Label { get; set; }
         public string Command { get; set; }
@@ -102,19 +105,25 @@ namespace NICE_P16F8x
         private bool active;
         public bool Active
         {
-            get { return this.active; }
-            set { this.SetAndNotify(ref this.active, value, () => this.Active); }
+            get { return active; }
+            set { SetAndNotify(ref active, value, () => Active); }
+        }
+        private bool breakpoint;
+        public bool Breakpoint
+        {
+            get { return breakpoint; }
+            set { SetAndNotify(ref breakpoint, value, () => Breakpoint); }
         }
 
         public SourceLine(string lineNumber, string label, string command, string comment, bool hasCommand)
         {
-            this.Breakpoint = false;
-            this.LineNumber = lineNumber;
-            this.Label = label;
-            this.Command = command;
-            this.Comment = comment;
+            breakpoint = false;
+            LineNumber = lineNumber;
+            Label = label;
+            Command = command;
+            Comment = comment;
             this.hasCommand = hasCommand;
-            this.active = false;
+            active = false;
         }
     }
 }
