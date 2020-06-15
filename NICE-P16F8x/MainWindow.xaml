@@ -72,7 +72,7 @@
             <MenuItem x:Name="MenuHelp" Header="_Help" Click="MenuHelp_Click">
 
             </MenuItem>
-            <MenuItem x:Name="MenuDebugAction" Header="_DebugAction" Click="MenuDebugAction_Click"/>
+            <MenuItem x:Name="MenuDebugAction" Header="_DebugAction" Click="MenuDebugAction_Click" Visibility="Hidden"/>
         </Menu>
         <StackPanel Margin="5,0,5,5">
             <Grid>

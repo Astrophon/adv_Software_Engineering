@@ -159,9 +159,9 @@ namespace NICE_P16F8x
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MenuDebugAction_Click(object sender, RoutedEventArgs e) // TEST METHOD FOR NOW
+        private void MenuDebugAction_Click(object sender, RoutedEventArgs e) // TEST METHOD
         {
-            MessageBox.Show(Data.setBit(0xFF, 3, false) + "\n" + Data.setBit(0x00, 4, true));
+
         }
         #endregion
 
