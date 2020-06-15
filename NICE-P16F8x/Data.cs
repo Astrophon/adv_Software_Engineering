@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Windows.Threading;
 
 namespace NICE_P16F8x
 {
@@ -127,17 +128,22 @@ namespace NICE_P16F8x
         #region Access
         public static void ProcessTMR0()
         {
+            bool increment = true;
             if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
             {
                 tmr0Precounter++;
-                if (tmr0Precounter >= prePostscaler)
+                if (tmr0Precounter < prePostscaler)
                 {
-                    byte tmr0 = (byte)(getRegister(Registers.TMR0) + 1);
-                    register[Registers.TMR0] = tmr0; //Direct access to avoid prescaler reset
-                    if (tmr0 == 0)
-                    {
-                        setRegisterBit(Registers.INTCON, Flags.Intcon.T0IF, true);
-                    }
+                    increment = false;
+                }
+            }
+            if (increment)
+            {
+                byte tmr0 = (byte)(getRegister(Registers.TMR0) + 1);
+                register[Registers.TMR0] = tmr0; //Direct access to avoid prescaler reset
+                if (tmr0 == 0)
+                {
+                    setRegisterBit(Registers.INTCON, Flags.Intcon.T0IF, true);
                 }
             }
         }
@@ -169,6 +175,10 @@ namespace NICE_P16F8x
             {
                 prePostscaler = (int)Math.Pow(2, PSByte);
             }
+        }
+        public static void ProcessPortBInterrupt()
+        {
+
         }
         public static void increaseRuntime()
         {
@@ -204,7 +214,6 @@ namespace NICE_P16F8x
             if (stackPointer == 7) stackPointer = 0;
             else stackPointer++;
         }
-
         public static int popStack()
         {
             if (stackPointer == 0) stackPointer = 7;
@@ -212,7 +221,6 @@ namespace NICE_P16F8x
 
             return stack[stackPointer];
         }
-
         public static void IncPC()
         {
             if (pc < 1023) pc++;
@@ -244,7 +252,10 @@ namespace NICE_P16F8x
         }
         public static void setRegister(byte address, byte data)
         {
+            //set actual register data
             register[Convert.ToInt16(address)] = data;
+
+            //Mirroring, special functions
             switch (address)
             {
                 case 0x00: //indirect (using FSR)
@@ -295,7 +306,7 @@ namespace NICE_P16F8x
             }
         }
         /// <summary>
-        /// Sets a specific bit in the given register
+        /// Sets a specific bit in the given register (absolute address)
         /// </summary>
         /// <param name="address"></param>
         /// <param name="bit"></param>
@@ -305,7 +316,7 @@ namespace NICE_P16F8x
             setRegister(address, setBit(getRegister(address), bit, value));
         }
         /// <summary>
-        /// Gets a specific bit in the given register
+        /// Gets a specific bit in the given register (absolute address)
         /// </summary>
         /// <param name="address"></param>
         /// <param name="bit"></param>
@@ -314,6 +325,21 @@ namespace NICE_P16F8x
         {
             return (1 == ((getRegister(address) >> position) & 1));
         }
+
+        public static byte AddressResolution(byte address)
+        {
+            //Add 0x80 if Bank 1 selected
+            if (getRegisterBit(Registers.STATUS, Flags.Status.RP0))
+            {
+                return (byte) (address + 0x80);
+            }
+            if (address >= register.Length)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            return address;
+        }
+
         #endregion
 
         #region HelperFunctions
@@ -520,6 +546,7 @@ namespace NICE_P16F8x
         public static void setPC(int newPc)
         {
             pc = newPc;
+            SetPCLfromPC();
         }
         public static decimal getRuntime()
         {

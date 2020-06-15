@@ -223,7 +223,19 @@ namespace NICE_P16F8x
         /// </summary>
         private void ProgramStep()
         {
-            InstructionProcessor.PCStep();
+            try
+            {
+                InstructionProcessor.PCStep();
+            }
+            catch (IndexOutOfRangeException)
+            {
+                Stop();
+                Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show("Tried to get/set an out of range register!\nCheck your code!", "Index out of range");
+                });
+                return;
+            }
             if (IsPCOutOfRange())
             {
                 if (!OutOfBoundsMessageShown) Stop();

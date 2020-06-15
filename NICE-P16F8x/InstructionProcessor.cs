@@ -16,7 +16,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = BitwiseAdd(Data.getRegisterW(), Data.getRegister(f));
+            byte result = BitwiseAdd(Data.getRegisterW(), Data.getRegister(Data.AddressResolution(f)));
 
             DirectionalWrite(d, f, result);
         }
@@ -25,14 +25,14 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)(Data.getRegisterW() & Data.getRegister(f));
+            byte result = (byte)(Data.getRegisterW() & Data.getRegister(Data.AddressResolution(f)));
 
             DirectionalWrite(d, f, result);
         }
         public static void CLRF(Data.Command com)
         {
             byte f = (byte)(com.getLowByte() & 127);
-            Data.setRegister(f, 0);
+            Data.setRegister(Data.AddressResolution(f), 0);
             Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.Z, true);
         }
         public static void CLRW(Data.Command com)
@@ -45,7 +45,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)~Data.getRegister(f);
+            byte result = (byte)~Data.getRegister(Data.AddressResolution(f));
             CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
@@ -55,7 +55,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(f) - 1);
+            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) - 1);
             CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
@@ -65,7 +65,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(f) - 1);
+            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) - 1);
 
             if (result == 0)
             {
@@ -80,7 +80,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(f) + 1);
+            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) + 1);
             CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
@@ -91,7 +91,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(f) + 1);
+            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) + 1);
 
             if (result == 0)
             {
@@ -106,7 +106,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(f) | Data.getRegisterW());
+            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) | Data.getRegisterW());
             CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
@@ -116,17 +116,17 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            CheckZFlag(Data.getRegister(f));
+            CheckZFlag(Data.getRegister(Data.AddressResolution(f)));
             if (d != 128)
             {
-                Data.setRegisterW(Data.getRegister(f));
+                Data.setRegisterW(Data.getRegister(Data.AddressResolution(f)));
             }
         }
         public static void MOVWF(Data.Command com)
         {
             byte f = (byte)(com.getLowByte() & 127);
 
-            Data.setRegister(f, Data.getRegisterW());
+            Data.setRegister(Data.AddressResolution(Data.AddressResolution(f)), Data.getRegisterW());
         }
         public static void NOP(Data.Command com)
         {
@@ -137,13 +137,13 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(f) << 1);
+            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) << 1);
 
             //Add carry bit if flag is set
             if (Data.getRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C)) result++;
 
             //Set carry flag for current calculation
-            if ((Data.getRegister(f) & 128) == 128) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
+            if ((Data.getRegister(Data.AddressResolution(f)) & 128) == 128) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
             else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
 
             DirectionalWrite(d, f, result);
@@ -153,13 +153,13 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(f) >> 1);
+            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) >> 1);
 
             //Add carry bit if flag is set
             if (Data.getRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C)) result += 128;
 
             //Set carry flag for current calculation
-            if ((Data.getRegister(f) & 1) == 1) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
+            if ((Data.getRegister(Data.AddressResolution(f)) & 1) == 1) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
             else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
 
             DirectionalWrite(d, f, result);
@@ -169,7 +169,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = BitwiseSubstract(Data.getRegister(f), Data.getRegisterW());
+            byte result = BitwiseSubstract(Data.getRegister(Data.AddressResolution(f)), Data.getRegisterW());
 
             DirectionalWrite(d, f, result);
         }
@@ -178,7 +178,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)((Data.getRegister(f) & 0x0F) << 4 | (Data.getRegister(f) & 0xF0) >> 4); ;
+            byte result = (byte)((Data.getRegister(Data.AddressResolution(f)) & 0x0F) << 4 | (Data.getRegister(Data.AddressResolution(f)) & 0xF0) >> 4); ;
 
             DirectionalWrite(d, f, result);
         }
@@ -187,7 +187,7 @@ namespace NICE_P16F8x
             byte d = (byte)(com.getLowByte() & 128);
             byte f = (byte)(com.getLowByte() & 127);
 
-            byte result = (byte)(Data.getRegisterW() ^ Data.getRegister(f));
+            byte result = (byte)(Data.getRegisterW() ^ Data.getRegister(Data.AddressResolution(f)));
             CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
@@ -201,7 +201,7 @@ namespace NICE_P16F8x
             int b = b1 + (((com.getLowByte() & 128) == 128) ? 1 : 0);
             byte f = (byte)(com.getLowByte() & 127);
 
-            Data.setRegisterBit(f, b, false);
+            Data.setRegisterBit(Data.AddressResolution(f), b, false);
         }
         public static void BSF(Data.Command com)
         {
@@ -209,7 +209,7 @@ namespace NICE_P16F8x
             int b = b1 + (((com.getLowByte() & 128) == 128) ? 1 : 0);
             byte f = (byte)(com.getLowByte() & 127);
 
-            Data.setRegisterBit(f, b, true);
+            Data.setRegisterBit(Data.AddressResolution(f), b, true);
         }
         public static void BTFSC(Data.Command com)
         {
@@ -217,7 +217,7 @@ namespace NICE_P16F8x
             int b = b1 + (((com.getLowByte() & 128) == 128) ? 1 : 0);
             byte f = (byte)(com.getLowByte() & 127);
 
-            if (Data.getRegisterBit(f, b) == false)
+            if (Data.getRegisterBit(Data.AddressResolution(f), b) == false)
             {
                 Data.IncPC();
                 SkipCycle();
@@ -229,7 +229,7 @@ namespace NICE_P16F8x
             int b = b1 + (((com.getLowByte() & 128) == 128) ? 1 : 0);
             byte f = (byte)(com.getLowByte() & 127);
 
-            if (Data.getRegisterBit(f, b) == true)
+            if (Data.getRegisterBit(Data.AddressResolution(f), b) == true)
             {
                 Data.IncPC();
                 SkipCycle();
@@ -396,7 +396,7 @@ namespace NICE_P16F8x
             return result;
         }
         /// <summary>
-        /// Write result according to d bit
+        /// Write result according to d bit (relative address)
         /// </summary>
         /// <param name="d"></param>
         /// <param name="f"></param>
@@ -406,7 +406,7 @@ namespace NICE_P16F8x
             //save to w register
             if (d == 0) Data.setRegisterW(result);
             //save to f address
-            else if (d == 128) Data.setRegister(f, result);
+            else if (d == 128) Data.setRegister(Data.AddressResolution(f), result);
         }
 
         private static void SkipCycle()
@@ -420,15 +420,18 @@ namespace NICE_P16F8x
         {
             if (Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE))
             {
-                if (Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.T0IE) && Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.T0IF))
+                if (Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.T0IE) && Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.T0IF) ||
+                    Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.INTE) && Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.INTF) ||
+                    Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.RBIE) && Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.RBIF))
                 {
                     CallInterrupt();
                 }
-            } //TODO
+            }
         }
 
         private static void CallInterrupt()
         {
+            Data.pushStack();
             Data.setPC(0x04); //Fixed interrupt routine address
             Data.setRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE, false); //Disable Global-Interrupt-Bit
         }
@@ -462,6 +465,7 @@ namespace NICE_P16F8x
                 Data.ProcessTMR0();
                 Data.ProcessWDT();
                 Data.increaseRuntime();
+                Data.ProcessPortBInterrupt();
                 CheckInterrupts();
 
             }
