@@ -203,6 +203,28 @@ namespace NICE_P16F8x
                 if (binding != null) { binding.UpdateSource(); }
             }
         }
+        private void TextBlock_StatusBitChange(object sender, MouseButtonEventArgs e)
+        {
+            TextBlock tBlock = (TextBlock)sender;
+            int bit = (int)typeof(Data.Flags.Status).GetField(tBlock.Name).GetValue(this);
+            Data.toggleRegisterBit(Data.Registers.STATUS, bit);
+            UpdateUI();
+        }
+        private void TextBlock_OptionBitChange(object sender, MouseButtonEventArgs e)
+        {
+            TextBlock tBlock = (TextBlock)sender;
+            int bit = (int)typeof(Data.Flags.Option).GetField(tBlock.Name).GetValue(this);
+            Data.toggleRegisterBit(Data.Registers.OPTION, bit);
+            UpdateUI();
+        }
+        private void TextBlock_IntconBitChange(object sender, MouseButtonEventArgs e)
+        {
+            TextBlock tBlock = (TextBlock)sender;
+            int bit = (int)typeof(Data.Flags.Intcon).GetField(tBlock.Name).GetValue(this);
+            Data.toggleRegisterBit(Data.Registers.INTCON, bit);
+            UpdateUI();
+
+        }
         #endregion
 
         #region UI Helper Functions
@@ -374,7 +396,7 @@ namespace NICE_P16F8x
 
         private void UpdateTimerInterval(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "SimSpeed")
+            if (e.PropertyName == "SimSpeed")
             {
                 StepTimer.Interval = View.SimSpeed;
             }

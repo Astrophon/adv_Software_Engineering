@@ -77,17 +77,6 @@ namespace NICE_P16F8x
                 public static readonly int RP1 = 6;
                 public static readonly int IRP = 7;
             }
-            public static class Intcon
-            {
-                public static readonly int RBIF = 0;
-                public static readonly int INTF = 1;
-                public static readonly int T0IF = 2;
-                public static readonly int RBIE = 3;
-                public static readonly int INTE = 4;
-                public static readonly int T0IE = 5;
-                public static readonly int EEIE = 6;
-                public static readonly int GIE = 7;
-            }
             public static class Option
             {
                 public static readonly int PS0 = 0;
@@ -98,6 +87,17 @@ namespace NICE_P16F8x
                 public static readonly int T0CS = 5;
                 public static readonly int INTEDG = 6;
                 public static readonly int RBPU = 7;
+            }
+            public static class Intcon
+            {
+                public static readonly int RBIF = 0;
+                public static readonly int INTF = 1;
+                public static readonly int T0IF = 2;
+                public static readonly int RBIE = 3;
+                public static readonly int INTE = 4;
+                public static readonly int T0IE = 5;
+                public static readonly int EEIE = 6;
+                public static readonly int GIE = 7;
             }
         }
         #endregion
@@ -405,9 +405,17 @@ namespace NICE_P16F8x
         /// <param name="address"></param>
         /// <param name="bit"></param>
         /// <param name="value"></param>
-        public static bool getRegisterBit(byte address, int position)
+        public static bool getRegisterBit(byte address, int bit)
         {
-            return (1 == ((getRegister(address) >> position) & 1));
+            return (1 == ((getRegister(address) >> bit) & 1));
+        }
+
+        public static void toggleRegisterBit(byte address, int bit)
+        {
+            if (getRegisterBit(address, bit))
+                setRegisterBit(address, bit, false);
+            else setRegisterBit(address, bit, true);
+
         }
 
         public static byte AddressResolution(byte address)

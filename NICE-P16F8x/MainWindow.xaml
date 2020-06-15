@@ -168,19 +168,19 @@
                             <TextBlock Grid.Row="0" Grid.Column="1">IRP</TextBlock>
                             <TextBlock Grid.Row="0" Grid.Column="2">RP1</TextBlock>
                             <TextBlock Grid.Row="0" Grid.Column="3">RP0</TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="4">T0</TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="4">TO</TextBlock>
                             <TextBlock Grid.Row="0" Grid.Column="5">PD</TextBlock>
                             <TextBlock Grid.Row="0" Grid.Column="6">Z</TextBlock>
                             <TextBlock Grid.Row="0" Grid.Column="7">DC</TextBlock>
                             <TextBlock Grid.Row="0" Grid.Column="8">C</TextBlock>
-                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Status[7]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Status[6]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Status[5]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Status[4]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="1" Grid.Column="5" Text="{Binding Status[3]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding Status[2]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="1" Grid.Column="7" Text="{Binding Status[1]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="1" Grid.Column="8" Text="{Binding Status[0]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Status[7]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_StatusBitChange" Name="IRP"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Status[6]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_StatusBitChange" Name="RP1"/>
+                            <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding Status[5]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_StatusBitChange" Name="RP0"/>
+                            <TextBlock Grid.Row="1" Grid.Column="4" Text="{Binding Status[4]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_StatusBitChange" Name="TO"/>
+                            <TextBlock Grid.Row="1" Grid.Column="5" Text="{Binding Status[3]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_StatusBitChange" Name="PD"/>
+                            <TextBlock Grid.Row="1" Grid.Column="6" Text="{Binding Status[2]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_StatusBitChange" Name="Z"/>
+                            <TextBlock Grid.Row="1" Grid.Column="7" Text="{Binding Status[1]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_StatusBitChange" Name="DC"/>
+                            <TextBlock Grid.Row="1" Grid.Column="8" Text="{Binding Status[0]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_StatusBitChange" Name="C"/>
                             <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,0,10,0" FontFamily="Default" FontSize="12">Option:</TextBlock>
                             <TextBlock Grid.Row="2" Grid.Column="1">RPu</TextBlock>
                             <TextBlock Grid.Row="2" Grid.Column="2">IEg</TextBlock>
@@ -190,14 +190,14 @@
                             <TextBlock Grid.Row="2" Grid.Column="6">PS2</TextBlock>
                             <TextBlock Grid.Row="2" Grid.Column="7">PS1</TextBlock>
                             <TextBlock Grid.Row="2" Grid.Column="8">PS0</TextBlock>
-                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Option[7]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Option[6]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding Option[5]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding Option[4]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="3" Grid.Column="5" Text="{Binding Option[3]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="3" Grid.Column="6" Text="{Binding Option[2]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="3" Grid.Column="7" Text="{Binding Option[1]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="3" Grid.Column="8" Text="{Binding Option[0]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Option[7]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_OptionBitChange" Name="RBPU"/>
+                            <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Option[6]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_OptionBitChange" Name="INTEDG"/>
+                            <TextBlock Grid.Row="3" Grid.Column="3" Text="{Binding Option[5]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_OptionBitChange" Name="T0CS"/>
+                            <TextBlock Grid.Row="3" Grid.Column="4" Text="{Binding Option[4]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_OptionBitChange" Name="T0SE"/>
+                            <TextBlock Grid.Row="3" Grid.Column="5" Text="{Binding Option[3]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_OptionBitChange" Name="PSA"/>
+                            <TextBlock Grid.Row="3" Grid.Column="6" Text="{Binding Option[2]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_OptionBitChange" Name="PS2"/>
+                            <TextBlock Grid.Row="3" Grid.Column="7" Text="{Binding Option[1]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_OptionBitChange" Name="PS1"/>
+                            <TextBlock Grid.Row="3" Grid.Column="8" Text="{Binding Option[0]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_OptionBitChange" Name="PS0"/>
                             <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,0,10,0" FontFamily="Default" FontSize="12">Intcon:</TextBlock>
                             <TextBlock Grid.Row="4" Grid.Column="1">GIE</TextBlock>
                             <TextBlock Grid.Row="4" Grid.Column="2">EIE</TextBlock>
@@ -207,14 +207,14 @@
                             <TextBlock Grid.Row="4" Grid.Column="6">TIF</TextBlock>
                             <TextBlock Grid.Row="4" Grid.Column="7">IF</TextBlock>
                             <TextBlock Grid.Row="4" Grid.Column="8">RIF</TextBlock>
-                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Intcon[7]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding Intcon[6]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding Intcon[5]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="5" Grid.Column="4" Text="{Binding Intcon[4]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="5" Grid.Column="5" Text="{Binding Intcon[3]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="5" Grid.Column="6" Text="{Binding Intcon[2]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="5" Grid.Column="7" Text="{Binding Intcon[1]}" Margin="0,0,0,7"/>
-                            <TextBlock Grid.Row="5" Grid.Column="8" Text="{Binding Intcon[0]}" Margin="0,0,0,7"/>
+                            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Intcon[7]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_IntconBitChange" Name="GIE"/>
+                            <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding Intcon[6]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_IntconBitChange" Name="EEIE"/>
+                            <TextBlock Grid.Row="5" Grid.Column="3" Text="{Binding Intcon[5]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_IntconBitChange" Name="T0IE"/>
+                            <TextBlock Grid.Row="5" Grid.Column="4" Text="{Binding Intcon[4]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_IntconBitChange" Name="INTE"/>
+                            <TextBlock Grid.Row="5" Grid.Column="5" Text="{Binding Intcon[3]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_IntconBitChange" Name="RBIE"/>
+                            <TextBlock Grid.Row="5" Grid.Column="6" Text="{Binding Intcon[2]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_IntconBitChange" Name="T0IF"/>
+                            <TextBlock Grid.Row="5" Grid.Column="7" Text="{Binding Intcon[1]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_IntconBitChange" Name="INTF"/>
+                            <TextBlock Grid.Row="5" Grid.Column="8" Text="{Binding Intcon[0]}" Padding="10,0,10,10" MouseLeftButtonDown="TextBlock_IntconBitChange" Name="RBIF"/>
                         </Grid>
                     </GroupBox>
 
@@ -406,7 +406,7 @@
                                                 <TextBlock>Simulation Speed:</TextBlock>
                                             </DockPanel>
                                             <DockPanel HorizontalAlignment="Right">
-                                                <TextBox Text="{Binding SimSpeed}" KeyDown="TextBox_UpdateSource" MinWidth="40" Margin="5,0,3,0"/>
+                                                <TextBox Text="{Binding SimSpeed}" KeyDown="TextBox_UpdateSource" MinWidth="33" Margin="5,0,3,0" TextAlignment="Right"/>
                                                 <TextBlock Text="ms"/>
                                             </DockPanel>
                                         </DockPanel>
