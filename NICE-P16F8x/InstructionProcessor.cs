@@ -258,7 +258,7 @@ namespace NICE_P16F8x
             byte k1 = com.getLowByte();
             byte k2 = (byte)(com.getHighByte() & 7);
 
-            byte merge = (byte)((Data.getRegister(Data.Registers.PCLATH) & 24) + k2); // geht evtl. nicht
+            byte merge = (byte)((Data.getRegister(Data.Registers.PCLATH) & 24) + k2);
 
             Data.pushStack();
             Data.setPCFromBytes(merge, k1);
@@ -274,7 +274,7 @@ namespace NICE_P16F8x
             byte k1 = com.getLowByte();
             byte k2 = (byte)(com.getHighByte() & 7);
 
-            byte merge = (byte)((Data.getRegister(Data.Registers.PCLATH) & 24) + k2); // geht evtl. nicht
+            byte merge = (byte)((Data.getRegister(Data.Registers.PCLATH) & 24) + k2);
             Data.setPCFromBytes(merge, k1);
             Data.SetPCLfromPC();
             SkipCycle();

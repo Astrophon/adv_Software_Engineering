@@ -13,7 +13,7 @@ namespace NICE_P16F8x
         private static int[] stack = new int[8];
         private static int stackPointer;
         private static byte w;
-        private static int pc; // vor dem fetch obere bits auf 0 setzen um später overflow zu vermeiden
+        private static int pc;
         private static int tmr0Precounter;
         private static int prePostscaler;
         private static decimal runtime, watchdog; //in microseconds
@@ -127,23 +127,17 @@ namespace NICE_P16F8x
         #region Access
         public static void ProcessTMR0()
         {
-            bool increment = true;
             if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
             {
                 tmr0Precounter++;
-
-                if (tmr0Precounter < prePostscaler)
+                if (tmr0Precounter >= prePostscaler)
                 {
-                    increment = false;
-                }
-            }
-            if (increment)
-            {
-                byte tmr0 = (byte)(getRegister(Registers.TMR0) + 1);
-                register[Registers.TMR0] = tmr0; //Direct access to avoid prescaler reset
-                if (tmr0 == 0)
-                {
-                    setRegisterBit(Registers.INTCON, Flags.Intcon.T0IF, true);
+                    byte tmr0 = (byte)(getRegister(Registers.TMR0) + 1);
+                    register[Registers.TMR0] = tmr0; //Direct access to avoid prescaler reset
+                    if (tmr0 == 0)
+                    {
+                        setRegisterBit(Registers.INTCON, Flags.Intcon.T0IF, true);
+                    }
                 }
             }
         }
@@ -221,7 +215,8 @@ namespace NICE_P16F8x
 
         public static void IncPC()
         {
-            pc++;
+            if (pc < 1023) pc++;
+            else pc = 0;
             SetPCLfromPC();
         }
         public static void setWriteProgram(List<string> commands)
@@ -325,7 +320,8 @@ namespace NICE_P16F8x
         public static void SetPCLfromPC()
         {
             byte pcl = BitConverter.GetBytes(pc)[0];
-            setRegister(Registers.PCL, pcl);
+            register[Registers.PCL] = pcl;
+            register[Registers.PCL2] = pcl;
         }
 
         public static void setPCFromBytes(byte bHigh, byte bLow)
