@@ -92,9 +92,16 @@ namespace NICE_P16F8x
         private void Stop()
         {
             TimerStep.Stop();
-            this.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
                 FileRegister.IsReadOnly = false;
+            });
+        }
+        private void StopAndUpdateUI()
+        {
+            Stop();
+            Dispatcher.Invoke(() =>
+            {
                 UpdateUI();
             });
         }
@@ -102,6 +109,7 @@ namespace NICE_P16F8x
         {
             Stop();
             Data.Reset();
+            UpdateUI();
         }
         #endregion
 
@@ -171,6 +179,7 @@ namespace NICE_P16F8x
             if (TimerStep.Enabled)
             {
                 Stop();
+                UpdateUI();
             }
             else
             {
@@ -199,7 +208,7 @@ namespace NICE_P16F8x
         private void OnRunTimerEvent(object source, ElapsedEventArgs e)
         {
             ProgramStep();
-            this.Dispatcher.Invoke(() =>
+            Dispatcher.Invoke(() =>
             {
                 if (DateTime.Now.Subtract(LastRegUpdate).TotalSeconds > 1)
                 {
@@ -229,6 +238,7 @@ namespace NICE_P16F8x
             catch (IndexOutOfRangeException)
             {
                 Stop();
+                UpdateUI();
                 Dispatcher.Invoke(() =>
                 {
                     MessageBox.Show("Tried to get/set an out of range register!\nCheck your code!", "Index out of range");
@@ -237,11 +247,11 @@ namespace NICE_P16F8x
             }
             if (IsPCOutOfRange())
             {
-                if (!OutOfBoundsMessageShown) Stop();
+                if (!OutOfBoundsMessageShown) StopAndUpdateUI();
             }
             else if (IsBreakpointHit())
             {
-                Stop();
+                StopAndUpdateUI();
             }
         }
         /// <summary>
@@ -306,7 +316,7 @@ namespace NICE_P16F8x
             View.SFRValues[5] = Data.getRegister(Data.Registers.FSR).ToString("X2");
             View.SFRValues[6] = Data.getRegister(Data.Registers.OPTION).ToString("X2");
             View.SFRValues[7] = Data.getRegister(Data.Registers.TMR0).ToString("X2");
-            View.SFRValues[8] = "1:" + Data.getPrePostscaler();
+            View.SFRValues[8] = "1:" + Data.getPrePostscalerRatio();
 
             if(Data.getRegisterBit(Data.Registers.OPTION, Data.Flags.Option.PSA)) View.PrePostScalerText = "Postscaler"; //Postscaler assigned to WDT
             else View.PrePostScalerText = "Prescaler"; //Prescaler assigned to TMR0

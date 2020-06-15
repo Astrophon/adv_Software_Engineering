@@ -135,7 +135,7 @@ namespace NICE_P16F8x
                 new KeyValuePair<int, string>(50000, "50 KHz"),
                 new KeyValuePair<int, string>(10000, "10 KHz"),
                 new KeyValuePair<int, string>(1000, "1 KHz"),
-                new KeyValuePair<int, string>(500, "500 MHz"),
+                new KeyValuePair<int, string>(500, "500 Hz"),
             };
             trisA = new ObservableCollection<bool>(new bool[8]);
             trisB = new ObservableCollection<bool>(new bool[8]);

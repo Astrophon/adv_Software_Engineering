@@ -270,7 +270,8 @@ namespace NICE_P16F8x
             Data.resetWatchdog();
             Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, true);
             Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
-            Data.SetPrePostscaler(); //Reset Postscaler if assigned to WDT
+            if (Data.getRegisterBit(Data.Registers.OPTION, Data.Flags.Option.PSA) == true)
+                Data.ResetPrePostScaler(); //Reset Postscaler if assigned to WDT
         }
         public static void GOTO(Data.Command com)
         {

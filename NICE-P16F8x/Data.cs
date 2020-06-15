@@ -8,23 +8,32 @@ namespace NICE_P16F8x
     public static class Data
     {
         #region Fields
-        //normal
+        //Loaded Program code
         private static List<Command> program = new List<Command>();
+
+        //Data Registers
         private static byte[] register = new byte[256];
         private static int[] stack = new int[8];
         private static int stackPointer;
         private static byte w;
         private static int pc;
-        private static int tmr0Precounter;
-        private static int prePostscaler;
+
+        //Status Vars
         private static decimal runtime, watchdog; //in microseconds
         private static int clockspeed = 4000000; //in Hz
-        private static bool watchdogEnabled;
         private static bool sleeping;
 
-        //Interrupt state saves
+        //Watchdog
+        private static int watchdogLimit = 18000; // 18 milliseconds watchdog time without prescaler
+        private static bool watchdogEnabled;
+
+        //Timer prescaler / Watchdog postscaler
+        private static int prePostscalerRatio, prePostscaler;
+
+        //Interrupt / Timer state saves
         private static byte RBIntLastState;
         private static byte RB0IntLastState;
+        private static byte RA4TimerLastState;
 
         //integrity
         private static bool programInitialized = false;
@@ -133,59 +142,66 @@ namespace NICE_P16F8x
         #region Access
         public static void ProcessTMR0()
         {
-            bool increment = true;
-            if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
+            byte RA4 = (byte)(getRegister(Registers.PORTA) >> 4 & 0x01);
+            if (getRegisterBit(Registers.OPTION, Flags.Option.T0CS) == false || //Internal clock source
+                getRegisterBit(Registers.OPTION, Flags.Option.T0SE) && RA4 < RA4TimerLastState || //External clock source (RA4) selected and falling edge detected
+                !getRegisterBit(Registers.OPTION, Flags.Option.T0SE) && RA4 > RA4TimerLastState)  //External clock source (RA4) selected and rising edge detected
             {
-                tmr0Precounter++;
-                if (tmr0Precounter < prePostscaler)
+                bool increment = true;
+                if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
                 {
-                    increment = false;
+                    prePostscaler++;
+                    if (prePostscaler >= getPrePostscalerRatio())
+                    {
+                        ResetPrePostScaler();
+                        increment = true;
+                    }
+                    else increment = false;
                 }
-                else
+                if (increment)
                 {
-                    tmr0Precounter = 0;
+                    byte tmr0 = (byte)(getRegister(Registers.TMR0) + 1); //Increment TMR0
+                    register[Registers.TMR0] = tmr0; //Direct access to avoid prescaler reset
+                    if (tmr0 == 0)
+                    {
+                        setRegisterBit(Registers.INTCON, Flags.Intcon.T0IF, true);
+                    }
                 }
             }
-            if (increment)
-            {
-                byte tmr0 = (byte)(getRegister(Registers.TMR0) + 1);
-                register[Registers.TMR0] = tmr0; //Direct access to avoid prescaler reset
-                if (tmr0 == 0)
-                {
-                    setRegisterBit(Registers.INTCON, Flags.Intcon.T0IF, true);
-                }
-            }
+            RA4TimerLastState = RA4;
         }
+
         public static void ProcessWDT()
         {
             if (watchdogEnabled)
             {
-                long limit = 18000; // 18 milliseconds watchdog time without prescaler
                 watchdog += getSingleExectionTime();
                 if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == true) //Postscaler assigned to WDT
                 {
-                    limit *= prePostscaler;
+                    watchdogLimit *= getPrePostscalerRatio();
                 }
-                if (watchdog >= limit) //Watchdog attacks!!
+                if (watchdog >= watchdogLimit) //Watchdog attacks!!
                 {
                     WDTReset();
                 }
             }
         }
-        public static void SetPrePostscaler()
+        public static void SetPrePostscalerRatio()
         {
-            tmr0Precounter = 0;
-
             byte PSByte = (byte)(getRegister(Registers.OPTION) & 7);
 
             if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
             {
-                prePostscaler = (int)Math.Pow(2, PSByte + 1);
+                prePostscalerRatio = (int)Math.Pow(2, PSByte + 1);
             }
             else // Postscaler assigned to WDT
             {
-                prePostscaler = (int)Math.Pow(2, PSByte);
+                prePostscalerRatio = (int)Math.Pow(2, PSByte);
             }
+        }
+        public static void ResetPrePostScaler()
+        {
+            prePostscaler = 0;
         }
         public static void ProcessRBInterrupts()
         {
@@ -199,7 +215,7 @@ namespace NICE_P16F8x
 
             //RB0 Interrupt depending on Flankenwechsel
             byte RB0 = (byte)(getRegister(Registers.PORTB) & 0x01);
-            if (getRegisterBit(Registers.INTCON, Flags.Option.INTEDG) && RB0 > RB0IntLastState || !getRegisterBit(Registers.INTCON, Flags.Option.INTEDG) && RB0 < RB0IntLastState)
+            if (getRegisterBit(Registers.OPTION, Flags.Option.INTEDG) && RB0 > RB0IntLastState || !getRegisterBit(Registers.OPTION, Flags.Option.INTEDG) && RB0 < RB0IntLastState)
             {
                 setRegisterBit(Registers.INTCON, Flags.Intcon.INTF, true);
             }
@@ -237,7 +253,6 @@ namespace NICE_P16F8x
             register = new byte[256];
             stack = new int[8];
             stackPointer = 0;
-            tmr0Precounter = 0;
             runtime = 0;
             watchdog = 0;
 
@@ -245,21 +260,26 @@ namespace NICE_P16F8x
             setRegister(Registers.OPTION, 0xFF);    //1111 1111
             setRegister(Registers.TRISA, 0x1F);     //0001 1111
             setRegister(Registers.TRISB, 0xFF);     //1111 1111
-            SetPrePostscaler();
+            SetPrePostscalerRatio();
         }
-        public static void WDTReset() //TODO
+        public static void WDTReset()
         {
             resetWatchdog();
-            if (Data.isSleeping())
+            if (isSleeping())
             {
-                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, false);
-                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
-                Data.IncPC();
-                Data.setSleeping(false);
-            } else
+                setRegisterBit(Registers.STATUS, Flags.Status.TO, false);
+                setRegisterBit(Registers.STATUS, Flags.Status.PD, false);
+                IncPC();
+                setSleeping(false);
+            }
+            else
             {
-                pc = 0;
-                w = 0;
+                setPC(0);
+                setRegisterW(0);
+                setRegister(Registers.STATUS, (byte)((getRegister(Registers.STATUS) & 7) + 0x08));  //0000 1uuu
+                setRegister(Registers.OPTION, 0xFF);    //1111 1111
+                setRegister(Registers.PCLATH, 0x00);    //0000 0000
+
             }
         }
         public static void pushStack()
@@ -317,7 +337,7 @@ namespace NICE_P16F8x
                     register[getRegister(Registers.FSR)] = data;
                     break;
                 case 0x01: //TMR0
-                    SetPrePostscaler(); //Reset Prescaler
+                    ResetPrePostScaler(); //Reset Prescaler
                     SkipCycle();
                     break;
                 case 0x02:
@@ -331,6 +351,7 @@ namespace NICE_P16F8x
                     register[Convert.ToInt16(0x84)] = data;
                     break;
                 case 0x05: //PORTA Latch TODO
+                           //latchPortA = data;
 
                     break;
                 case 0x06: //PORTB Latch TODO
@@ -347,7 +368,7 @@ namespace NICE_P16F8x
                     register[getRegister(Registers.FSR)] = data;
                     break;
                 case 0x81: //OPTION 
-                    SetPrePostscaler(); //TODO
+                    SetPrePostscalerRatio();
                     break;
                 case 0x82:
                     register[Convert.ToInt16(0x02)] = data;
@@ -660,9 +681,9 @@ namespace NICE_P16F8x
         {
             watchdogEnabled = wdte;
         }
-        public static int getPrePostscaler()
+        public static int getPrePostscalerRatio()
         {
-            return prePostscaler;
+            return prePostscalerRatio;
         }
         public static void setSleeping(bool sleep)
         {
