@@ -122,6 +122,12 @@ namespace NICE_P16F8x
                 Data.setWatchdogEnabled(watchdogEnabled);
             }
         }
+        private int simSpeed;
+        public int SimSpeed
+        {
+            get { return simSpeed; }
+            set { SetAndNotify(ref simSpeed, value, () => SimSpeed); }
+        }
         #endregion
 
         public MainWindowViewModel()
@@ -149,6 +155,7 @@ namespace NICE_P16F8x
             runtime = 0;
             watchdog = 0;
             WatchdogEnabled = false;
+            SimSpeed = 50;
         }
     }
 }

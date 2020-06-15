@@ -87,14 +87,14 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="SFR + W" MinWidth="200" MinHeight="100" Padding="5">
+                    <GroupBox Grid.Column="0" Header="SFR + W" MinWidth="2" MinHeight="100" Padding="5">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition MinWidth="40"/>
                                 <ColumnDefinition MinWidth="30"/>
                                 <ColumnDefinition/>
-                                <ColumnDefinition MinWidth="45"/>
+                                <ColumnDefinition MinWidth="50"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -296,7 +296,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <GroupBox Grid.Column="0" Header="Program (LST-File)" Height="480" VerticalAlignment="Center" HorizontalAlignment="Left" Width="800">
+                    <GroupBox Grid.Column="0" Header="Program (LST-File)" Height="500" VerticalAlignment="Center" HorizontalAlignment="Left" Width="800">
                         <DataGrid x:Name="SourceDataGrid" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFE2E2E2" VerticalGridLinesBrush="#FFE2E2E2" SelectionMode="Extended" AutoGenerateColumns="False" CanUserSortColumns="False"
                                   FontFamily="Courier New" Background="White" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" HeadersVisibility="None" FontSize="14" CanUserAddRows="False" CanUserDeleteRows="False"
                                   CellStyle="{StaticResource SourceFileCellStyle}">
@@ -365,9 +365,10 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                         <RowDefinition/>
+                                        <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <DockPanel Grid.Row="0" VerticalAlignment="Center">
-                                        <TextBlock Margin="0,0,15,0" VerticalAlignment="Center">Clock speed:</TextBlock>
+                                        <TextBlock Margin="0,0,15,0" VerticalAlignment="Center">Clock Speed:</TextBlock>
                                         <ComboBox 
                                             ItemsSource="{Binding ClockSpeedPairs}"
                                             SelectedValuePath="Key"
@@ -382,7 +383,7 @@
                                                 <TextBlock>Runtime:</TextBlock>
                                             </DockPanel>
                                             <DockPanel HorizontalAlignment="Right">
-                                                <TextBlock HorizontalAlignment="Right" Text="{Binding Runtime}" FontWeight="Bold"></TextBlock>
+                                                <TextBlock HorizontalAlignment="Right" Text="{Binding Runtime}" FontWeight="Bold"/>
                                                 <TextBlock HorizontalAlignment="Right" Text="µs" FontWeight="Bold"/>
                                             </DockPanel>
                                         </DockPanel>
@@ -391,13 +392,25 @@
                                                 <TextBlock>Watchdog:</TextBlock>
                                             </DockPanel>
                                             <DockPanel HorizontalAlignment="Right">
-                                                <TextBlock HorizontalAlignment="Right" Text="{Binding Watchdog}" FontWeight="Bold"></TextBlock>
+                                                <TextBlock HorizontalAlignment="Right" Text="{Binding Watchdog}" FontWeight="Bold"/>
                                                 <TextBlock HorizontalAlignment="Right" Text="µs" FontWeight="Bold"/>
                                             </DockPanel>
                                         </DockPanel>
                                     </StackPanel>
                                     <StackPanel Grid.Row="2" VerticalAlignment="Center">
                                         <CheckBox IsChecked="{Binding WatchdogEnabled}">Enable Watchdog (WDTE)</CheckBox>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="3" VerticalAlignment="Center">
+                                        <DockPanel Margin="0,5,0,5">
+                                            <DockPanel>
+                                                <TextBlock>Simulation Speed:</TextBlock>
+                                            </DockPanel>
+                                            <DockPanel HorizontalAlignment="Right">
+                                                <TextBox Text="{Binding SimSpeed}" KeyDown="TextBox_UpdateSource" MinWidth="40" Margin="5,0,3,0"/>
+                                                <TextBlock Text="ms"/>
+                                            </DockPanel>
+                                        </DockPanel>
+                                        <Slider IsDirectionReversed="True" Minimum="10" Maximum="1000" TickPlacement="BottomRight" TickFrequency="200" Value="{Binding SimSpeed}" Name="SpeedSlider" LargeChange="100"/>
                                     </StackPanel>
                                 </Grid>
                             </GroupBox>

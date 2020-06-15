@@ -2,11 +2,14 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace NICE_P16F8x
 {
@@ -17,7 +20,7 @@ namespace NICE_P16F8x
     {
         private SourceFile SourceFile;
         private MainWindowViewModel View;
-        private Timer TimerStep;
+        private Timer StepTimer;
         private DateTime LastRegUpdate;
         private bool OutOfBoundsMessageShown = false;
 
@@ -27,9 +30,10 @@ namespace NICE_P16F8x
             View = new MainWindowViewModel();
             DataContext = View;
 
-            TimerStep = new Timer(40);  //Time between steps in running mode
-            TimerStep.AutoReset = true;
-            TimerStep.Elapsed += new ElapsedEventHandler(OnRunTimerEvent);
+            StepTimer = new Timer(View.SimSpeed);  //Time between steps in running mode
+            StepTimer.AutoReset = true;
+            StepTimer.Elapsed += new ElapsedEventHandler(OnRunTimerEvent);
+            View.PropertyChanged += UpdateTimerInterval;
 
             //Init UI
             InitializeComponent();
@@ -39,6 +43,38 @@ namespace NICE_P16F8x
         }
 
         #region User interaction logic functions
+
+        private void Start()
+        {
+            if (Data.isProgramInitialized())
+            {
+                FileRegister.IsReadOnly = true;
+                StepTimer.Start();
+            }
+        }
+        private void Stop()
+        {
+            StepTimer.Stop();
+            Dispatcher.Invoke(() =>
+            {
+                FileRegister.IsReadOnly = false;
+            });
+        }
+        private void StopAndUpdateUI()
+        {
+            Stop();
+            Dispatcher.Invoke(() =>
+            {
+                UpdateUI();
+            });
+        }
+        private void Reset()
+        {
+            Stop();
+            Data.Reset();
+            UpdateUI();
+        }
+
         /// <summary>
         /// Handles user hex edit in fileregister view
         /// </summary>
@@ -80,36 +116,6 @@ namespace NICE_P16F8x
                     MessageBox.Show("Only one hexadecimal byte allowed", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-        }
-        private void Start()
-        {
-            if (Data.isProgramInitialized())
-            {
-                FileRegister.IsReadOnly = true;
-                TimerStep.Start();
-            }
-        }
-        private void Stop()
-        {
-            TimerStep.Stop();
-            Dispatcher.Invoke(() =>
-            {
-                FileRegister.IsReadOnly = false;
-            });
-        }
-        private void StopAndUpdateUI()
-        {
-            Stop();
-            Dispatcher.Invoke(() =>
-            {
-                UpdateUI();
-            });
-        }
-        private void Reset()
-        {
-            Stop();
-            Data.Reset();
-            UpdateUI();
         }
         #endregion
 
@@ -159,7 +165,7 @@ namespace NICE_P16F8x
         }
         #endregion
 
-        #region Button Functions
+        #region Button / Textbox Functions
         private void Button_Step_Click(object sender, RoutedEventArgs e)
         {
             if (Data.isProgramInitialized())
@@ -176,7 +182,7 @@ namespace NICE_P16F8x
         }
         private void Button_StartStop_Click(object sender, RoutedEventArgs e)
         {
-            if (TimerStep.Enabled)
+            if (StepTimer.Enabled)
             {
                 Stop();
                 UpdateUI();
@@ -184,6 +190,17 @@ namespace NICE_P16F8x
             else
             {
                 Start();
+            }
+        }
+        private void TextBox_UpdateSource(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox tBox = (TextBox)sender;
+                DependencyProperty prop = TextBox.TextProperty;
+
+                BindingExpression binding = BindingOperations.GetBindingExpression(tBox, prop);
+                if (binding != null) { binding.UpdateSource(); }
             }
         }
         #endregion
@@ -321,7 +338,7 @@ namespace NICE_P16F8x
             if(Data.getRegisterBit(Data.Registers.OPTION, Data.Flags.Option.PSA)) View.PrePostScalerText = "Postscaler"; //Postscaler assigned to WDT
             else View.PrePostScalerText = "Prescaler"; //Prescaler assigned to TMR0
 
-            if (TimerStep.Enabled) View.StartStopButtonText = "Stop";
+            if (StepTimer.Enabled) View.StartStopButtonText = "Stop";
             else View.StartStopButtonText = "Start";
 
 
@@ -352,11 +369,15 @@ namespace NICE_P16F8x
                     data[i, j] = Data.getAllRegisters()[index++].ToString("X2");
                 }
             }
-            //Stopwatch sw = new Stopwatch();
-            //sw.Start();
             View.FileRegisterData = data;
-            //sw.Stop();
-            //MessageBox.Show("Elapsed Setting SourceData = "+ sw.ElapsedMilliseconds.ToString());
+        }
+
+        private void UpdateTimerInterval(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == "SimSpeed")
+            {
+                StepTimer.Interval = View.SimSpeed;
+            }
         }
         #endregion
 
