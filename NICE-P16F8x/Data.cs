@@ -176,11 +176,12 @@ namespace NICE_P16F8x
             if (watchdogEnabled)
             {
                 watchdog += getSingleExectionTime();
+                int limit = watchdogLimit;
                 if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == true) //Postscaler assigned to WDT
                 {
-                    watchdogLimit *= getPrePostscalerRatio();
+                    limit *= getPrePostscalerRatio();
                 }
-                if (watchdog >= watchdogLimit) //Watchdog attacks!!
+                if (watchdog >= limit) //Watchdog attacks!!
                 {
                     WDTReset();
                 }
