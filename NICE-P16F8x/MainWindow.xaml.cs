@@ -27,7 +27,7 @@ namespace NICE_P16F8x
             View = new MainWindowViewModel();
             DataContext = View;
 
-            TimerStep = new Timer(100);  //Time between steps in running mode
+            TimerStep = new Timer(40);  //Time between steps in running mode
             TimerStep.AutoReset = true;
             TimerStep.Elapsed += new ElapsedEventHandler(OnRunTimerEvent);
 
@@ -36,7 +36,6 @@ namespace NICE_P16F8x
 
             //Initial data reset / refresh
             Reset();
-            UpdateUI();
         }
 
         #region User interaction logic functions
@@ -96,6 +95,7 @@ namespace NICE_P16F8x
             this.Dispatcher.Invoke(() =>
             {
                 FileRegister.IsReadOnly = false;
+                UpdateUI();
             });
         }
         private void Reset()
@@ -171,7 +171,6 @@ namespace NICE_P16F8x
             if (TimerStep.Enabled)
             {
                 Stop();
-                UpdateUI();
             }
             else
             {

@@ -20,6 +20,11 @@ namespace NICE_P16F8x
         private static decimal runtime, watchdog; //in microseconds
         private static int clockspeed = 4000000; //in Hz
         private static bool watchdogEnabled;
+        private static bool sleeping;
+
+        //Interrupt state saves
+        private static byte RBIntLastState;
+        private static byte RB0IntLastState;
 
         //integrity
         private static bool programInitialized = false;
@@ -136,6 +141,10 @@ namespace NICE_P16F8x
                 {
                     increment = false;
                 }
+                else
+                {
+                    tmr0Precounter = 0;
+                }
             }
             if (increment)
             {
@@ -165,6 +174,8 @@ namespace NICE_P16F8x
         }
         public static void SetPrePostscaler()
         {
+            tmr0Precounter = 0;
+
             byte PSByte = (byte)(getRegister(Registers.OPTION) & 7);
 
             if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
@@ -176,16 +187,51 @@ namespace NICE_P16F8x
                 prePostscaler = (int)Math.Pow(2, PSByte);
             }
         }
-        public static void ProcessPortBInterrupt()
+        public static void ProcessRBInterrupts()
         {
+            //RB Interrupt
+            byte RB = (byte)(getRegister(Registers.PORTB) & 0xF0);
+            if (((RBIntLastState ^ RB) & getRegister(Registers.TRISB)) != 0)
+            {
+                setRegisterBit(Registers.INTCON, Flags.Intcon.RBIF, true);
+            }
+            RBIntLastState = RB;
 
+            //RB0 Interrupt depending on Flankenwechsel
+            byte RB0 = (byte)(getRegister(Registers.PORTB) & 0x01);
+            if (getRegisterBit(Registers.INTCON, Flags.Option.INTEDG) && RB0 > RB0IntLastState || !getRegisterBit(Registers.INTCON, Flags.Option.INTEDG) && RB0 < RB0IntLastState)
+            {
+                setRegisterBit(Registers.INTCON, Flags.Intcon.INTF, true);
+            }
+
+            RB0IntLastState = RB0;
+        }
+        public static bool CheckInterrupts()
+        {
+            if (getRegisterBit(Registers.INTCON, Flags.Intcon.GIE))
+            {
+                if (getRegisterBit(Registers.INTCON, Flags.Intcon.T0IE) && getRegisterBit(Registers.INTCON, Flags.Intcon.T0IF) ||
+                    getRegisterBit(Registers.INTCON, Flags.Intcon.INTE) && getRegisterBit(Registers.INTCON, Flags.Intcon.INTF) ||
+                    getRegisterBit(Registers.INTCON, Flags.Intcon.RBIE) && getRegisterBit(Registers.INTCON, Flags.Intcon.RBIF))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         public static void increaseRuntime()
         {
             runtime += getSingleExectionTime();
         }
+        public static void SkipCycle()
+        {
+            ProcessTMR0();
+            ProcessWDT();
+            increaseRuntime();
+        }
         public static void Reset()
         {
+            sleeping = false;
             pc = 0;
             w = 0;
             register = new byte[256];
@@ -199,13 +245,22 @@ namespace NICE_P16F8x
             setRegister(Registers.OPTION, 0xFF);    //1111 1111
             setRegister(Registers.TRISA, 0x1F);     //0001 1111
             setRegister(Registers.TRISB, 0xFF);     //1111 1111
+            SetPrePostscaler();
         }
         public static void WDTReset() //TODO
         {
-            pc = 0;
-            w = 0;
-            setRegister(Registers.STATUS, (byte)(getRegister(Registers.STATUS) & 7 + 8));
-            throw new NotImplementedException();
+            resetWatchdog();
+            if (Data.isSleeping())
+            {
+                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, false);
+                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
+                Data.IncPC();
+                Data.setSleeping(false);
+            } else
+            {
+                pc = 0;
+                w = 0;
+            }
         }
         public static void pushStack()
         {
@@ -262,7 +317,8 @@ namespace NICE_P16F8x
                     register[getRegister(Registers.FSR)] = data;
                     break;
                 case 0x01: //TMR0
-                    prePostscaler = 0; //Reset Prescaler
+                    SetPrePostscaler(); //Reset Prescaler
+                    SkipCycle();
                     break;
                 case 0x02:
                     register[Convert.ToInt16(0x82)] = data;
@@ -273,6 +329,12 @@ namespace NICE_P16F8x
                     break;
                 case 0x04:
                     register[Convert.ToInt16(0x84)] = data;
+                    break;
+                case 0x05: //PORTA Latch TODO
+
+                    break;
+                case 0x06: //PORTB Latch TODO
+
                     break;
                 case 0x0A:
                     register[Convert.ToInt16(0x8A)] = data;
@@ -285,7 +347,7 @@ namespace NICE_P16F8x
                     register[getRegister(Registers.FSR)] = data;
                     break;
                 case 0x81: //OPTION 
-                    SetPrePostscaler();
+                    SetPrePostscaler(); //TODO
                     break;
                 case 0x82:
                     register[Convert.ToInt16(0x02)] = data;
@@ -331,7 +393,7 @@ namespace NICE_P16F8x
             //Add 0x80 if Bank 1 selected
             if (getRegisterBit(Registers.STATUS, Flags.Status.RP0))
             {
-                return (byte) (address + 0x80);
+                return (byte)(address + 0x80);
             }
             if (address >= register.Length)
             {
@@ -556,6 +618,10 @@ namespace NICE_P16F8x
         {
             return watchdog;
         }
+        public static void resetWatchdog()
+        {
+            watchdog = 0;
+        }
         public static byte[] getAllRegisters()
         {
             return register;
@@ -594,10 +660,18 @@ namespace NICE_P16F8x
         {
             watchdogEnabled = wdte;
         }
-        #endregion
         public static int getPrePostscaler()
         {
             return prePostscaler;
         }
+        public static void setSleeping(bool sleep)
+        {
+            sleeping = sleep;
+        }
+        public static bool isSleeping()
+        {
+            return sleeping;
+        }
+        #endregion
     }
 }

@@ -70,7 +70,7 @@ namespace NICE_P16F8x
             if (result == 0)
             {
                 Data.IncPC();
-                SkipCycle();
+                Data.SkipCycle();
             }
 
             DirectionalWrite(d, f, result);
@@ -96,7 +96,7 @@ namespace NICE_P16F8x
             if (result == 0)
             {
                 Data.IncPC();
-                SkipCycle();
+                Data.SkipCycle();
             }
 
             DirectionalWrite(d, f, result);
@@ -126,7 +126,7 @@ namespace NICE_P16F8x
         {
             byte f = (byte)(com.getLowByte() & 127);
 
-            Data.setRegister(Data.AddressResolution(Data.AddressResolution(f)), Data.getRegisterW());
+            Data.setRegister(Data.AddressResolution(f), Data.getRegisterW());
         }
         public static void NOP(Data.Command com)
         {
@@ -220,7 +220,7 @@ namespace NICE_P16F8x
             if (Data.getRegisterBit(Data.AddressResolution(f), b) == false)
             {
                 Data.IncPC();
-                SkipCycle();
+                Data.SkipCycle();
             }
         }
         public static void BTFSS(Data.Command com)
@@ -232,7 +232,7 @@ namespace NICE_P16F8x
             if (Data.getRegisterBit(Data.AddressResolution(f), b) == true)
             {
                 Data.IncPC();
-                SkipCycle();
+                Data.SkipCycle();
             }
         }
         #endregion
@@ -263,11 +263,14 @@ namespace NICE_P16F8x
             Data.pushStack();
             Data.setPCFromBytes(merge, k1);
             Data.SetPCLfromPC();
-            SkipCycle();
+            Data.SkipCycle();
         }
         public static void CLRWDT(Data.Command com)
         {
-            //TODO
+            Data.resetWatchdog();
+            Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, true);
+            Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
+            Data.SetPrePostscaler(); //Reset Postscaler if assigned to WDT
         }
         public static void GOTO(Data.Command com)
         {
@@ -277,7 +280,7 @@ namespace NICE_P16F8x
             byte merge = (byte)((Data.getRegister(Data.Registers.PCLATH) & 24) + k2);
             Data.setPCFromBytes(merge, k1);
             Data.SetPCLfromPC();
-            SkipCycle();
+            Data.SkipCycle();
         }
         public static void IORLW(Data.Command com)
         {
@@ -298,7 +301,7 @@ namespace NICE_P16F8x
             Data.setPC(Data.popStack());
             Data.SetPCLfromPC();
             Data.setRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE, true); //Re-enable Global-Interrupt-Bit
-            SkipCycle();
+            Data.SkipCycle();
         }
         public static void RETLW(Data.Command com)
         {
@@ -307,15 +310,22 @@ namespace NICE_P16F8x
             Data.setRegisterW(k);
             Data.setPC(Data.popStack());
             Data.SetPCLfromPC();
-            SkipCycle();
+            Data.SkipCycle();
         }
         public static void RETURN(Data.Command com)
         {
             Data.setPC(Data.popStack());
             Data.SetPCLfromPC();
-            SkipCycle();
+            Data.SkipCycle();
         }
-        //public static void SLEEP(Data.Command com)
+        public static void SLEEP(Data.Command com)
+        {
+            CLRWDT(null);
+            Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, true);
+            Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
+            Data.setSleeping(true);
+            Data.setPC(Data.getPC() - 1);
+        }
         public static void SUBLW(Data.Command com)
         {
             byte k = com.getLowByte();
@@ -409,31 +419,19 @@ namespace NICE_P16F8x
             else if (d == 128) Data.setRegister(Data.AddressResolution(f), result);
         }
 
-        private static void SkipCycle()
-        {
-            Data.ProcessTMR0();
-            Data.ProcessWDT();
-            Data.increaseRuntime();
-        }
-
-        private static void CheckInterrupts()
-        {
-            if (Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE))
-            {
-                if (Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.T0IE) && Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.T0IF) ||
-                    Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.INTE) && Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.INTF) ||
-                    Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.RBIE) && Data.getRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.RBIF))
-                {
-                    CallInterrupt();
-                }
-            }
-        }
-
         private static void CallInterrupt()
         {
             Data.pushStack();
             Data.setPC(0x04); //Fixed interrupt routine address
             Data.setRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE, false); //Disable Global-Interrupt-Bit
+
+            if (Data.isSleeping())
+            {
+                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, true);
+                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
+                Data.IncPC();
+                Data.setSleeping(false);
+            }
         }
         #endregion
 
@@ -451,22 +449,27 @@ namespace NICE_P16F8x
         {
             if (Data.isProgramInitialized())
             {
-                if (Data.getPC() < Data.getProgram().Count)
+                if (!Data.isSleeping())
                 {
-                    Data.Command com = Data.getProgram()[Data.getPC()];
-                    Data.IncPC();
-                    InstructionProcessor.Execute(Data.InstructionLookup(com), com);
+                    if (Data.getPC() < Data.getProgram().Count)
+                    {
+                        Data.Command com = Data.getProgram()[Data.getPC()];
+                        Data.IncPC();
+                        InstructionProcessor.Execute(Data.InstructionLookup(com), com);
+                    }
+                    else //PC has left program area
+                    {
+                        Data.IncPC();
+                    }
+                    Data.ProcessTMR0();
                 }
-                else //PC has left program area
-                {
-                    Data.IncPC();
-                }
-
-                Data.ProcessTMR0();
                 Data.ProcessWDT();
                 Data.increaseRuntime();
-                Data.ProcessPortBInterrupt();
-                CheckInterrupts();
+                Data.ProcessRBInterrupts();
+                if (Data.CheckInterrupts())
+                {
+                    CallInterrupt();
+                }
 
             }
         }
