@@ -134,6 +134,8 @@ namespace NICE_P16F8x
                 new KeyValuePair<int, string>(1000000, "1 MHz"),
                 new KeyValuePair<int, string>(50000, "50 KHz"),
                 new KeyValuePair<int, string>(10000, "10 KHz"),
+                new KeyValuePair<int, string>(1000, "1 KHz"),
+                new KeyValuePair<int, string>(500, "500 MHz"),
             };
             trisA = new ObservableCollection<bool>(new bool[8]);
             trisB = new ObservableCollection<bool>(new bool[8]);
@@ -145,7 +147,7 @@ namespace NICE_P16F8x
             stackDisplay = new ObservableCollection<string>(Enumerable.Repeat("0000", 8).ToList());
             sfrvalues = new ObservableCollection<string>(Enumerable.Repeat("00", 10).ToList());
             runtime = 0;
-            watchdog = 0; 
+            watchdog = 0;
             WatchdogEnabled = false;
         }
     }
