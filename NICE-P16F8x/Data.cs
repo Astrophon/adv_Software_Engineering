@@ -240,12 +240,7 @@ namespace NICE_P16F8x
         {
             runtime += getSingleExectionTime();
         }
-        public static void SkipCycle()
-        {
-            ProcessTMR0();
-            ProcessWDT();
-            increaseRuntime();
-        }
+
         public static void Reset()
         {
             sleeping = false;
@@ -339,7 +334,7 @@ namespace NICE_P16F8x
                     break;
                 case 0x01: //TMR0
                     ResetPrePostScaler(); //Reset Prescaler
-                    SkipCycle();
+                    InstructionProcessor.SkipCycle();
                     break;
                 case 0x02:
                     register[Convert.ToInt16(0x82)] = data;

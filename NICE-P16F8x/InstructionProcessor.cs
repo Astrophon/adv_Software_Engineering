@@ -70,7 +70,7 @@ namespace NICE_P16F8x
             if (result == 0)
             {
                 Data.IncPC();
-                Data.SkipCycle();
+                SkipCycle();
             }
 
             DirectionalWrite(d, f, result);
@@ -96,7 +96,7 @@ namespace NICE_P16F8x
             if (result == 0)
             {
                 Data.IncPC();
-                Data.SkipCycle();
+                SkipCycle();
             }
 
             DirectionalWrite(d, f, result);
@@ -220,7 +220,7 @@ namespace NICE_P16F8x
             if (Data.getRegisterBit(Data.AddressResolution(f), b) == false)
             {
                 Data.IncPC();
-                Data.SkipCycle();
+                SkipCycle();
             }
         }
         public static void BTFSS(Data.Command com)
@@ -232,7 +232,7 @@ namespace NICE_P16F8x
             if (Data.getRegisterBit(Data.AddressResolution(f), b) == true)
             {
                 Data.IncPC();
-                Data.SkipCycle();
+                SkipCycle();
             }
         }
         #endregion
@@ -263,7 +263,7 @@ namespace NICE_P16F8x
             Data.pushStack();
             Data.setPCFromBytes(merge, k1);
             Data.SetPCLfromPC();
-            Data.SkipCycle();
+            SkipCycle();
         }
         public static void CLRWDT(Data.Command com)
         {
@@ -281,7 +281,7 @@ namespace NICE_P16F8x
             byte merge = (byte)((Data.getRegister(Data.Registers.PCLATH) & 24) + k2);
             Data.setPCFromBytes(merge, k1);
             Data.SetPCLfromPC();
-            Data.SkipCycle();
+            SkipCycle();
         }
         public static void IORLW(Data.Command com)
         {
@@ -302,7 +302,7 @@ namespace NICE_P16F8x
             Data.setPC(Data.popStack());
             Data.SetPCLfromPC();
             Data.setRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE, true); //Re-enable Global-Interrupt-Bit
-            Data.SkipCycle();
+            SkipCycle();
         }
         public static void RETLW(Data.Command com)
         {
@@ -311,13 +311,13 @@ namespace NICE_P16F8x
             Data.setRegisterW(k);
             Data.setPC(Data.popStack());
             Data.SetPCLfromPC();
-            Data.SkipCycle();
+            SkipCycle();
         }
         public static void RETURN(Data.Command com)
         {
             Data.setPC(Data.popStack());
             Data.SetPCLfromPC();
-            Data.SkipCycle();
+            SkipCycle();
         }
         public static void SLEEP(Data.Command com)
         {
@@ -462,16 +462,22 @@ namespace NICE_P16F8x
                     {
                         Data.IncPC();
                     }
-                    Data.ProcessTMR0();
                 }
-                Data.ProcessWDT();
-                Data.increaseRuntime();
-                Data.ProcessRBInterrupts();
-                if (Data.CheckInterrupts())
-                {
-                    CallInterrupt();
-                }
-
+                SkipCycle();
+            }
+        }
+        public static void SkipCycle()
+        {
+            if (!Data.isSleeping())
+            {
+                Data.ProcessTMR0();
+            }
+            Data.ProcessWDT();
+            Data.ProcessRBInterrupts();
+            Data.increaseRuntime();
+            if (Data.CheckInterrupts())
+            {
+                CallInterrupt();
             }
         }
         #endregion
