@@ -297,8 +297,10 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <GroupBox Grid.Column="0" Header="Program (LST-File)" Height="500" VerticalAlignment="Center" HorizontalAlignment="Left" Width="800">
-                        <DataGrid x:Name="SourceDataGrid" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFE2E2E2" VerticalGridLinesBrush="#FFE2E2E2" SelectionMode="Extended" AutoGenerateColumns="False" CanUserSortColumns="False"
-                                  FontFamily="Courier New" Background="White" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" HeadersVisibility="None" FontSize="14" CanUserAddRows="False" CanUserDeleteRows="False"
+                        <DataGrid x:Name="SourceDataGrid" GridLinesVisibility="All" HorizontalGridLinesBrush="#FFE2E2E2" VerticalGridLinesBrush="#FFE2E2E2" SelectionMode="Extended" AutoGenerateColumns="False" 
+                                  CanUserSortColumns="False" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                                  HeadersVisibility="None" FontFamily="Courier New" Background="White"  FontSize="14" FrozenColumnCount="4" RowHeaderWidth="0"
+                                  ScrollViewer.CanContentScroll="True" EnableRowVirtualization="True" EnableColumnVirtualization="False" VirtualizingStackPanel.VirtualizationMode="Recycling" VirtualizingStackPanel.IsVirtualizing="True"
                                   CellStyle="{StaticResource SourceFileCellStyle}">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="Breakpoint"  Width="20pt" IsReadOnly="False" CellStyle="{StaticResource SourceFileAllowClick}">

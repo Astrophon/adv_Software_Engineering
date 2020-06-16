@@ -138,10 +138,10 @@ namespace NICE_P16F8x
             {
                 Reset();
                 SourceFile = new SourceFile(dialog.FileName);
+                SourceDataGrid.ItemsSource = SourceFile.getSourceLines(); //Set new data to LST View
                 SourceDataGrid.Columns[4].Width = 0; //Reset comment column width
-                SourceDataGrid.ItemsSource = SourceFile.getSourceLines();
-                SourceDataGrid.Columns[4].Width = DataGridLength.Auto; //Set new column width automatically according to content
                 SourceDataGrid.UpdateLayout();
+                SourceDataGrid.Columns[4].Width = DataGridLength.Auto; //Set new column width automatically according to content
                 UpdateUI();
             }
         }
@@ -357,7 +357,7 @@ namespace NICE_P16F8x
             View.SFRValues[7] = Data.getRegister(Data.Registers.TMR0).ToString("X2");
             View.SFRValues[8] = "1:" + Data.getPrePostscalerRatio();
 
-            if(Data.getRegisterBit(Data.Registers.OPTION, Data.Flags.Option.PSA)) View.PrePostScalerText = "Postscaler"; //Postscaler assigned to WDT
+            if (Data.getRegisterBit(Data.Registers.OPTION, Data.Flags.Option.PSA)) View.PrePostScalerText = "Postscaler"; //Postscaler assigned to WDT
             else View.PrePostScalerText = "Prescaler"; //Prescaler assigned to TMR0
 
             if (StepTimer.Enabled) View.StartStopButtonText = "Stop";
@@ -367,7 +367,8 @@ namespace NICE_P16F8x
             if (Data.getPC() < Data.getProgram().Count)
             {
                 View.SFRValues[9] = Data.InstructionLookup(Data.getProgram()[Data.getPC()]).ToString();
-            } else
+            }
+            else
             {
                 View.SFRValues[9] = "N/A";
             }
