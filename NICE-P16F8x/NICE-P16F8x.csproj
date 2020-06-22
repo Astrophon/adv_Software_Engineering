@@ -21,4 +21,10 @@
     <Resource Include="chip.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Dokumentation_NICE-PIC16F8x.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

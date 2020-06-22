@@ -3,6 +3,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Timers;
 using System.Windows;
@@ -151,7 +153,19 @@ namespace NICE_P16F8x
         /// <param name="e"></param>
         private void MenuHelp_Click(object sender, RoutedEventArgs e)
         {
-
+            string path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "Dokumentation_NICE-PIC16F8x.pdf");
+            if (File.Exists(path))
+            {
+                ProcessStartInfo psi = new ProcessStartInfo(path)
+                {
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
+            }
+            else
+            {
+                MessageBox.Show("Documentation is missing!\nPlease unpack original application package again!", "Documentation missing", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         /// <summary>
         /// Debug action for development testing
