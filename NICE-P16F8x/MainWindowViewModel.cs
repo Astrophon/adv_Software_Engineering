@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Windows;
 
 namespace NICE_P16F8x
 {
@@ -91,7 +89,7 @@ namespace NICE_P16F8x
             set
             {
                 SetAndNotify(ref clockSpeed, value, () => ClockSpeed);
-                Data.setClockSpeed(clockSpeed);
+                Data.SetClockSpeed(clockSpeed);
             }
         }
         private string startStopButtonText;
@@ -119,7 +117,7 @@ namespace NICE_P16F8x
             set
             {
                 SetAndNotify(ref watchdogEnabled, value, () => WatchdogEnabled);
-                Data.setWatchdogEnabled(watchdogEnabled);
+                Data.SetWatchdogEnabled(watchdogEnabled);
             }
         }
         private int simSpeed;

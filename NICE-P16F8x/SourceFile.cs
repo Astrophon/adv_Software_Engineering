@@ -8,8 +8,8 @@ namespace NICE_P16F8x
 {
     class SourceFile
     {
-        ObservableCollection<SourceLine> sourceLines = new ObservableCollection<SourceLine>();
-        int[] linesWithCommands;
+        readonly ObservableCollection<SourceLine> sourceLines = new ObservableCollection<SourceLine>();
+        readonly int[] linesWithCommands;
         int LastHighlightedIndex = 0;
 
         public SourceFile(string path)
@@ -72,19 +72,19 @@ namespace NICE_P16F8x
             this.linesWithCommands = linesWithCommands.ToArray();
 
             //Write commands to Data store
-            Data.setWriteProgram(commands);
+            Data.SetWriteProgram(commands);
         }
         public void HighlightLine(int pc)
         {
-            sourceLines[getSourceLineIndexFromPC(LastHighlightedIndex)].Active = false;
-            sourceLines[getSourceLineIndexFromPC(pc)].Active = true;
+            sourceLines[GetSourceLineIndexFromPC(LastHighlightedIndex)].Active = false;
+            sourceLines[GetSourceLineIndexFromPC(pc)].Active = true;
             LastHighlightedIndex = pc;
         }
-        public ObservableCollection<SourceLine> getSourceLines()
+        public ObservableCollection<SourceLine> GetSourceLines()
         {
             return sourceLines;
         }
-        public int getSourceLineIndexFromPC(int pc)
+        public int GetSourceLineIndexFromPC(int pc)
         {
             if (pc < linesWithCommands.Length) return linesWithCommands[pc];
             else return -1;
@@ -92,7 +92,7 @@ namespace NICE_P16F8x
         }
         public bool LineHasBreakpoint(int pc)
         {
-            return sourceLines[getSourceLineIndexFromPC(pc)].Breakpoint;
+            return sourceLines[GetSourceLineIndexFromPC(pc)].Breakpoint;
         }
     }
     class SourceLine : ObservableObject
@@ -101,7 +101,7 @@ namespace NICE_P16F8x
         public string Label { get; set; }
         public string Command { get; set; }
         public string Comment { get; set; }
-        public bool hasCommand { get; set; }
+        public bool HasCommand { get; set; }
         private bool active;
         public bool Active
         {
@@ -122,7 +122,7 @@ namespace NICE_P16F8x
             Label = label;
             Command = command;
             Comment = comment;
-            this.hasCommand = hasCommand;
+            HasCommand = hasCommand;
             active = false;
         }
     }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Dynamic;
-using System.Reflection;
-using System.Windows;
+﻿using System.Reflection;
 
 namespace NICE_P16F8x
 {
@@ -13,59 +10,59 @@ namespace NICE_P16F8x
         #region BYTE-ORIENTED FILE REGISTER OPERATIONS
         public static void ADDWF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = BitwiseAdd(Data.getRegisterW(), Data.getRegister(Data.AddressResolution(f)));
+            byte result = BitwiseAdd(Data.GetRegisterW(), Data.GetRegister(Data.AddressResolution(f)));
 
             DirectionalWrite(d, f, result);
         }
         public static void ANDWF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = (byte)(Data.getRegisterW() & Data.getRegister(Data.AddressResolution(f)));
+            byte result = (byte)(Data.GetRegisterW() & Data.GetRegister(Data.AddressResolution(f)));
 
             DirectionalWrite(d, f, result);
         }
         public static void CLRF(Data.Command com)
         {
-            byte f = (byte)(com.getLowByte() & 127);
-            Data.setRegister(Data.AddressResolution(f), 0);
-            Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.Z, true);
+            byte f = (byte)(com.GetLowByte() & 127);
+            Data.SetRegister(Data.AddressResolution(f), 0);
+            Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.Z, true);
         }
         public static void CLRW(Data.Command com)
         {
-            Data.setRegisterW(0);
-            Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.Z, true);
+            Data.SetRegisterW(0);
+            Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.Z, true);
         }
         public static void COMF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = (byte)~Data.getRegister(Data.AddressResolution(f));
+            byte result = (byte)~Data.GetRegister(Data.AddressResolution(f));
             CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
         }
         public static void DECF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) - 1);
+            byte result = (byte)(Data.GetRegister(Data.AddressResolution(f)) - 1);
             CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
         }
         public static void DECFSZ(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) - 1);
+            byte result = (byte)(Data.GetRegister(Data.AddressResolution(f)) - 1);
 
             if (result == 0)
             {
@@ -77,10 +74,10 @@ namespace NICE_P16F8x
         }
         public static void INCF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) + 1);
+            byte result = (byte)(Data.GetRegister(Data.AddressResolution(f)) + 1);
             CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
@@ -88,10 +85,10 @@ namespace NICE_P16F8x
 
         public static void INCFSZ(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) + 1);
+            byte result = (byte)(Data.GetRegister(Data.AddressResolution(f)) + 1);
 
             if (result == 0)
             {
@@ -103,30 +100,30 @@ namespace NICE_P16F8x
         }
         public static void IORWF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) | Data.getRegisterW());
+            byte result = (byte)(Data.GetRegister(Data.AddressResolution(f)) | Data.GetRegisterW());
             CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
         }
         public static void MOVF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            CheckZFlag(Data.getRegister(Data.AddressResolution(f)));
+            CheckZFlag(Data.GetRegister(Data.AddressResolution(f)));
             if (d != 128)
             {
-                Data.setRegisterW(Data.getRegister(Data.AddressResolution(f)));
+                Data.SetRegisterW(Data.GetRegister(Data.AddressResolution(f)));
             }
         }
         public static void MOVWF(Data.Command com)
         {
-            byte f = (byte)(com.getLowByte() & 127);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            Data.setRegister(Data.AddressResolution(f), Data.getRegisterW());
+            Data.SetRegister(Data.AddressResolution(f), Data.GetRegisterW());
         }
         public static void NOP(Data.Command com)
         {
@@ -134,60 +131,60 @@ namespace NICE_P16F8x
         }
         public static void RLF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) << 1);
+            byte result = (byte)(Data.GetRegister(Data.AddressResolution(f)) << 1);
 
             //Add carry bit if flag is set
-            if (Data.getRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C)) result++;
+            if (Data.GetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C)) result++;
 
             //Set carry flag for current calculation
-            if ((Data.getRegister(Data.AddressResolution(f)) & 128) == 128) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
-            else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
+            if ((Data.GetRegister(Data.AddressResolution(f)) & 128) == 128) Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
+            else Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
 
             DirectionalWrite(d, f, result);
         }
         public static void RRF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = (byte)(Data.getRegister(Data.AddressResolution(f)) >> 1);
+            byte result = (byte)(Data.GetRegister(Data.AddressResolution(f)) >> 1);
 
             //Add carry bit if flag is set
-            if (Data.getRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C)) result += 128;
+            if (Data.GetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C)) result += 128;
 
             //Set carry flag for current calculation
-            if ((Data.getRegister(Data.AddressResolution(f)) & 1) == 1) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
-            else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
+            if ((Data.GetRegister(Data.AddressResolution(f)) & 1) == 1) Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
+            else Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
 
             DirectionalWrite(d, f, result);
         }
         public static void SUBWF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = BitwiseSubstract(Data.getRegister(Data.AddressResolution(f)), Data.getRegisterW());
+            byte result = BitwiseSubstract(Data.GetRegister(Data.AddressResolution(f)), Data.GetRegisterW());
 
             DirectionalWrite(d, f, result);
         }
         public static void SWAPF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = (byte)((Data.getRegister(Data.AddressResolution(f)) & 0x0F) << 4 | (Data.getRegister(Data.AddressResolution(f)) & 0xF0) >> 4); ;
+            byte result = (byte)((Data.GetRegister(Data.AddressResolution(f)) & 0x0F) << 4 | (Data.GetRegister(Data.AddressResolution(f)) & 0xF0) >> 4); ;
 
             DirectionalWrite(d, f, result);
         }
         public static void XORWF(Data.Command com)
         {
-            byte d = (byte)(com.getLowByte() & 128);
-            byte f = (byte)(com.getLowByte() & 127);
+            byte d = (byte)(com.GetLowByte() & 128);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            byte result = (byte)(Data.getRegisterW() ^ Data.getRegister(Data.AddressResolution(f)));
+            byte result = (byte)(Data.GetRegisterW() ^ Data.GetRegister(Data.AddressResolution(f)));
             CheckZFlag(result);
 
             DirectionalWrite(d, f, result);
@@ -197,27 +194,27 @@ namespace NICE_P16F8x
         #region BIT-ORIENTED FILE REGISTER OPERATIONS
         public static void BCF(Data.Command com)
         {
-            int b1 = (com.getHighByte() & 3) << 1;
-            int b = b1 + (((com.getLowByte() & 128) == 128) ? 1 : 0);
-            byte f = (byte)(com.getLowByte() & 127);
+            int b1 = (com.GetHighByte() & 3) << 1;
+            int b = b1 + (((com.GetLowByte() & 128) == 128) ? 1 : 0);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            Data.setRegisterBit(Data.AddressResolution(f), b, false);
+            Data.SetRegisterBit(Data.AddressResolution(f), b, false);
         }
         public static void BSF(Data.Command com)
         {
-            int b1 = (com.getHighByte() & 3) << 1;
-            int b = b1 + (((com.getLowByte() & 128) == 128) ? 1 : 0);
-            byte f = (byte)(com.getLowByte() & 127);
+            int b1 = (com.GetHighByte() & 3) << 1;
+            int b = b1 + (((com.GetLowByte() & 128) == 128) ? 1 : 0);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            Data.setRegisterBit(Data.AddressResolution(f), b, true);
+            Data.SetRegisterBit(Data.AddressResolution(f), b, true);
         }
         public static void BTFSC(Data.Command com)
         {
-            int b1 = (com.getHighByte() & 3) << 1;
-            int b = b1 + (((com.getLowByte() & 128) == 128) ? 1 : 0);
-            byte f = (byte)(com.getLowByte() & 127);
+            int b1 = (com.GetHighByte() & 3) << 1;
+            int b = b1 + (((com.GetLowByte() & 128) == 128) ? 1 : 0);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            if (Data.getRegisterBit(Data.AddressResolution(f), b) == false)
+            if (Data.GetRegisterBit(Data.AddressResolution(f), b) == false)
             {
                 Data.IncPC();
                 SkipCycle();
@@ -225,11 +222,11 @@ namespace NICE_P16F8x
         }
         public static void BTFSS(Data.Command com)
         {
-            int b1 = (com.getHighByte() & 3) << 1;
-            int b = b1 + (((com.getLowByte() & 128) == 128) ? 1 : 0);
-            byte f = (byte)(com.getLowByte() & 127);
+            int b1 = (com.GetHighByte() & 3) << 1;
+            int b = b1 + (((com.GetLowByte() & 128) == 128) ? 1 : 0);
+            byte f = (byte)(com.GetLowByte() & 127);
 
-            if (Data.getRegisterBit(Data.AddressResolution(f), b) == true)
+            if (Data.GetRegisterBit(Data.AddressResolution(f), b) == true)
             {
                 Data.IncPC();
                 SkipCycle();
@@ -240,107 +237,107 @@ namespace NICE_P16F8x
         #region LITERAL AND CONTROL OPERATIONS
         public static void ADDLW(Data.Command com)
         {
-            byte k = com.getLowByte();
+            byte k = com.GetLowByte();
 
-            byte result = BitwiseAdd(Data.getRegisterW(), k);
-            Data.setRegisterW(result);
+            byte result = BitwiseAdd(Data.GetRegisterW(), k);
+            Data.SetRegisterW(result);
         }
         public static void ANDLW(Data.Command com)
         {
-            byte k = com.getLowByte();
+            byte k = com.GetLowByte();
 
-            byte result = (byte)(Data.getRegisterW() & k);
+            byte result = (byte)(Data.GetRegisterW() & k);
             CheckZFlag(result);
-            Data.setRegisterW(result);
+            Data.SetRegisterW(result);
         }
         public static void CALL(Data.Command com)
         {
-            byte k1 = com.getLowByte();
-            byte k2 = (byte)(com.getHighByte() & 7);
+            byte k1 = com.GetLowByte();
+            byte k2 = (byte)(com.GetHighByte() & 7);
 
-            byte merge = (byte)((Data.getRegister(Data.Registers.PCLATH) & 24) + k2);
+            byte merge = (byte)((Data.GetRegister(Data.Registers.PCLATH) & 24) + k2);
 
-            Data.pushStack();
-            Data.setPCFromBytes(merge, k1);
+            Data.PushStack();
+            Data.SetPCFromBytes(merge, k1);
             Data.SetPCLfromPC();
             SkipCycle();
         }
         public static void CLRWDT(Data.Command com)
         {
-            Data.resetWatchdog();
-            Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, true);
-            Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
-            if (Data.getRegisterBit(Data.Registers.OPTION, Data.Flags.Option.PSA) == true)
+            Data.ResetWatchdog();
+            Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, true);
+            Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
+            if (Data.GetRegisterBit(Data.Registers.OPTION, Data.Flags.Option.PSA) == true)
                 Data.ResetPrePostScaler(); //Reset Postscaler if assigned to WDT
         }
         public static void GOTO(Data.Command com)
         {
-            byte k1 = com.getLowByte();
-            byte k2 = (byte)(com.getHighByte() & 7);
+            byte k1 = com.GetLowByte();
+            byte k2 = (byte)(com.GetHighByte() & 7);
 
-            byte merge = (byte)((Data.getRegister(Data.Registers.PCLATH) & 24) + k2);
-            Data.setPCFromBytes(merge, k1);
+            byte merge = (byte)((Data.GetRegister(Data.Registers.PCLATH) & 24) + k2);
+            Data.SetPCFromBytes(merge, k1);
             Data.SetPCLfromPC();
             SkipCycle();
         }
         public static void IORLW(Data.Command com)
         {
-            byte k = com.getLowByte();
+            byte k = com.GetLowByte();
 
-            byte result = (byte)(Data.getRegisterW() | k);
+            byte result = (byte)(Data.GetRegisterW() | k);
             CheckZFlag(result);
-            Data.setRegisterW(result);
+            Data.SetRegisterW(result);
         }
         public static void MOVLW(Data.Command com)
         {
-            byte k = com.getLowByte();
+            byte k = com.GetLowByte();
 
-            Data.setRegisterW(k);
+            Data.SetRegisterW(k);
         }
         public static void RETFIE(Data.Command com)
         {
-            Data.setPC(Data.popStack());
+            Data.SetPC(Data.PopStack());
             Data.SetPCLfromPC();
-            Data.setRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE, true); //Re-enable Global-Interrupt-Bit
+            Data.SetRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE, true); //Re-enable Global-Interrupt-Bit
             SkipCycle();
         }
         public static void RETLW(Data.Command com)
         {
-            byte k = com.getLowByte();
+            byte k = com.GetLowByte();
 
-            Data.setRegisterW(k);
-            Data.setPC(Data.popStack());
+            Data.SetRegisterW(k);
+            Data.SetPC(Data.PopStack());
             Data.SetPCLfromPC();
             SkipCycle();
         }
         public static void RETURN(Data.Command com)
         {
-            Data.setPC(Data.popStack());
+            Data.SetPC(Data.PopStack());
             Data.SetPCLfromPC();
             SkipCycle();
         }
         public static void SLEEP(Data.Command com)
         {
             CLRWDT(null);
-            Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, true);
-            Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
-            Data.setSleeping(true);
-            Data.setPC(Data.getPC() - 1);
+            Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, true);
+            Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
+            Data.SetSleeping(true);
+            Data.SetPC(Data.GetPC() - 1);
         }
         public static void SUBLW(Data.Command com)
         {
-            byte k = com.getLowByte();
+            byte k = com.GetLowByte();
 
-            byte result = BitwiseSubstract(k, Data.getRegisterW());
-            Data.setRegisterW(result);
+            byte result = BitwiseSubstract(k, Data.GetRegisterW());
+            Data.SetRegisterW(result);
         }
         public static void XORLW(Data.Command com)
         {
-            byte k = com.getLowByte();
+            byte k = com.GetLowByte();
 
-            byte result = (byte)(Data.getRegisterW() ^ k);
+            byte result = (byte)(Data.GetRegisterW() ^ k);
             CheckZFlag(result);
-            Data.setRegisterW(result);
+            Data.SetRegisterW(result);
         }
         #endregion
 
@@ -351,8 +348,8 @@ namespace NICE_P16F8x
         /// <param name="result"></param>
         private static void CheckZFlag(byte result)
         {
-            if (result == 0) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.Z, true);
-            else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.Z, false);
+            if (result == 0) Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.Z, true);
+            else Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.Z, false);
         }
         /// <summary>
         /// Bitwise add of two bytes, also sets Z, C and DC flag
@@ -367,15 +364,15 @@ namespace NICE_P16F8x
 
             //FLAGS
             //set Carry flag if byte overflows
-            if (result < b1 || result < b2) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
-            else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
+            if (result < b1 || result < b2) Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
+            else Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
 
             //set DC flag if 4th low order bit overflows
             //if (((b1 & 8) == 8 || (b2 & 8) == 8) && (result & 8) == 0)
             if ((((b1 & 15) + (b2 & 15)) & 16) == 16)
-                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, true);
+                Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, true);
             else
-                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, false);
+                Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, false);
 
             //set Z flag if result is zero
             CheckZFlag(result);
@@ -392,14 +389,14 @@ namespace NICE_P16F8x
 
             //FLAGS
             //set Carry flag if byte overflows OR if either b1 or b2 is zero
-            if (result < b1 || result < b2 || b1 == 0 || b2 == 0) Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
-            else Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
+            if (result < b1 || result < b2 || b1 == 0 || b2 == 0) Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, true);
+            else Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.C, false);
 
             //set DC flag if 4th low order bit overflows OR if either b1 or b2 is zero
             if (((((b1 & 15) + (b2 & 15)) & 16) == 16) || b1 == 0 || b2 == 0)
-                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, true);
+                Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, true);
             else
-                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, false);
+                Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.DC, false);
 
             //set Z flag if result is zero
             CheckZFlag(result);
@@ -415,23 +412,23 @@ namespace NICE_P16F8x
         private static void DirectionalWrite(byte d, byte f, byte result)
         {
             //save to w register
-            if (d == 0) Data.setRegisterW(result);
+            if (d == 0) Data.SetRegisterW(result);
             //save to f address
-            else if (d == 128) Data.setRegister(Data.AddressResolution(f), result);
+            else if (d == 128) Data.SetRegister(Data.AddressResolution(f), result);
         }
 
         private static void CallInterrupt()
         {
-            Data.pushStack();
-            Data.setPC(0x04); //Fixed interrupt routine address
-            Data.setRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE, false); //Disable Global-Interrupt-Bit
+            Data.PushStack();
+            Data.SetPC(0x04); //Fixed interrupt routine address
+            Data.SetRegisterBit(Data.Registers.INTCON, Data.Flags.Intcon.GIE, false); //Disable Global-Interrupt-Bit
 
-            if (Data.isSleeping())
+            if (Data.IsSleeping())
             {
-                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, true);
-                Data.setRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
+                Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.TO, true);
+                Data.SetRegisterBit(Data.Registers.STATUS, Data.Flags.Status.PD, false);
                 Data.IncPC();
-                Data.setSleeping(false);
+                Data.SetSleeping(false);
             }
         }
         #endregion
@@ -448,13 +445,13 @@ namespace NICE_P16F8x
         /// <returns>false if within program bounds, true if PC left program bounds</returns>
         public static void PCStep()
         {
-            if (Data.isProgramInitialized())
+            if (Data.IsProgramInitialized())
             {
-                if (!Data.isSleeping())
+                if (!Data.IsSleeping())
                 {
-                    if (Data.getPC() < Data.getProgram().Count)
+                    if (Data.GetPC() < Data.GetProgram().Count)
                     {
-                        Data.Command com = Data.getProgram()[Data.getPC()];
+                        Data.Command com = Data.GetProgram()[Data.GetPC()];
                         Data.IncPC();
                         InstructionProcessor.Execute(Data.InstructionLookup(com), com);
                     }
@@ -468,13 +465,13 @@ namespace NICE_P16F8x
         }
         public static void SkipCycle()
         {
-            if (!Data.isSleeping())
+            if (!Data.IsSleeping())
             {
                 Data.ProcessTMR0();
             }
             Data.ProcessWDT();
             Data.ProcessRBInterrupts();
-            Data.increaseRuntime();
+            Data.IncreaseRuntime();
             if (Data.CheckInterrupts())
             {
                 CallInterrupt();

@@ -39,7 +39,7 @@
                 <DataTrigger Binding="{Binding Active}" Value="True">
                     <Setter Property="BorderBrush" Value="DarkOrange" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding hasCommand}" Value="True">
+                <DataTrigger Binding="{Binding HasCommand}" Value="True">
                     <Setter Property="FontWeight" Value="Bold" />
                 </DataTrigger>
             </Style.Triggers>
@@ -310,7 +310,7 @@
                                                 <Style TargetType="CheckBox">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding hasCommand}" Value="True">
+                                                        <DataTrigger Binding="{Binding HasCommand}" Value="True">
                                                             <Setter Property="Visibility" Value="Visible"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>

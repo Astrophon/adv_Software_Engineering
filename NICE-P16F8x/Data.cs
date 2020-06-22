@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Windows.Threading;
 
 namespace NICE_P16F8x
 {
@@ -24,7 +22,7 @@ namespace NICE_P16F8x
         private static bool sleeping;
 
         //Watchdog
-        private static int watchdogLimit = 18000; // 18 milliseconds watchdog time without prescaler
+        private static readonly int watchdogLimit = 18000; // 18 milliseconds watchdog time without prescaler
         private static bool watchdogEnabled;
 
         //Timer prescaler / Watchdog postscaler
@@ -107,8 +105,8 @@ namespace NICE_P16F8x
         {
             public Command(string hexData)
             {
-                high = (byte)hexToInt(hexData.Substring(0, 2));
-                low = (byte)hexToInt(hexData.Substring(2, 2));
+                high = (byte)HexToInt(hexData.Substring(0, 2));
+                low = (byte)HexToInt(hexData.Substring(2, 2));
             }
             public Command(byte high, byte low)
             {
@@ -116,15 +114,15 @@ namespace NICE_P16F8x
                 this.low = low;
             }
 
-            private byte high; //0x30 - command
-            private byte low;  //0x11 - data
+            private readonly byte high; //0x30 - command
+            private readonly byte low;  //0x11 - data
 
-            public byte getHighByte()
+            public byte GetHighByte()
             {
                 return high;
             }
 
-            public byte getLowByte()
+            public byte GetLowByte()
             {
                 return low;
             }
@@ -142,16 +140,16 @@ namespace NICE_P16F8x
         #region Access
         public static void ProcessTMR0()
         {
-            byte RA4 = (byte)(getRegister(Registers.PORTA) >> 4 & 0x01);
-            if (getRegisterBit(Registers.OPTION, Flags.Option.T0CS) == false || //Internal clock source
-                getRegisterBit(Registers.OPTION, Flags.Option.T0SE) && RA4 < RA4TimerLastState || //External clock source (RA4) selected and falling edge detected
-                !getRegisterBit(Registers.OPTION, Flags.Option.T0SE) && RA4 > RA4TimerLastState)  //External clock source (RA4) selected and rising edge detected
+            byte RA4 = (byte)(GetRegister(Registers.PORTA) >> 4 & 0x01);
+            if (GetRegisterBit(Registers.OPTION, Flags.Option.T0CS) == false || //Internal clock source
+                GetRegisterBit(Registers.OPTION, Flags.Option.T0SE) && RA4 < RA4TimerLastState || //External clock source (RA4) selected and falling edge detected
+                !GetRegisterBit(Registers.OPTION, Flags.Option.T0SE) && RA4 > RA4TimerLastState)  //External clock source (RA4) selected and rising edge detected
             {
                 bool increment = true;
-                if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
+                if (GetRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
                 {
                     prePostscaler++;
-                    if (prePostscaler >= getPrePostscalerRatio())
+                    if (prePostscaler >= GetPrePostscalerRatio())
                     {
                         ResetPrePostScaler();
                         increment = true;
@@ -160,11 +158,11 @@ namespace NICE_P16F8x
                 }
                 if (increment)
                 {
-                    byte tmr0 = (byte)(getRegister(Registers.TMR0) + 1); //Increment TMR0
+                    byte tmr0 = (byte)(GetRegister(Registers.TMR0) + 1); //Increment TMR0
                     register[Registers.TMR0] = tmr0; //Direct access to avoid prescaler reset
                     if (tmr0 == 0)
                     {
-                        setRegisterBit(Registers.INTCON, Flags.Intcon.T0IF, true);
+                        SetRegisterBit(Registers.INTCON, Flags.Intcon.T0IF, true);
                     }
                 }
             }
@@ -175,11 +173,11 @@ namespace NICE_P16F8x
         {
             if (watchdogEnabled)
             {
-                watchdog += getSingleExectionTime();
+                watchdog += GetSingleExectionTime();
                 int limit = watchdogLimit;
-                if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == true) //Postscaler assigned to WDT
+                if (GetRegisterBit(Registers.OPTION, Flags.Option.PSA) == true) //Postscaler assigned to WDT
                 {
-                    limit *= getPrePostscalerRatio();
+                    limit *= GetPrePostscalerRatio();
                 }
                 if (watchdog >= limit) //Watchdog attacks!!
                 {
@@ -189,9 +187,9 @@ namespace NICE_P16F8x
         }
         public static void SetPrePostscalerRatio()
         {
-            byte PSByte = (byte)(getRegister(Registers.OPTION) & 7);
+            byte PSByte = (byte)(GetRegister(Registers.OPTION) & 7);
 
-            if (getRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
+            if (GetRegisterBit(Registers.OPTION, Flags.Option.PSA) == false) //Prescaler assigned to TMR0
             {
                 prePostscalerRatio = (int)Math.Pow(2, PSByte + 1);
             }
@@ -207,38 +205,38 @@ namespace NICE_P16F8x
         public static void ProcessRBInterrupts()
         {
             //RB Interrupt
-            byte RB = (byte)(getRegister(Registers.PORTB) & 0xF0);
-            if (((RBIntLastState ^ RB) & getRegister(Registers.TRISB)) != 0)
+            byte RB = (byte)(GetRegister(Registers.PORTB) & 0xF0);
+            if (((RBIntLastState ^ RB) & GetRegister(Registers.TRISB)) != 0)
             {
-                setRegisterBit(Registers.INTCON, Flags.Intcon.RBIF, true);
+                SetRegisterBit(Registers.INTCON, Flags.Intcon.RBIF, true);
             }
             RBIntLastState = RB;
 
             //RB0 Interrupt depending on Flankenwechsel
-            byte RB0 = (byte)(getRegister(Registers.PORTB) & 0x01);
-            if (getRegisterBit(Registers.OPTION, Flags.Option.INTEDG) && RB0 > RB0IntLastState || !getRegisterBit(Registers.OPTION, Flags.Option.INTEDG) && RB0 < RB0IntLastState)
+            byte RB0 = (byte)(GetRegister(Registers.PORTB) & 0x01);
+            if (GetRegisterBit(Registers.OPTION, Flags.Option.INTEDG) && RB0 > RB0IntLastState || !GetRegisterBit(Registers.OPTION, Flags.Option.INTEDG) && RB0 < RB0IntLastState)
             {
-                setRegisterBit(Registers.INTCON, Flags.Intcon.INTF, true);
+                SetRegisterBit(Registers.INTCON, Flags.Intcon.INTF, true);
             }
 
             RB0IntLastState = RB0;
         }
         public static bool CheckInterrupts()
         {
-            if (getRegisterBit(Registers.INTCON, Flags.Intcon.GIE))
+            if (GetRegisterBit(Registers.INTCON, Flags.Intcon.GIE))
             {
-                if (getRegisterBit(Registers.INTCON, Flags.Intcon.T0IE) && getRegisterBit(Registers.INTCON, Flags.Intcon.T0IF) ||
-                    getRegisterBit(Registers.INTCON, Flags.Intcon.INTE) && getRegisterBit(Registers.INTCON, Flags.Intcon.INTF) ||
-                    getRegisterBit(Registers.INTCON, Flags.Intcon.RBIE) && getRegisterBit(Registers.INTCON, Flags.Intcon.RBIF))
+                if (GetRegisterBit(Registers.INTCON, Flags.Intcon.T0IE) && GetRegisterBit(Registers.INTCON, Flags.Intcon.T0IF) ||
+                    GetRegisterBit(Registers.INTCON, Flags.Intcon.INTE) && GetRegisterBit(Registers.INTCON, Flags.Intcon.INTF) ||
+                    GetRegisterBit(Registers.INTCON, Flags.Intcon.RBIE) && GetRegisterBit(Registers.INTCON, Flags.Intcon.RBIF))
                 {
                     return true;
                 }
             }
             return false;
         }
-        public static void increaseRuntime()
+        public static void IncreaseRuntime()
         {
-            runtime += getSingleExectionTime();
+            runtime += GetSingleExectionTime();
         }
 
         public static void Reset()
@@ -252,40 +250,40 @@ namespace NICE_P16F8x
             runtime = 0;
             watchdog = 0;
 
-            setRegister(Registers.STATUS, 0x18);    //0001 1000
-            setRegister(Registers.OPTION, 0xFF);    //1111 1111
-            setRegister(Registers.TRISA, 0x1F);     //0001 1111
-            setRegister(Registers.TRISB, 0xFF);     //1111 1111
+            SetRegister(Registers.STATUS, 0x18);    //0001 1000
+            SetRegister(Registers.OPTION, 0xFF);    //1111 1111
+            SetRegister(Registers.TRISA, 0x1F);     //0001 1111
+            SetRegister(Registers.TRISB, 0xFF);     //1111 1111
             SetPrePostscalerRatio();
         }
         public static void WDTReset()
         {
-            resetWatchdog();
-            if (isSleeping())
+            ResetWatchdog();
+            if (IsSleeping())
             {
-                setRegisterBit(Registers.STATUS, Flags.Status.TO, false);
-                setRegisterBit(Registers.STATUS, Flags.Status.PD, false);
+                SetRegisterBit(Registers.STATUS, Flags.Status.TO, false);
+                SetRegisterBit(Registers.STATUS, Flags.Status.PD, false);
                 IncPC();
-                setSleeping(false);
+                SetSleeping(false);
             }
             else
             {
-                setPC(0);
-                setRegisterW(0);
-                setRegister(Registers.STATUS, (byte)((getRegister(Registers.STATUS) & 7) + 0x08));  //0000 1uuu
-                setRegister(Registers.OPTION, 0xFF);    //1111 1111
-                setRegister(Registers.PCLATH, 0x00);    //0000 0000
+                SetPC(0);
+                SetRegisterW(0);
+                SetRegister(Registers.STATUS, (byte)((GetRegister(Registers.STATUS) & 7) + 0x08));  //0000 1uuu
+                SetRegister(Registers.OPTION, 0xFF);    //1111 1111
+                SetRegister(Registers.PCLATH, 0x00);    //0000 0000
 
             }
         }
-        public static void pushStack()
+        public static void PushStack()
         {
             stack[stackPointer] = pc;
 
             if (stackPointer == 7) stackPointer = 0;
             else stackPointer++;
         }
-        public static int popStack()
+        public static int PopStack()
         {
             if (stackPointer == 0) stackPointer = 7;
             else stackPointer--;
@@ -298,7 +296,7 @@ namespace NICE_P16F8x
             else pc = 0;
             SetPCLfromPC();
         }
-        public static void setWriteProgram(List<string> commands)
+        public static void SetWriteProgram(List<string> commands)
         {
             if (commands == null) throw new ArgumentNullException();
 
@@ -311,17 +309,15 @@ namespace NICE_P16F8x
 
             programInitialized = true;
         }
-        public static byte getRegister(byte address)
+        public static byte GetRegister(byte address)
         {
-            switch (address)
+            return address switch
             {
-                case 0x00:
-                    return register[getRegister(Registers.FSR)];
-                default:
-                    return register[Convert.ToInt16(address)];
-            }
+                0x00 => register[GetRegister(Registers.FSR)],
+                _ => register[Convert.ToInt16(address)],
+            };
         }
-        public static void setRegister(byte address, byte data)
+        public static void SetRegister(byte address, byte data)
         {
             //set actual register data
             register[Convert.ToInt16(address)] = data;
@@ -330,7 +326,7 @@ namespace NICE_P16F8x
             switch (address)
             {
                 case 0x00: //indirect (using FSR)
-                    register[getRegister(Registers.FSR)] = data;
+                    register[GetRegister(Registers.FSR)] = data;
                     break;
                 case 0x01: //TMR0
                     ResetPrePostScaler(); //Reset Prescaler
@@ -338,7 +334,7 @@ namespace NICE_P16F8x
                     break;
                 case 0x02:
                     register[Convert.ToInt16(0x82)] = data;
-                    setPCFromBytes(getRegister(Registers.PCLATH), getRegister(Registers.PCL));
+                    SetPCFromBytes(GetRegister(Registers.PCLATH), GetRegister(Registers.PCL));
                     break;
                 case 0x03:
                     register[Convert.ToInt16(0x83)] = data;
@@ -361,14 +357,14 @@ namespace NICE_P16F8x
                     break;
 
                 case 0x80: //indirect (using FSR)
-                    register[getRegister(Registers.FSR)] = data;
+                    register[GetRegister(Registers.FSR)] = data;
                     break;
                 case 0x81: //OPTION 
                     SetPrePostscalerRatio();
                     break;
                 case 0x82:
                     register[Convert.ToInt16(0x02)] = data;
-                    setPCFromBytes(getRegister(Registers.PCLATH), getRegister(Registers.PCL));
+                    SetPCFromBytes(GetRegister(Registers.PCLATH), GetRegister(Registers.PCL));
                     break;
                 case 0x83:
                     register[Convert.ToInt16(0x03)] = data;
@@ -390,9 +386,9 @@ namespace NICE_P16F8x
         /// <param name="address"></param>
         /// <param name="bit"></param>
         /// <param name="value"></param>
-        public static void setRegisterBit(byte address, int bit, bool value)
+        public static void SetRegisterBit(byte address, int bit, bool value)
         {
-            setRegister(address, setBit(getRegister(address), bit, value));
+            SetRegister(address, SetBit(GetRegister(address), bit, value));
         }
         /// <summary>
         /// Gets a specific bit in the given register (absolute address)
@@ -400,23 +396,23 @@ namespace NICE_P16F8x
         /// <param name="address"></param>
         /// <param name="bit"></param>
         /// <param name="value"></param>
-        public static bool getRegisterBit(byte address, int bit)
+        public static bool GetRegisterBit(byte address, int bit)
         {
-            return (1 == ((getRegister(address) >> bit) & 1));
+            return (1 == ((GetRegister(address) >> bit) & 1));
         }
 
-        public static void toggleRegisterBit(byte address, int bit)
+        public static void ToggleRegisterBit(byte address, int bit)
         {
-            if (getRegisterBit(address, bit))
-                setRegisterBit(address, bit, false);
-            else setRegisterBit(address, bit, true);
+            if (GetRegisterBit(address, bit))
+                SetRegisterBit(address, bit, false);
+            else SetRegisterBit(address, bit, true);
 
         }
 
         public static byte AddressResolution(byte address)
         {
             //Add 0x80 if Bank 1 selected
-            if (getRegisterBit(Registers.STATUS, Flags.Status.RP0))
+            if (GetRegisterBit(Registers.STATUS, Flags.Status.RP0))
             {
                 return (byte)(address + 0x80);
             }
@@ -437,7 +433,7 @@ namespace NICE_P16F8x
             register[Registers.PCL2] = pcl;
         }
 
-        public static void setPCFromBytes(byte bHigh, byte bLow)
+        public static void SetPCFromBytes(byte bHigh, byte bLow)
         {
             pc = BitConverter.ToUInt16(new byte[] { bLow, bHigh }, 0);
         }
@@ -446,10 +442,10 @@ namespace NICE_P16F8x
         /// </summary>
         /// <param name="hex"></param>
         /// <returns></returns>
-        public static int hexToInt(string hex)
+        public static int HexToInt(string hex)
         {
             if (hex.Length > 2) return -1;
-            return 16 * hexLookup(hex[0]) + hexLookup(hex[1]);
+            return 16 * HexLookup(hex[0]) + HexLookup(hex[1]);
         }
         /// <summary>
         /// Converts a Byte to a bool[8]
@@ -504,7 +500,7 @@ namespace NICE_P16F8x
         /// <param name="bit"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static byte setBit(byte ofByte, int bitIndex, bool value)
+        public static byte SetBit(byte ofByte, int bitIndex, bool value)
         {
             byte mask = (byte)(1 << bitIndex);
             if (value)
@@ -520,13 +516,13 @@ namespace NICE_P16F8x
         public static Instruction InstructionLookup(Command command)
         {
             //BYTE-ORIENTED FILE REGISTER OPERATIONS
-            switch (command.getHighByte())
+            switch (command.GetHighByte())
             {
                 //bytes get compared as integers, so opcode conversion is needed
                 case 7: return Instruction.ADDWF;
                 case 5: return Instruction.ANDWF;
                 case 1:
-                    if ((command.getLowByte() & 128) == 0) return Instruction.CLRW;
+                    if ((command.GetLowByte() & 128) == 0) return Instruction.CLRW;
                     else return Instruction.CLRF;
                 case 9: return Instruction.COMF;
                 case 3: return Instruction.DECF;
@@ -544,17 +540,17 @@ namespace NICE_P16F8x
                 //LITERAL AND CONTROL OPERATIONS + NOP & MOVWF
                 case 57: return Instruction.ANDLW;
                 case 0:
-                    if (command.getLowByte() == 100) return Instruction.CLRWDT;
-                    else if (command.getLowByte() == 9) return Instruction.RETFIE;
-                    else if (command.getLowByte() == 8) return Instruction.RETURN;
-                    else if (command.getLowByte() == 99) return Instruction.SLEEP;
-                    else if ((command.getLowByte() & 159) == 0) return Instruction.NOP;
+                    if (command.GetLowByte() == 100) return Instruction.CLRWDT;
+                    else if (command.GetLowByte() == 9) return Instruction.RETFIE;
+                    else if (command.GetLowByte() == 8) return Instruction.RETURN;
+                    else if (command.GetLowByte() == 99) return Instruction.SLEEP;
+                    else if ((command.GetLowByte() & 159) == 0) return Instruction.NOP;
                     else return Instruction.MOVWF;
                 case 56: return Instruction.IORLW;
                 case 58: return Instruction.XORLW;
             }
             //BIT-ORIENTED FILE REGISTER OPERATIONS
-            switch (command.getHighByte() & 60)
+            switch (command.GetHighByte() & 60)
             {
                 case 16: return Instruction.BCF;
                 case 20: return Instruction.BSF;
@@ -566,18 +562,16 @@ namespace NICE_P16F8x
                 case 52: return Instruction.RETLW;
             }
             //LITERAL AND CONTROL OPERATIONS
-            switch (command.getHighByte() & 56)
+            switch (command.GetHighByte() & 56)
             {
                 case 32: return Instruction.CALL;
                 case 40: return Instruction.GOTO;
             }
-            switch (command.getHighByte() & 62)
+            switch (command.GetHighByte() & 62)
             {
                 case 62: return Instruction.ADDLW;
                 case 60: return Instruction.SUBLW;
             }
-
-
             return Instruction.UNKNOWNCOMMAND;
         }
 
@@ -586,7 +580,7 @@ namespace NICE_P16F8x
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
-        public static int hexLookup(char c)
+        public static int HexLookup(char c)
         {
             return c switch
             {
@@ -618,82 +612,82 @@ namespace NICE_P16F8x
         #endregion
 
         #region Getter/Setter
-        public static int[] getStack()
+        public static int[] GetStack()
         {
             return stack;
         }
-        public static long getSingleExectionTime() //In Microseconds
+        public static long GetSingleExectionTime() //In Microseconds
         {
             return (4000000 / clockspeed);
         }
-        public static int getPC()
+        public static int GetPC()
         {
             return pc;
         }
-        public static void setPC(int newPc)
+        public static void SetPC(int newPc)
         {
             pc = newPc;
             SetPCLfromPC();
         }
-        public static decimal getRuntime()
+        public static decimal GetRuntime()
         {
             return runtime;
         }
-        public static decimal getWatchdog()
+        public static decimal GetWatchdog()
         {
             return watchdog;
         }
-        public static void resetWatchdog()
+        public static void ResetWatchdog()
         {
             watchdog = 0;
         }
-        public static byte[] getAllRegisters()
+        public static byte[] GetAllRegisters()
         {
             return register;
         }
-        public static int getProgramLineCount()
+        public static int GetProgramLineCount()
         {
             return program.Count;
         }
-        public static List<Command> getProgram()
+        public static List<Command> GetProgram()
         {
             return program;
         }
-        public static bool isProgramInitialized()
+        public static bool IsProgramInitialized()
         {
             return programInitialized;
         }
-        public static byte getRegisterW()
+        public static byte GetRegisterW()
         {
             return w;
         }
-        public static void setRegisterW(byte val)
+        public static void SetRegisterW(byte val)
         {
             w = val;
         }
-        public static Command getProgramLine(int index)
+        public static Command GetProgramLine(int index)
         {
             if (!programInitialized) return null;
 
             return program[index];
         }
-        public static void setClockSpeed(int speed)
+        public static void SetClockSpeed(int speed)
         {
             clockspeed = speed;
         }
-        public static void setWatchdogEnabled(bool wdte)
+        public static void SetWatchdogEnabled(bool wdte)
         {
             watchdogEnabled = wdte;
         }
-        public static int getPrePostscalerRatio()
+        public static int GetPrePostscalerRatio()
         {
             return prePostscalerRatio;
         }
-        public static void setSleeping(bool sleep)
+        public static void SetSleeping(bool sleep)
         {
             sleeping = sleep;
         }
-        public static bool isSleeping()
+        public static bool IsSleeping()
         {
             return sleeping;
         }
